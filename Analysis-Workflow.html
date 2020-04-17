@@ -535,13 +535,11 @@ df_BYeligible.5 &lt;- df_bio2 %&gt;%
 <div id="run-models-for-each-course" class="section level2">
 <h2>2. Run Models (for each Course)</h2>
 <p>(see also <a href="https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174">Sample Descriptions</a> for model specs.)</p>
-<div id="rq1" class="section level3">
-<h3>RQ1:</h3>
-<div id="what-student-characteristics-are-associated-with-student-participation-and-success-in-ap-courses-for-students-enrolled-at-the-selected-universities" class="section level4">
-<h4>What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?</h4>
+<div id="rq1-what-student-characteristics-are-associated-with-student-participation-and-success-in-ap-courses-for-students-enrolled-at-the-selected-universities" class="section level3">
+<h3>RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?</h3>
 </div>
-<div id="rq1a-who-takes-ap" class="section level4">
-<h4><em>RQ1a: Who takes AP?</em></h4>
+<div id="rq1a-who-takes-ap" class="section level3">
+<h3><em>RQ1a: Who takes AP?</em></h3>
 <ul>
 <li>Sample: Took Course 2 dataframe</li>
 <li>DV: aptaker</li>
@@ -644,7 +642,6 @@ logistic.display(m1.a_BY)
 ## factor(enrl_from_cohort)4    1.283459e-06 0.00000000        Inf 9.797858e-01
 ## factor(enrl_from_cohort)4.5  7.058345e-07 0.00000000        Inf 9.788950e-01
 ## factor(enrl_from_cohort)4.66 1.264938e-06 0.00000000        Inf 9.797642e-01</code></pre>
-</div>
 <div id="rq1b." class="section level4">
 <h4><em>RQ1b.</em></h4>
 <ul>
@@ -712,7 +709,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2",
+      selectors: "h1,h2,h3",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {

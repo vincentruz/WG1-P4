@@ -666,9 +666,9 @@ df_BYeligible.5 <- df_bio2 %>%
 ## 2.	Run Models (for each Course)
 (see also [Sample Descriptions](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174) for model specs.)
 
-### RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?
+## RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?
 
-### *RQ1a: Who takes AP?*
+## *RQ1a: Who takes AP?*
       
 - Sample: Took Course 2 dataframe
 - DV: aptaker
@@ -678,55 +678,51 @@ df_BYeligible.5 <- df_bio2 %>%
 ```{r include = FALSE}
 # Model 1a: Credits ####
 #Bio
-m1.a_BY <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
                binomial(link = "logit"), df_bio2)
-summary(m1.a_BY)
-exp(cbind("Odds Ratio" = coef(m1.a_BY), confint.default(m1.a_BY, level = 0.95)))
-logistic.display(m1.a_BY)
+summary(m1.a_bio)
+exp(cbind("Odds Ratio" = coef(m1.a_bio), confint.default(m1.a_bio, level = 0.95)))
+logistic.display(m1.a_bio)
 
 #Chem
-m1.a_CH <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_chem <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
                binomial(link = "logit"), df_chem2)
-summary(m1.a_CH)   
-exp(cbind("Odds Ratio" = coef(m1.a_CH), confint.default(m1.a_CH, level = 0.95)))
-logistic.display(m1.a_CH)
+summary(m1.a_chem)   
+exp(cbind("Odds Ratio" = coef(m1.a_chem), confint.default(m1.a_chem, level = 0.95)))
+logistic.display(m1.a_chem)
 
 #Physics
-m1.a_PH <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_phys <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
                binomial(link = "logit"), df_phys2)
-summary(m1.a_PH)
-exp(cbind("Odds Ratio" = coef(m1.a_PH), confint.default(m1.a_PH, level = 0.95)))
-logistic.display(m1.a_BY)
+summary(m1.a_phys)
+exp(cbind("Odds Ratio" = coef(m1.a_phys), confint.default(m1.a_phys, level = 0.95)))
+logistic.display(m1.a_phys)
 
 ```
 
 ```{r eval = FALSE}
 # Model 1a: Credits ####
 #Bio
-m1.a_BY <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
                binomial(link = "logit"), df_bio2)
-summary(m1.a_BY)
-exp(cbind("Odds Ratio" = coef(m1.a_BY), confint.default(m1.a_BY, level = 0.95)))
-logistic.display(m1.a_BY)
+logistic.display(m1.a_bio)
 
 # Repeat for Chem, Phys
 ```
 
 ```{r}
-summary(m1.a_BY)
-exp(cbind("Odds Ratio" = coef(m1.a_BY), confint.default(m1.a_BY, level = 0.95)))
-logistic.display(m1.a_BY)
+logistic.display(m1.a_bio)
 ```
 
-#### *RQ1b.* 
+## *RQ1b.* 
 
 - Sample: Took AP dataframe
 - DV: apscore
 - IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) + scale(hsgpa) +                   scale(mathsr) + scale(englsr)
 - COV: factor(crs_term) 
             
-#### (Etc….)
+## (Etc….)
