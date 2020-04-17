@@ -1,6 +1,6 @@
 SIESMIC AP Analysis Workflow
 
-1.	Data Processing (Institution Specific - see here for shared SEISMIC variable names)
+1.	Data Processing (Institution Specific - see <a href="https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021"> for shared SEISMIC variable names)
   a.	Load R pkgs
   b.	Load full dataset
   c.	Student level variables
