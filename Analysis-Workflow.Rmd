@@ -663,7 +663,7 @@ df_BYeligible.5 <- df_bio2 %>%
 # Repeat for Chem, Phys
 ```
 
-## 2.	Run Models (for each Course)
+## 1.	Run Models (for each Course)
 (see also [Sample Descriptions](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174) for model specs.)
 
 ## RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?
