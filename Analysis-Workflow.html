@@ -535,11 +535,12 @@ df_BYeligible.5 &lt;- df_bio2 %&gt;%
 <div id="run-models-for-each-course" class="section level2">
 <h2>2. Run Models (for each Course)</h2>
 <p>(see also <a href="https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174">Sample Descriptions</a> for model specs.)</p>
-<div id="rq1-what-student-characteristics-are-associated-with-student-participation-and-success-in-ap-courses-for-students-enrolled-at-the-selected-universities" class="section level3">
-<h3>RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?</h3>
 </div>
-<div id="rq1a-who-takes-ap" class="section level3">
-<h3><em>RQ1a: Who takes AP?</em></h3>
+<div id="rq1-what-student-characteristics-are-associated-with-student-participation-and-success-in-ap-courses-for-students-enrolled-at-the-selected-universities" class="section level2">
+<h2>RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?</h2>
+</div>
+<div id="rq1a-who-takes-ap" class="section level2">
+<h2><em>RQ1a: Who takes AP?</em></h2>
 <ul>
 <li>Sample: Took Course 2 dataframe</li>
 <li>DV: aptaker</li>
@@ -548,80 +549,13 @@ df_BYeligible.5 &lt;- df_bio2 %&gt;%
 </ul>
 <pre class="r"><code># Model 1a: Credits ####
 #Bio
-m1.a_BY &lt;- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_bio &lt;- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
                binomial(link = &quot;logit&quot;), df_bio2)
-summary(m1.a_BY)
-exp(cbind(&quot;Odds Ratio&quot; = coef(m1.a_BY), confint.default(m1.a_BY, level = 0.95)))
-logistic.display(m1.a_BY)
+logistic.display(m1.a_bio)
 
 # Repeat for Chem, Phys</code></pre>
-<pre class="r"><code>summary(m1.a_BY)</code></pre>
-<pre><code>## 
-## Call:
-## glm(formula = aptaker ~ factor(firstgen) + factor(lowincomflag) + 
-##     factor(female) + factor(urm) + scale(hsgpa) + scale(mathsr) + 
-##     scale(englsr) + factor(enrl_from_cohort), family = binomial(link = &quot;logit&quot;), 
-##     data = df_bio2)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.4563  -1.2151   0.9629   1.1067   2.3066  
-## 
-## Coefficients:
-##                               Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)                    0.29687    0.07849   3.782 0.000155 ***
-## factor(firstgen)1              0.05927    0.15959   0.371 0.710366    
-## factor(lowincomflag)1         -0.06870    0.14499  -0.474 0.635636    
-## factor(female)1               -0.14335    0.09243  -1.551 0.120911    
-## factor(urm)1                   0.15470    0.15300   1.011 0.311953    
-## scale(hsgpa)                  -0.03197    0.04714  -0.678 0.497634    
-## scale(mathsr)                  0.09454    0.05413   1.746 0.080755 .  
-## scale(englsr)                  0.03557    0.05316   0.669 0.503383    
-## factor(enrl_from_cohort)1.5   -0.73755    0.12132  -6.079 1.21e-09 ***
-## factor(enrl_from_cohort)1.66  -0.21853    0.23973  -0.912 0.361995    
-## factor(enrl_from_cohort)2     -0.85650    0.24132  -3.549 0.000386 ***
-## factor(enrl_from_cohort)2.5   -2.53563    0.74665  -3.396 0.000684 ***
-## factor(enrl_from_cohort)2.66  -0.41198    0.37404  -1.101 0.270707    
-## factor(enrl_from_cohort)3     -0.09262    0.56037  -0.165 0.868722    
-## factor(enrl_from_cohort)3.5    0.63337    1.22775   0.516 0.605937    
-## factor(enrl_from_cohort)3.66  -0.23881    0.58172  -0.411 0.681419    
-## factor(enrl_from_cohort)4    -13.56595  535.41118  -0.025 0.979786    
-## factor(enrl_from_cohort)4.5  -14.16389  535.41120  -0.026 0.978895    
-## factor(enrl_from_cohort)4.66 -13.58049  535.41118  -0.025 0.979764    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 3162.8  on 2281  degrees of freedom
-## Residual deviance: 3078.6  on 2263  degrees of freedom
-##   (499 observations deleted due to missingness)
-## AIC: 3116.6
-## 
-## Number of Fisher Scoring iterations: 12</code></pre>
-<pre class="r"><code>exp(cbind(&quot;Odds Ratio&quot; = coef(m1.a_BY), confint.default(m1.a_BY, level = 0.95)))</code></pre>
-<pre><code>##                                Odds Ratio      2.5 %     97.5 %
-## (Intercept)                  1.345642e+00 1.15376980  1.5694228
-## factor(firstgen)1            1.061059e+00 0.77605614  1.4507279
-## factor(lowincomflag)1        9.336068e-01 0.70265811  1.2404634
-## factor(female)1              8.664525e-01 0.72289022  1.0385256
-## factor(urm)1                 1.167308e+00 0.86487668  1.5754941
-## scale(hsgpa)                 9.685349e-01 0.88305993  1.0622834
-## scale(mathsr)                1.099148e+00 0.98850133  1.2221806
-## scale(englsr)                1.036213e+00 0.93368411  1.1500009
-## factor(enrl_from_cohort)1.5  4.782860e-01 0.37706970  0.6066716
-## factor(enrl_from_cohort)1.66 8.037013e-01 0.50238773  1.2857315
-## factor(enrl_from_cohort)2    4.246465e-01 0.26461771  0.6814536
-## factor(enrl_from_cohort)2.5  7.921156e-02 0.01833322  0.3422461
-## factor(enrl_from_cohort)2.66 6.623396e-01 0.31820030  1.3786718
-## factor(enrl_from_cohort)3    9.115404e-01 0.30393872  2.7337941
-## factor(enrl_from_cohort)3.5  1.883956e+00 0.16982774 20.8993588
-## factor(enrl_from_cohort)3.66 7.875640e-01 0.25184226  2.4628793
-## factor(enrl_from_cohort)4    1.283459e-06 0.00000000        Inf
-## factor(enrl_from_cohort)4.5  7.058345e-07 0.00000000        Inf
-## factor(enrl_from_cohort)4.66 1.264938e-06 0.00000000        Inf</code></pre>
-<pre class="r"><code>logistic.display(m1.a_BY)</code></pre>
+<pre class="r"><code>logistic.display(m1.a_bio)</code></pre>
 <pre><code>##  
 ##                                        OR  lower95ci  upper95ci     Pr(&gt;|Z|)
 ## factor(firstgen)1            1.061059e+00 0.77605614  1.4507279 7.103658e-01
@@ -642,8 +576,9 @@ logistic.display(m1.a_BY)
 ## factor(enrl_from_cohort)4    1.283459e-06 0.00000000        Inf 9.797858e-01
 ## factor(enrl_from_cohort)4.5  7.058345e-07 0.00000000        Inf 9.788950e-01
 ## factor(enrl_from_cohort)4.66 1.264938e-06 0.00000000        Inf 9.797642e-01</code></pre>
-<div id="rq1b." class="section level4">
-<h4><em>RQ1b.</em></h4>
+</div>
+<div id="rq1b." class="section level2">
+<h2><em>RQ1b.</em></h2>
 <ul>
 <li>Sample: Took AP dataframe</li>
 <li>DV: apscore</li>
@@ -651,10 +586,8 @@ logistic.display(m1.a_BY)
 <li>COV: factor(crs_term)</li>
 </ul>
 </div>
-<div id="etc." class="section level4">
-<h4>(Etc….)</h4>
-</div>
-</div>
+<div id="etc." class="section level2">
+<h2>(Etc….)</h2>
 </div>
 </div>
 
