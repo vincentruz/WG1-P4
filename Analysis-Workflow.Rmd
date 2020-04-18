@@ -1,15 +1,19 @@
 ---
 title: "SEISMIC WG1-P4"
-subtitle: "Analysis Workflow"
 author: "Eben"
 date: "4/17/2020"
-output: 
+output:
   html_document:
+    keep_md: true
     code_folding: show
-    toc: true
-    toc_depth: 2
-    toc_float: true
     theme: cosmo
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+subtitle: Analysis Workflow
 ---
 
 ```{r setup, include=FALSE}
