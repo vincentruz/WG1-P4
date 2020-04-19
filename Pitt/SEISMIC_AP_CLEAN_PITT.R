@@ -3,7 +3,7 @@
 # Load packages and data
 if (!require("pacman")) install.packages("pacman")
 library(pacman)
-pacman::p_load("tidyverse")
+pacman::p_load("tidyverse", "psych")
 
 # Functions and settings ####
 # Use dplyr for 'select'
@@ -183,12 +183,7 @@ df_crs_bio1 <- df_crs %>%
   group_by(st_id, crs_catalog) %>% 
   arrange(crs_term, .by_group= TRUE) %>%
   mutate(crs_retake_num = row_number()) %>%
-  filter(crs_retake_num == 1) %>%
-  #Only first time taking course (incl. Honors)
-  group_by(st_id) %>% 
-  arrange(crs_term, .by_group= TRUE) %>%
-  mutate(crs_retake_num2 = row_number()) %>%
-  filter(crs_retake_num2 == 1)
+  filter(crs_retake_num == 1)
 
 df_crs_bio2 <- df_crs %>%
   filter(crs_sbj == "BIOSC" & (crs_catalog == "0160")) %>% # | crs_catalog == "0716")) %>%
@@ -196,12 +191,7 @@ df_crs_bio2 <- df_crs %>%
   group_by(st_id, crs_catalog) %>% 
   arrange(crs_term, .by_group= TRUE) %>%
   mutate(crs_retake_num = row_number()) %>%
-  filter(crs_retake_num == 1) %>%
-  #Only first time taking course (incl. Honors)
-  group_by(st_id) %>% 
-  arrange(crs_term, .by_group= TRUE) %>%
-  mutate(crs_retake_num2 = row_number()) %>%
-  filter(crs_retake_num2 == 1)
+  filter(crs_retake_num == 1)
 
 #Chem
 df_crs_chem1 <- df_crs %>%
@@ -210,12 +200,7 @@ df_crs_chem1 <- df_crs %>%
   group_by(st_id, crs_catalog) %>% 
   arrange(crs_term, .by_group= TRUE) %>%
   mutate(crs_retake_num = row_number()) %>%
-  filter(crs_retake_num == 1) %>%
-  #Only first time taking course (incl. Honors)
-  group_by(st_id) %>% 
-  arrange(crs_term, .by_group= TRUE) %>%
-  mutate(crs_retake_num2 = row_number()) %>%
-  filter(crs_retake_num2 == 1)
+  filter(crs_retake_num == 1) 
 
 df_crs_chem2 <- df_crs %>%
   filter(crs_sbj == "CHEM" & (crs_catalog == "0120")) %>% # | crs_catalog == "0720")) %>%
@@ -223,12 +208,7 @@ df_crs_chem2 <- df_crs %>%
   group_by(st_id, crs_catalog) %>% 
   arrange(crs_term, .by_group= TRUE) %>%
   mutate(crs_retake_num = row_number()) %>%
-  filter(crs_retake_num == 1) %>%
-  #Only first time taking course (incl. Honors)
-  group_by(st_id) %>% 
-  arrange(crs_term, .by_group= TRUE) %>%
-  mutate(crs_retake_num2 = row_number()) %>%
-  filter(crs_retake_num2 == 1)
+  filter(crs_retake_num == 1) 
 
 #Phys
 df_crs_phys1 <- df_crs %>%
@@ -237,12 +217,7 @@ df_crs_phys1 <- df_crs %>%
   group_by(st_id, crs_catalog) %>% 
   arrange(crs_term, .by_group= TRUE) %>%
   mutate(crs_retake_num = row_number()) %>%
-  filter(crs_retake_num == 1) %>%
-  #Only first time taking course (incl. Honors)
-  group_by(st_id) %>% 
-  arrange(crs_term, .by_group= TRUE) %>%
-  mutate(crs_retake_num2 = row_number()) %>%
-  filter(crs_retake_num2 == 1)
+  filter(crs_retake_num == 1)
 
 df_crs_phys2 <- df_crs %>%
   filter(crs_sbj == "PHYS" & (crs_catalog == "0175")) %>% # | crs_catalog == "0476")) %>%
@@ -250,12 +225,7 @@ df_crs_phys2 <- df_crs %>%
   group_by(st_id, crs_catalog) %>% 
   arrange(crs_term, .by_group= TRUE) %>%
   mutate(crs_retake_num = row_number()) %>%
-  filter(crs_retake_num == 1) %>%
-  #Only first time taking course (incl. Honors)
-  group_by(st_id) %>% 
-  arrange(crs_term, .by_group= TRUE) %>%
-  mutate(crs_retake_num2 = row_number()) %>%
-  filter(crs_retake_num2 == 1)
+  filter(crs_retake_num == 1)
 
 ##### AP Level ####
 # By course ####
