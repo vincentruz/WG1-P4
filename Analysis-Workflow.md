@@ -85,16 +85,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 8CE4…        0 WHITE                   0     0      1      1    234310
-##  2 522A…        0 WHITE                   0     0      1      1    236276
-##  3 46D8…        0 WHITE                   0     0      0      0        NA
-##  4 05F5…        0 WHITE                   0     0      0      0     66181
-##  5 510C…        0 WHITE                   0     0      1      1    287858
-##  6 5CD5…        1 WHITE                   0     0      0      0     49447
-##  7 FDBB…        0 ASIAN                   2     0      1      1        NA
-##  8 47EB…        0 WHITE                   0     0      0      0     35501
-##  9 5CFE…        1 WHITE                   0     0      0      0     54897
-## 10 6093…        0 WHITE                   0     0      1      1     64684
+##  1 012C…        0 WHITE                   0     0      0      0    350771
+##  2 3DAE…        0 WHITE                   0     0      1      1        NA
+##  3 D11C…        0 WHITE                   0     0      0      0        NA
+##  4 DC90…        0 WHITE                   0     0      1      1        NA
+##  5 2574…        1 WHITE                   0     0      1      1     56784
+##  6 5C44…        1 WHITE                   0     0      1      1     67283
+##  7 D8F1…        0 ASIAN                   2     0      0      0     16582
+##  8 6B18…        0 OTHER                  NA    NA      0      0        NA
+##  9 6F6E…        0 HISPA                   1     1      1      1    205623
+## 10 5871…        0 WHITE                   0     0      1      1    131000
 ## # … with 16 more variables: lowincomflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
@@ -208,8 +208,8 @@ df_crs_bio1 <- df_crs %>%
 df_ap_bio <- df_full %>%
   mutate(st_id = EMPLID_H) %>%
   mutate(aptaker = ifelse(is.na(BY), 0, 1)) %>%
-  mutate(apskipper = ifelse(BY >= 4 & !is.na(BY), 1, 0)) %>%
-  mutate(apskipper_2 = ifelse(BY == 5 & !is.na(BY), 1, 0)) %>%
+  mutate(eligible_to_skip = ifelse(BY >= 4 & !is.na(BY), 1, 0)) %>%
+  mutate(eligible_to_skip_2 = ifelse(BY == 5 & !is.na(BY), 1, 0)) %>%
   mutate(tookcourse = ifelse(
     SUBJECT_CD == "BIOSC" & (CATALOG_NBR == "0150") & # | CATALOG_NBR == "0715") & 
       COURSE_GRADE_CD != "W", 1, 0)) %>%
@@ -229,19 +229,20 @@ df_ap_bio <- df_full %>%
 
 ```
 ## # A tibble: 22,976 x 8
-##    st_id aptaker apskipper apskipper_2 tookcourse tookcourse_2 apscore
-##    <fct>   <dbl>     <dbl>       <dbl>      <dbl>        <dbl> <chr>  
-##  1 0000…       0         0           0          0            0 <NA>   
-##  2 0005…       0         0           0          0            0 <NA>   
-##  3 0009…       0         0           0          0            0 <NA>   
-##  4 000E…       0         0           0          0            0 <NA>   
-##  5 000E…       0         0           0          0            0 <NA>   
-##  6 0019…       0         0           0          0            0 <NA>   
-##  7 001D…       1         1           1          0            0 5      
-##  8 001F…       0         0           0          0            0 <NA>   
-##  9 001F…       0         0           0          0            0 <NA>   
-## 10 0029…       0         0           0          0            0 <NA>   
-## # … with 22,966 more rows, and 1 more variable: apscore_full <dbl>
+##    st_id aptaker eligible_to_skip eligible_to_ski… tookcourse tookcourse_2
+##    <fct>   <dbl>            <dbl>            <dbl>      <dbl>        <dbl>
+##  1 0000…       0                0                0          0            0
+##  2 0005…       0                0                0          0            0
+##  3 0009…       0                0                0          0            0
+##  4 000E…       0                0                0          0            0
+##  5 000E…       0                0                0          0            0
+##  6 0019…       0                0                0          0            0
+##  7 001D…       1                1                1          0            0
+##  8 001F…       0                0                0          0            0
+##  9 001F…       0                0                0          0            0
+## 10 0029…       0                0                0          0            0
+## # … with 22,966 more rows, and 2 more variables: apscore <chr>,
+## #   apscore_full <dbl>
 ```
 
 ## 4. Create stacked dataset
@@ -261,10 +262,10 @@ df_bio <- df_std %>%
   full_join(df_crs_bio1, by = "st_id") %>%
   full_join(df_ap_bio, by = "st_id") %>%
   mutate(discipline = "BIO") %>%
-  mutate(skipped_1 = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
+  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
-         aptaker, apscore, apscore_full, apskipper, 
-         tookcourse, tookcourse_2, skipped_1) 
+         aptaker, apscore, apscore_full, eligible_to_skip, 
+         tookcourse, tookcourse_2, skipped_course) 
 
 # repeat for Chem, Phys
 ```
@@ -299,8 +300,8 @@ df_bio <- df_std %>%
 ## #   crs_term_yr.y <chr>, crs_term_sem.y <chr>, summer_crs.y <dbl>,
 ## #   TERM_REF.y <int>, enrl_from_cohort.y <dbl>, crs_credits.y <dbl>,
 ## #   crs_component.y <fct>, class_number.y <int>, current_major.y <fct>,
-## #   aptaker <dbl>, apscore <chr>, apscore_full <dbl>, apskipper <dbl>,
-## #   tookcourse <dbl>, tookcourse_2 <dbl>, skipped_1 <dbl>
+## #   aptaker <dbl>, apscore <chr>, apscore_full <dbl>, eligible_to_skip <dbl>,
+## #   tookcourse <dbl>, tookcourse_2 <dbl>, skipped_course <dbl>
 ```
 
 ### b. Stack all dataframes, with course indicator
@@ -424,7 +425,7 @@ df_BYtakers <- df_clean %>%
 # Skip eligible
 df_BYeligible <- df_clean %>%
   subset(discipline == "BIO") %>%
-  subset(apskipper == 1)
+  subset(eligible_to_skip == 1)
 
 # repeat for Chem, Phys
 ```
@@ -524,12 +525,11 @@ summary(m1.b_bio)
 ## scale(hsgpa)          1.1357923 1.0693442 1.2063693 3.732853e-05
 ## scale(mathsr)         1.1824570 1.1049289 1.2654250 1.448605e-06
 ## scale(englsr)         1.2551903 1.1741453 1.3418294 3.871251e-11
-## factor(crs_term)15    1.0093590 0.8458980 1.2044072 9.177080e-01
-## factor(crs_term)16    0.8605007 0.7240162 1.0227141 8.845368e-02
-## factor(crs_term)17    0.9218042 0.7782489 1.0918395 3.460371e-01
-## factor(crs_term)18    1.0497281 0.8878170 1.2411670 5.702780e-01
-## factor(crs_term)19    0.7206907 0.3634912 1.4289069 3.484743e-01
+## factor(crs_term)2015  1.0093590 0.8458980 1.2044072 9.177080e-01
+## factor(crs_term)2016  0.8605007 0.7240162 1.0227141 8.845368e-02
+## factor(crs_term)2017  0.9218042 0.7782489 1.0918395 3.460371e-01
+## factor(crs_term)2018  1.0497281 0.8878170 1.2411670 5.702780e-01
+## factor(crs_term)2019  0.7206907 0.3634912 1.4289069 3.484743e-01
 ```
-
 
 ## *(Etc…)*

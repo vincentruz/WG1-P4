@@ -327,16 +327,16 @@ df_std &lt;- df_full %&gt;%
 <pre><code>## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;int&gt;
-##  1 8CE4…        0 WHITE                   0     0      1      1    234310
-##  2 522A…        0 WHITE                   0     0      1      1    236276
-##  3 46D8…        0 WHITE                   0     0      0      0        NA
-##  4 05F5…        0 WHITE                   0     0      0      0     66181
-##  5 510C…        0 WHITE                   0     0      1      1    287858
-##  6 5CD5…        1 WHITE                   0     0      0      0     49447
-##  7 FDBB…        0 ASIAN                   2     0      1      1        NA
-##  8 47EB…        0 WHITE                   0     0      0      0     35501
-##  9 5CFE…        1 WHITE                   0     0      0      0     54897
-## 10 6093…        0 WHITE                   0     0      1      1     64684
+##  1 012C…        0 WHITE                   0     0      0      0    350771
+##  2 3DAE…        0 WHITE                   0     0      1      1        NA
+##  3 D11C…        0 WHITE                   0     0      0      0        NA
+##  4 DC90…        0 WHITE                   0     0      1      1        NA
+##  5 2574…        1 WHITE                   0     0      1      1     56784
+##  6 5C44…        1 WHITE                   0     0      1      1     67283
+##  7 D8F1…        0 ASIAN                   2     0      0      0     16582
+##  8 6B18…        0 OTHER                  NA    NA      0      0        NA
+##  9 6F6E…        0 HISPA                   1     1      1      1    205623
+## 10 5871…        0 WHITE                   0     0      1      1    131000
 ## # … with 16 more variables: lowincomflag &lt;dbl&gt;, transfer &lt;dbl&gt;,
 ## #   international &lt;dbl&gt;, ell &lt;dbl&gt;, us_hs &lt;dbl&gt;, cohort &lt;dbl&gt;,
 ## #   cohort_2013 &lt;dbl&gt;, cohort_2014 &lt;dbl&gt;, cohort_2015 &lt;dbl&gt;, cohort_2016 &lt;dbl&gt;,
@@ -431,8 +431,8 @@ df_crs_bio1 &lt;- df_crs %&gt;%
 df_ap_bio &lt;- df_full %&gt;%
   mutate(st_id = EMPLID_H) %&gt;%
   mutate(aptaker = ifelse(is.na(BY), 0, 1)) %&gt;%
-  mutate(apskipper = ifelse(BY &gt;= 4 &amp; !is.na(BY), 1, 0)) %&gt;%
-  mutate(apskipper_2 = ifelse(BY == 5 &amp; !is.na(BY), 1, 0)) %&gt;%
+  mutate(eligible_to_skip = ifelse(BY &gt;= 4 &amp; !is.na(BY), 1, 0)) %&gt;%
+  mutate(eligible_to_skip_2 = ifelse(BY == 5 &amp; !is.na(BY), 1, 0)) %&gt;%
   mutate(tookcourse = ifelse(
     SUBJECT_CD == &quot;BIOSC&quot; &amp; (CATALOG_NBR == &quot;0150&quot;) &amp; # | CATALOG_NBR == &quot;0715&quot;) &amp; 
       COURSE_GRADE_CD != &quot;W&quot;, 1, 0)) %&gt;%
@@ -448,19 +448,20 @@ df_ap_bio &lt;- df_full %&gt;%
 
 # repeat for Chem, Phys</code></pre>
 <pre><code>## # A tibble: 22,976 x 8
-##    st_id aptaker apskipper apskipper_2 tookcourse tookcourse_2 apscore
-##    &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt; &lt;chr&gt;  
-##  1 0000…       0         0           0          0            0 &lt;NA&gt;   
-##  2 0005…       0         0           0          0            0 &lt;NA&gt;   
-##  3 0009…       0         0           0          0            0 &lt;NA&gt;   
-##  4 000E…       0         0           0          0            0 &lt;NA&gt;   
-##  5 000E…       0         0           0          0            0 &lt;NA&gt;   
-##  6 0019…       0         0           0          0            0 &lt;NA&gt;   
-##  7 001D…       1         1           1          0            0 5      
-##  8 001F…       0         0           0          0            0 &lt;NA&gt;   
-##  9 001F…       0         0           0          0            0 &lt;NA&gt;   
-## 10 0029…       0         0           0          0            0 &lt;NA&gt;   
-## # … with 22,966 more rows, and 1 more variable: apscore_full &lt;dbl&gt;</code></pre>
+##    st_id aptaker eligible_to_skip eligible_to_ski… tookcourse tookcourse_2
+##    &lt;fct&gt;   &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;
+##  1 0000…       0                0                0          0            0
+##  2 0005…       0                0                0          0            0
+##  3 0009…       0                0                0          0            0
+##  4 000E…       0                0                0          0            0
+##  5 000E…       0                0                0          0            0
+##  6 0019…       0                0                0          0            0
+##  7 001D…       1                1                1          0            0
+##  8 001F…       0                0                0          0            0
+##  9 001F…       0                0                0          0            0
+## 10 0029…       0                0                0          0            0
+## # … with 22,966 more rows, and 2 more variables: apscore &lt;chr&gt;,
+## #   apscore_full &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <div id="create-stacked-dataset" class="section level2">
@@ -481,10 +482,10 @@ df_bio &lt;- df_std %&gt;%
   full_join(df_crs_bio1, by = &quot;st_id&quot;) %&gt;%
   full_join(df_ap_bio, by = &quot;st_id&quot;) %&gt;%
   mutate(discipline = &quot;BIO&quot;) %&gt;%
-  mutate(skipped_1 = ifelse(tookcourse == 0 &amp; tookcourse_2 == 1, 1, 0)) %&gt;%
+  mutate(skipped_course = ifelse(tookcourse == 0 &amp; tookcourse_2 == 1, 1, 0)) %&gt;%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
-         aptaker, apscore, apscore_full, apskipper, 
-         tookcourse, tookcourse_2, skipped_1) 
+         aptaker, apscore, apscore_full, eligible_to_skip, 
+         tookcourse, tookcourse_2, skipped_course) 
 
 # repeat for Chem, Phys</code></pre>
 <pre><code>## # A tibble: 22,976 x 64
@@ -515,8 +516,8 @@ df_bio &lt;- df_std %&gt;%
 ## #   crs_term_yr.y &lt;chr&gt;, crs_term_sem.y &lt;chr&gt;, summer_crs.y &lt;dbl&gt;,
 ## #   TERM_REF.y &lt;int&gt;, enrl_from_cohort.y &lt;dbl&gt;, crs_credits.y &lt;dbl&gt;,
 ## #   crs_component.y &lt;fct&gt;, class_number.y &lt;int&gt;, current_major.y &lt;fct&gt;,
-## #   aptaker &lt;dbl&gt;, apscore &lt;chr&gt;, apscore_full &lt;dbl&gt;, apskipper &lt;dbl&gt;,
-## #   tookcourse &lt;dbl&gt;, tookcourse_2 &lt;dbl&gt;, skipped_1 &lt;dbl&gt;</code></pre>
+## #   aptaker &lt;dbl&gt;, apscore &lt;chr&gt;, apscore_full &lt;dbl&gt;, eligible_to_skip &lt;dbl&gt;,
+## #   tookcourse &lt;dbl&gt;, tookcourse_2 &lt;dbl&gt;, skipped_course &lt;dbl&gt;</code></pre>
 </div>
 <div id="b.-stack-all-dataframes-with-course-indicator" class="section level3">
 <h3>b. Stack all dataframes, with course indicator</h3>
@@ -619,7 +620,7 @@ df_BYtakers &lt;- df_clean %&gt;%
 <pre class="r"><code># Skip eligible
 df_BYeligible &lt;- df_clean %&gt;%
   subset(discipline == &quot;BIO&quot;) %&gt;%
-  subset(apskipper == 1)
+  subset(eligible_to_skip == 1)
 
 # repeat for Chem, Phys</code></pre>
 <ol start="4" style="list-style-type: decimal">
@@ -695,11 +696,11 @@ summary(m1.b_bio)</code></pre>
 ## scale(hsgpa)          1.1357923 1.0693442 1.2063693 3.732853e-05
 ## scale(mathsr)         1.1824570 1.1049289 1.2654250 1.448605e-06
 ## scale(englsr)         1.2551903 1.1741453 1.3418294 3.871251e-11
-## factor(crs_term)15    1.0093590 0.8458980 1.2044072 9.177080e-01
-## factor(crs_term)16    0.8605007 0.7240162 1.0227141 8.845368e-02
-## factor(crs_term)17    0.9218042 0.7782489 1.0918395 3.460371e-01
-## factor(crs_term)18    1.0497281 0.8878170 1.2411670 5.702780e-01
-## factor(crs_term)19    0.7206907 0.3634912 1.4289069 3.484743e-01</code></pre>
+## factor(crs_term)2015  1.0093590 0.8458980 1.2044072 9.177080e-01
+## factor(crs_term)2016  0.8605007 0.7240162 1.0227141 8.845368e-02
+## factor(crs_term)2017  0.9218042 0.7782489 1.0918395 3.460371e-01
+## factor(crs_term)2018  1.0497281 0.8878170 1.2411670 5.702780e-01
+## factor(crs_term)2019  0.7206907 0.3634912 1.4289069 3.484743e-01</code></pre>
 </div>
 <div id="etc" class="section level2">
 <h2><em>(Etc…)</em></h2>
