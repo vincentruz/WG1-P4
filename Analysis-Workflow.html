@@ -279,7 +279,7 @@ div.tocify {
 <p><em>Note:</em></p>
 <ul>
 <li>Specific syntax for these steps are likely to vary by institutional variable naming conventions</li>
-<li>Sample code shown here; see WG1-P4 GitHub repository institutional folders for complete data cleaning examples, and shared analysis folder for complete analysis code.</li>
+<li>Sample code shown here; see WG1-P4 GitHub repository institutional folders for complete data cleaning examples.</li>
 </ul>
 <div id="startup" class="section level2">
 <h2>0. Startup</h2>
@@ -287,17 +287,21 @@ div.tocify {
 <h3>a. Load R pkgs</h3>
 <pre class="r"><code>if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
 library(pacman)
-pacman::p_load(&quot;tidyverse&quot;)</code></pre>
+pacman::p_load(&quot;tidyverse&quot;)   # Data wrangling</code></pre>
 </div>
 <div id="b.-load-full-dataset" class="section level3">
 <h3>b. Load full dataset</h3>
 <pre class="r"><code># CHANGE TO YOUR FILE PATH
 df_full &lt;- read.csv(&quot;~/YOUR FILE PATH HERE.csv&quot;)
 head(names(df_full))</code></pre>
-<pre><code>##  [1] &quot;X&quot;                      &quot;EMPLID_H&quot;               &quot;ACADEMIC_PLAN_DESCR&quot;   
-##  [4] &quot;ACADEMIC_PROGRAM_CD&quot;    &quot;ACADEMIC_PROGRAM_DESCR&quot; &quot;BIRTH_DT&quot;              
-##  [7] &quot;GENDER_CD&quot;              &quot;ETHNIC_GROUP_CD&quot;        &quot;ETHNIC_AMIND_FLG&quot;      
-## [10] &quot;ETHNIC_ASIAN_FLG&quot;</code></pre>
+<pre><code>##  [1] &quot;X&quot;                        &quot;EMPLID_H&quot;                
+##  [3] &quot;ACADEMIC_PLAN_DESCR&quot;      &quot;ACADEMIC_PROGRAM_CD&quot;     
+##  [5] &quot;ACADEMIC_PROGRAM_DESCR&quot;   &quot;BIRTH_DT&quot;                
+##  [7] &quot;GENDER_CD&quot;                &quot;ETHNIC_GROUP_CD&quot;         
+##  [9] &quot;ETHNIC_AMIND_FLG&quot;         &quot;ETHNIC_ASIAN_FLG&quot;        
+## [11] &quot;ETHNIC_BLACK_FLG&quot;         &quot;ETHNIC_HISPA_FLG&quot;        
+## [13] &quot;ETHNIC_PACIF_FLG&quot;         &quot;ETHNIC_WHITE_FLG&quot;        
+## [15] &quot;CITIZENSHIP_STATUS_DESCR&quot;</code></pre>
 </div>
 </div>
 <div id="clean-student-level-variables" class="section level2">
@@ -310,7 +314,7 @@ df_std &lt;- df_full %&gt;%
   mutate(st_id = EMPLID_H) %&gt;%
   mutate(ethniccode = ETHNIC_GROUP_CD) %&gt;%
   mutate(famincome = abs(AGI)) %&gt;%
-  # Recoded variable
+  # Recoded variables
   mutate(firstgen = recode(FIRST_GENERATION_DESCR, &quot;First Generation&quot; = 1, &quot;Not First Generation&quot; = 0, &quot;Unknown&quot; = 0)) %&gt;%
   mutate(ethniccode_cat = recode(ETHNIC_GROUP_CD, &quot;HISPA&quot; = 1, &quot;BLACK&quot; = 1, &quot;AMIND&quot; = 1, &quot;PACIF&quot; = 1, &quot;ASIAN&quot; = 2, &quot;WHITE&quot; = 0)) %&gt;%
   mutate(urm = recode(ETHNIC_GROUP_CD, &quot;HISPA&quot; = 1, &quot;BLACK&quot; = 1, &quot;AMIND&quot; = 1, &quot;PACIF&quot; = 1, &quot;ASIAN&quot; = 0, &quot;WHITE&quot; = 0)) %&gt;%
@@ -320,15 +324,19 @@ df_std &lt;- df_full %&gt;%
                                 if_else(AGI &lt;= 46435, 1,0))) 
 
 # etc...</code></pre>
-<pre><code>## # A tibble: 6 x 24
-##   st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
-##   &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;int&gt;
-## 1 075E…        0 WHITE                   0     0      0      0     64365
-## 2 A743…        0 WHITE                   0     0      0      0        NA
-## 3 B579…        0 WHITE                   0     0      0      0        NA
-## 4 EA42…        1 ASIAN                   2     0      1      1     51651
-## 5 FE52…        0 WHITE                   0     0      0      0        NA
-## 6 7F05…        0 WHITE                   0     0      1      1    121485
+<pre><code>## # A tibble: 10 x 24
+##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
+##    &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;int&gt;
+##  1 8CE4…        0 WHITE                   0     0      1      1    234310
+##  2 522A…        0 WHITE                   0     0      1      1    236276
+##  3 46D8…        0 WHITE                   0     0      0      0        NA
+##  4 05F5…        0 WHITE                   0     0      0      0     66181
+##  5 510C…        0 WHITE                   0     0      1      1    287858
+##  6 5CD5…        1 WHITE                   0     0      0      0     49447
+##  7 FDBB…        0 ASIAN                   2     0      1      1        NA
+##  8 47EB…        0 WHITE                   0     0      0      0     35501
+##  9 5CFE…        1 WHITE                   0     0      0      0     54897
+## 10 6093…        0 WHITE                   0     0      1      1     64684
 ## # … with 16 more variables: lowincomflag &lt;dbl&gt;, transfer &lt;dbl&gt;,
 ## #   international &lt;dbl&gt;, ell &lt;dbl&gt;, us_hs &lt;dbl&gt;, cohort &lt;dbl&gt;,
 ## #   cohort_2013 &lt;dbl&gt;, cohort_2014 &lt;dbl&gt;, cohort_2015 &lt;dbl&gt;, cohort_2016 &lt;dbl&gt;,
@@ -359,19 +367,23 @@ df_crs &lt;- df_full %&gt;%
   mutate(summer_crs = if_else(endsWith(as.character(TERM_CD),&quot;7&quot;), 1, 0))
 
 # etc...</code></pre>
-<pre><code>## # A tibble: 6 x 17
-##   st_id crs_sbj crs_catalog crs_name numgrade numgrade_w crs_retake crs_term
-##   &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;       &lt;fct&gt;       &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;         &lt;int&gt;
-## 1 1343… CS      0441        DISCRET…     4             0 N              2171
-## 2 1343… STAT    1000        APPLIED…     4             0 N              2174
-## 3 1343… STAT    1361        STATSTC…     3.25          0 N              2184
-## 4 1343… MATH    0240        ANALYTC…     4             0 N              2187
-## 5 1343… HPS     1616        ARTFCL …     4             0 N              2191
-## 6 1343… STAT    1631        INTERME…     3.25          0 N              2191
-## # … with 9 more variables: crs_term_yr &lt;chr&gt;, crs_term_sem &lt;chr&gt;,
-## #   summer_crs &lt;dbl&gt;, TERM_REF &lt;int&gt;, enrl_from_cohort &lt;dbl&gt;,
-## #   crs_credits &lt;dbl&gt;, crs_component &lt;fct&gt;, class_number &lt;int&gt;,
-## #   current_major &lt;fct&gt;</code></pre>
+<pre><code>## # A tibble: 670,191 x 17
+##    st_id crs_sbj crs_catalog crs_name numgrade numgrade_w crs_retake crs_term
+##    &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;       &lt;fct&gt;       &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;         &lt;int&gt;
+##  1 1343… CS      0441        DISCRET…     4             0 N              2171
+##  2 1343… STAT    1000        APPLIED…     4             0 N              2174
+##  3 1343… STAT    1361        STATSTC…     3.25          0 N              2184
+##  4 1343… MATH    0240        ANALYTC…     4             0 N              2187
+##  5 1343… HPS     1616        ARTFCL …     4             0 N              2191
+##  6 1343… STAT    1631        INTERME…     3.25          0 N              2191
+##  7 AE6D… CHEM    0310        ORGANIC…     0             0 N              2084
+##  8 AE6D… MATH    0230        ANALYTC…     0             0 N              2114
+##  9 AE6D… PHYS    0175        BASC PH…     0             0 N              2114
+## 10 AE6D… MATH    0230        ANALYTC…     0             0 N              2117
+## # … with 670,181 more rows, and 9 more variables: crs_term_yr &lt;chr&gt;,
+## #   crs_term_sem &lt;chr&gt;, summer_crs &lt;dbl&gt;, TERM_REF &lt;int&gt;,
+## #   enrl_from_cohort &lt;dbl&gt;, crs_credits &lt;dbl&gt;, crs_component &lt;fct&gt;,
+## #   class_number &lt;int&gt;, current_major &lt;fct&gt;</code></pre>
 </div>
 <div id="b.-for-each-subject-course-1-and-2-create-dataframe-of-only-first-time-taking-that-course" class="section level3">
 <h3>b. For each subject course (1 and 2), create dataframe of only first time taking that course</h3>
@@ -383,28 +395,26 @@ df_crs_bio1 &lt;- df_crs %&gt;%
   group_by(st_id, crs_catalog) %&gt;% 
   arrange(crs_term, .by_group= TRUE) %&gt;%
   mutate(crs_retake_num = row_number()) %&gt;%
-  filter(crs_retake_num == 1) %&gt;%
-  #Only first time taking course (incl. Honors)
-  group_by(st_id) %&gt;% 
-  arrange(crs_term, .by_group= TRUE) %&gt;%
-  mutate(crs_retake_num2 = row_number()) %&gt;%
-  filter(crs_retake_num2 == 1)
+  filter(crs_retake_num == 1) 
 
 # repeat for Bio2, Chem1, Chem2, Phys1, Phys2</code></pre>
-<pre><code>## # A tibble: 7,368 x 6
-##    crs_credits crs_catalog numgrade_w crs_term_sem crs_retake_num crs_sbj
-##          &lt;dbl&gt; &lt;fct&gt;            &lt;dbl&gt; &lt;chr&gt;                 &lt;int&gt; &lt;fct&gt;  
-##  1           3 0150                 0 1                         1 BIOSC  
-##  2           3 0150                 0 1                         1 BIOSC  
-##  3           3 0150                 0 1                         1 BIOSC  
-##  4           3 0150                 0 1                         1 BIOSC  
-##  5           3 0150                 0 4                         1 BIOSC  
-##  6           3 0150                 0 1                         1 BIOSC  
-##  7           3 0150                 0 1                         1 BIOSC  
-##  8           3 0150                 0 1                         1 BIOSC  
-##  9           3 0150                 0 1                         1 BIOSC  
-## 10           3 0150                 0 1                         1 BIOSC  
-## # … with 7,358 more rows</code></pre>
+<pre><code>## # A tibble: 7,368 x 18
+##    st_id crs_sbj crs_catalog crs_name numgrade numgrade_w crs_retake crs_term
+##    &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;       &lt;fct&gt;       &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;         &lt;int&gt;
+##  1 0036… BIOSC   0150        FOUNDAT…     0             0 R              2131
+##  2 003E… BIOSC   0150        FOUNDAT…     3             0 N              2101
+##  3 0042… BIOSC   0150        FOUNDAT…     2             0 N              2121
+##  4 0042… BIOSC   0150        FOUNDAT…     3.25          0 N              2071
+##  5 0043… BIOSC   0150        FOUNDAT…     3.25          0 N              2164
+##  6 0043… BIOSC   0150        FOUNDAT…     1             0 R              2121
+##  7 0047… BIOSC   0150        FOUNDAT…     3             0 N              2101
+##  8 004D… BIOSC   0150        FOUNDAT…     3             0 N              2191
+##  9 0061… BIOSC   0150        FOUNDAT…     3.75          0 N              2161
+## 10 0067… BIOSC   0150        FOUNDAT…     2             0 N              2121
+## # … with 7,358 more rows, and 10 more variables: crs_term_yr &lt;chr&gt;,
+## #   crs_term_sem &lt;chr&gt;, summer_crs &lt;dbl&gt;, TERM_REF &lt;int&gt;,
+## #   enrl_from_cohort &lt;dbl&gt;, crs_credits &lt;dbl&gt;, crs_component &lt;fct&gt;,
+## #   class_number &lt;int&gt;, current_major &lt;fct&gt;, crs_retake_num &lt;int&gt;</code></pre>
 </div>
 </div>
 <div id="clean-ap-level-variables" class="section level2">
@@ -437,20 +447,20 @@ df_ap_bio &lt;- df_full %&gt;%
   summarize_at(vars(-group_cols()),max)
 
 # repeat for Chem, Phys</code></pre>
-<pre><code>## # A tibble: 22,976 x 6
-##    apskipper aptaker apscore apscore_full apskipper_2 tookcourse
-##        &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;
-##  1         0       0 &lt;NA&gt;               0           0          0
-##  2         0       0 &lt;NA&gt;               0           0          0
-##  3         0       0 &lt;NA&gt;               0           0          0
-##  4         0       0 &lt;NA&gt;               0           0          0
-##  5         0       0 &lt;NA&gt;               0           0          0
-##  6         0       0 &lt;NA&gt;               0           0          0
-##  7         1       1 5                  5           1          0
-##  8         0       0 &lt;NA&gt;               0           0          0
-##  9         0       0 &lt;NA&gt;               0           0          0
-## 10         0       0 &lt;NA&gt;               0           0          0
-## # … with 22,966 more rows</code></pre>
+<pre><code>## # A tibble: 22,976 x 8
+##    st_id aptaker apskipper apskipper_2 tookcourse tookcourse_2 apscore
+##    &lt;fct&gt;   &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt; &lt;chr&gt;  
+##  1 0000…       0         0           0          0            0 &lt;NA&gt;   
+##  2 0005…       0         0           0          0            0 &lt;NA&gt;   
+##  3 0009…       0         0           0          0            0 &lt;NA&gt;   
+##  4 000E…       0         0           0          0            0 &lt;NA&gt;   
+##  5 000E…       0         0           0          0            0 &lt;NA&gt;   
+##  6 0019…       0         0           0          0            0 &lt;NA&gt;   
+##  7 001D…       1         1           1          0            0 5      
+##  8 001F…       0         0           0          0            0 &lt;NA&gt;   
+##  9 001F…       0         0           0          0            0 &lt;NA&gt;   
+## 10 0029…       0         0           0          0            0 &lt;NA&gt;   
+## # … with 22,966 more rows, and 1 more variable: apscore_full &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <div id="create-stacked-dataset" class="section level2">
@@ -477,31 +487,36 @@ df_bio &lt;- df_std %&gt;%
          tookcourse, tookcourse_2, skipped_1) 
 
 # repeat for Chem, Phys</code></pre>
-<pre><code>## # A tibble: 6 x 64
-##   discipline st_id firstgen ethniccode ethniccode_cat   urm gender female
-##   &lt;chr&gt;      &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1 BIO        0035…        0 ASIAN                   2     0      1      1
-## 2 BIO        003E…        0 WHITE                   0     0      1      1
-## 3 BIO        0043…        0 WHITE                   0     0      1      1
-## 4 BIO        0047…        0 WHITE                   0     0      1      1
-## 5 BIO        004D…        0 WHITE                   0     0      1      1
-## 6 BIO        0061…        0 WHITE                   0     0      0      0
-## # … with 56 more variables: famincome &lt;int&gt;, lowincomflag &lt;dbl&gt;,
-## #   transfer &lt;dbl&gt;, international &lt;dbl&gt;, ell &lt;dbl&gt;, us_hs &lt;dbl&gt;, cohort &lt;dbl&gt;,
-## #   cohort_2013 &lt;dbl&gt;, cohort_2014 &lt;dbl&gt;, cohort_2015 &lt;dbl&gt;, cohort_2016 &lt;dbl&gt;,
-## #   cohort_2017 &lt;dbl&gt;, cohort_2018 &lt;dbl&gt;, apyear &lt;dbl&gt;, englsr &lt;dbl&gt;,
-## #   mathsr &lt;dbl&gt;, hsgpa &lt;dbl&gt;, crs_sbj.x &lt;fct&gt;, crs_catalog.x &lt;fct&gt;,
-## #   crs_name.x &lt;fct&gt;, numgrade.x &lt;dbl&gt;, numgrade_w.x &lt;dbl&gt;, crs_retake.x &lt;fct&gt;,
-## #   crs_term.x &lt;int&gt;, crs_term_yr.x &lt;chr&gt;, crs_term_sem.x &lt;chr&gt;,
-## #   summer_crs.x &lt;dbl&gt;, TERM_REF.x &lt;int&gt;, enrl_from_cohort.x &lt;dbl&gt;,
-## #   crs_credits.x &lt;dbl&gt;, crs_component.x &lt;fct&gt;, class_number.x &lt;int&gt;,
-## #   current_major.x &lt;fct&gt;, crs_sbj.y &lt;fct&gt;, crs_catalog.y &lt;fct&gt;,
-## #   crs_name.y &lt;fct&gt;, numgrade.y &lt;dbl&gt;, numgrade_w.y &lt;dbl&gt;, crs_retake.y &lt;fct&gt;,
-## #   crs_term.y &lt;int&gt;, crs_term_yr.y &lt;chr&gt;, crs_term_sem.y &lt;chr&gt;,
-## #   summer_crs.y &lt;dbl&gt;, TERM_REF.y &lt;int&gt;, enrl_from_cohort.y &lt;dbl&gt;,
-## #   crs_credits.y &lt;dbl&gt;, crs_component.y &lt;fct&gt;, class_number.y &lt;int&gt;,
-## #   current_major.y &lt;fct&gt;, aptaker &lt;dbl&gt;, apscore &lt;chr&gt;, apscore_full &lt;dbl&gt;,
-## #   apskipper &lt;dbl&gt;, tookcourse &lt;dbl&gt;, tookcourse_2 &lt;dbl&gt;, skipped_1 &lt;dbl&gt;</code></pre>
+<pre><code>## # A tibble: 22,976 x 64
+##    discipline st_id firstgen ethniccode ethniccode_cat   urm gender female
+##    &lt;chr&gt;      &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1 BIO        0035…        0 ASIAN                   2     0      1      1
+##  2 BIO        003E…        0 WHITE                   0     0      1      1
+##  3 BIO        0043…        0 WHITE                   0     0      1      1
+##  4 BIO        0047…        0 WHITE                   0     0      1      1
+##  5 BIO        004D…        0 WHITE                   0     0      1      1
+##  6 BIO        0061…        0 WHITE                   0     0      0      0
+##  7 BIO        006A…        1 HISPA                   1     1      0      0
+##  8 BIO        0076…        0 WHITE                   0     0      0      0
+##  9 BIO        0080…        0 WHITE                   0     0      0      0
+## 10 BIO        0085…        1 ASIAN                   2     0      0      0
+## # … with 22,966 more rows, and 56 more variables: famincome &lt;int&gt;,
+## #   lowincomflag &lt;dbl&gt;, transfer &lt;dbl&gt;, international &lt;dbl&gt;, ell &lt;dbl&gt;,
+## #   us_hs &lt;dbl&gt;, cohort &lt;dbl&gt;, cohort_2013 &lt;dbl&gt;, cohort_2014 &lt;dbl&gt;,
+## #   cohort_2015 &lt;dbl&gt;, cohort_2016 &lt;dbl&gt;, cohort_2017 &lt;dbl&gt;, cohort_2018 &lt;dbl&gt;,
+## #   apyear &lt;dbl&gt;, englsr &lt;dbl&gt;, mathsr &lt;dbl&gt;, hsgpa &lt;dbl&gt;, crs_sbj.x &lt;fct&gt;,
+## #   crs_catalog.x &lt;fct&gt;, crs_name.x &lt;fct&gt;, numgrade.x &lt;dbl&gt;,
+## #   numgrade_w.x &lt;dbl&gt;, crs_retake.x &lt;fct&gt;, crs_term.x &lt;int&gt;,
+## #   crs_term_yr.x &lt;chr&gt;, crs_term_sem.x &lt;chr&gt;, summer_crs.x &lt;dbl&gt;,
+## #   TERM_REF.x &lt;int&gt;, enrl_from_cohort.x &lt;dbl&gt;, crs_credits.x &lt;dbl&gt;,
+## #   crs_component.x &lt;fct&gt;, class_number.x &lt;int&gt;, current_major.x &lt;fct&gt;,
+## #   crs_sbj.y &lt;fct&gt;, crs_catalog.y &lt;fct&gt;, crs_name.y &lt;fct&gt;, numgrade.y &lt;dbl&gt;,
+## #   numgrade_w.y &lt;dbl&gt;, crs_retake.y &lt;fct&gt;, crs_term.y &lt;int&gt;,
+## #   crs_term_yr.y &lt;chr&gt;, crs_term_sem.y &lt;chr&gt;, summer_crs.y &lt;dbl&gt;,
+## #   TERM_REF.y &lt;int&gt;, enrl_from_cohort.y &lt;dbl&gt;, crs_credits.y &lt;dbl&gt;,
+## #   crs_component.y &lt;fct&gt;, class_number.y &lt;int&gt;, current_major.y &lt;fct&gt;,
+## #   aptaker &lt;dbl&gt;, apscore &lt;chr&gt;, apscore_full &lt;dbl&gt;, apskipper &lt;dbl&gt;,
+## #   tookcourse &lt;dbl&gt;, tookcourse_2 &lt;dbl&gt;, skipped_1 &lt;dbl&gt;</code></pre>
 </div>
 <div id="b.-stack-all-dataframes-with-course-indicator" class="section level3">
 <h3>b. Stack all dataframes, with course indicator</h3>
@@ -518,24 +533,30 @@ rm(df_ap_bio, df_ap_chem, df_ap_phys,
    df_crs_bio1, df_crs_bio2, df_crs_chem1, df_crs_chem2, df_crs_phys1, df_crs_phys2,
    df_crs, df_std)</code></pre>
 </div>
-<div id="c.-should-end-up-with-something-that-looks-like-this." class="section level3">
-<h3>c. Should end up with something that looks like <a href="https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&amp;ouid=118183464940790632947">this</a>.</h3>
+<div id="c.-should-end-up-with-something-that-looks-like-this-example-dataset." class="section level3">
+<h3>c. Should end up with something that looks like this <a href="https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&amp;ouid=118183464940790632947">Example Dataset</a>.</h3>
 <pre><code>##  [1] &quot;discipline&quot;     &quot;st_id&quot;          &quot;firstgen&quot;       &quot;ethniccode&quot;    
 ##  [5] &quot;ethniccode_cat&quot; &quot;urm&quot;            &quot;gender&quot;         &quot;female&quot;        
-##  [9] &quot;famincome&quot;      &quot;lowincomflag&quot;</code></pre>
+##  [9] &quot;famincome&quot;      &quot;lowincomflag&quot;   &quot;transfer&quot;       &quot;international&quot; 
+## [13] &quot;ell&quot;            &quot;us_hs&quot;          &quot;cohort&quot;</code></pre>
 </div>
 </div>
 </div>
 <div id="data-analysis-same-across-institutions" class="section level1">
 <h1><strong>Data Analysis (Same Across Institutions)</strong></h1>
-<p><em>Note</em>: - Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed) - Sample code shown here; see shared analysis folder in WG1-P4 GitHub repository for complete analysis code</p>
+<p><em>Note:</em></p>
+<ul>
+<li>Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed)</li>
+<li>Sample code shown here; see shared analysis folder in WG1-P4 GitHub repository for complete analysis code</li>
+</ul>
 <div id="startup-1" class="section level2">
 <h2>0. Startup</h2>
 <div id="a.-load-r-pkgs-1" class="section level3">
 <h3>a. Load R pkgs</h3>
 <pre class="r"><code>if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
 library(pacman)
-pacman::p_load(&quot;tidyverse&quot;, &quot;epiDisplay&quot;)</code></pre>
+pacman::p_load(&quot;tidyverse&quot;,   # Data wrangling
+               &quot;epiDisplay&quot;)  # Display OR for logistic regressions</code></pre>
 </div>
 <div id="b.-load-full-dataset-1" class="section level3">
 <h3>b. Load full dataset</h3>
@@ -544,7 +565,8 @@ df_clean &lt;- read.csv(&quot;~/YOUR FILE PATH HERE.csv&quot;)
 head(names(df_clean))</code></pre>
 <pre><code>##  [1] &quot;X&quot;              &quot;discipline&quot;     &quot;st_id&quot;          &quot;firstgen&quot;      
 ##  [5] &quot;ethniccode&quot;     &quot;ethniccode_cat&quot; &quot;urm&quot;            &quot;gender&quot;        
-##  [9] &quot;female&quot;         &quot;famincome&quot;</code></pre>
+##  [9] &quot;female&quot;         &quot;famincome&quot;      &quot;lowincomflag&quot;   &quot;transfer&quot;      
+## [13] &quot;transfer_cred&quot;  &quot;international&quot;  &quot;ell&quot;</code></pre>
 </div>
 <div id="c.-filter-for-student-level-inclusionexclusion-criteria" class="section level3">
 <h3>c. Filter for student level inclusion/exclusion criteria</h3>
@@ -562,12 +584,19 @@ head(names(df_clean))</code></pre>
 <li>Honors</li>
 </ul></li>
 </ul>
+<pre class="r"><code>df_clean &lt;- df_clean %&gt;%
+  # Include
+  filter(transfer == 0) %&gt;%
+  filter(tookcourse_2 == 1) %&gt;%
+  filter(cohort &gt;= 2013 &amp; cohort &lt;= 2018) %&gt;%
+  # Exclude
+  filter(international == 0)</code></pre>
 </div>
 <div id="d.-create-subset-dataframes-for-each-analysis-sample" class="section level3">
 <h3>d. Create subset dataframes for each analysis sample</h3>
-<ul>
+<ol style="list-style-type: decimal">
 <li>For each course: Full Sample, AP taken after test re-design</li>
-</ul>
+</ol>
 <pre class="r"><code># Bio
 # Took 2nd course in sequence
 df_bio2 &lt;- df_clean %&gt;%
@@ -575,27 +604,27 @@ df_bio2 &lt;- df_clean %&gt;%
   subset(apyear &gt;= 2013)
 
 # repeat for Chem, Phys</code></pre>
-<ul>
+<ol start="2" style="list-style-type: decimal">
 <li>For each course: Took AP</li>
-</ul>
+</ol>
 <pre class="r"><code># Took AP 
 df_BYtakers &lt;- df_clean %&gt;%
   subset(discipline == &quot;BIO&quot;) %&gt;%
   subset(aptaker == 1)
 
 # repeat for Chem, Phys</code></pre>
-<ul>
+<ol start="3" style="list-style-type: decimal">
 <li>For each course: Recieved a skip-eligible score</li>
-</ul>
+</ol>
 <pre class="r"><code># Skip eligible
 df_BYeligible &lt;- df_clean %&gt;%
   subset(discipline == &quot;BIO&quot;) %&gt;%
   subset(apskipper == 1)
 
 # repeat for Chem, Phys</code></pre>
-<ul>
+<ol start="4" style="list-style-type: decimal">
 <li>For each course: Recieved a skip-eligible score (at each eligible score)</li>
-</ul>
+</ol>
 <pre class="r"><code># Skip eligible (at each eligble scores)
 df_BYeligible.4 &lt;- df_bio2 %&gt;%
   subset(apscore == 4)
@@ -628,19 +657,20 @@ m1.a_bio &lt;- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(f
 logistic.display(m1.a_bio)
 
 # Repeat for Chem, Phys</code></pre>
+<pre><code>## [1] &quot;Model Parameters for RQ1a - Bio&quot;</code></pre>
 <pre><code>##  
 ##                              OR lower95ci upper95ci     Pr(&gt;|Z|)
-## factor(firstgen)1     1.0971642 0.8163172 1.4746342 5.387752e-01
-## factor(lowincomflag)1 0.9473895 0.7262308 1.2358976 6.902949e-01
-## factor(female)1       0.8201140 0.6921092 0.9717932 2.199673e-02
-## factor(urm)1          1.0306634 0.7747606 1.3710906 8.356884e-01
-## scale(hsgpa)          0.9756179 0.8966082 1.0615900 5.667314e-01
-## scale(mathsr)         1.1669200 1.0562886 1.2891386 2.385424e-03
-## scale(englsr)         1.1020438 0.9990431 1.2156639 5.227747e-02
-## factor(cohort)2015    1.1474610 0.9050728 1.4547634 2.558981e-01
-## factor(cohort)2016    1.2694275 1.0006982 1.6103219 4.933153e-02
-## factor(cohort)2017    1.5352998 1.2029418 1.9594842 5.722756e-04
-## factor(cohort)2018    2.1862614 1.6600413 2.8792891 2.581175e-08</code></pre>
+## factor(firstgen)1     1.1327672 0.8458207 1.5170610 4.029029e-01
+## factor(lowincomflag)1 0.9091437 0.7067043 1.1695730 4.585982e-01
+## factor(female)1       0.8449690 0.7144546 0.9993253 4.908547e-02
+## factor(urm)1          0.9912676 0.7515754 1.3074024 9.504824e-01
+## scale(hsgpa)          0.9925281 0.9133099 1.0786175 8.597277e-01
+## scale(mathsr)         1.1684125 1.0582577 1.2900335 2.064939e-03
+## scale(englsr)         1.1098205 1.0067102 1.2234916 3.622537e-02
+## factor(cohort)2015    1.1675600 0.9138517 1.4917041 2.152381e-01
+## factor(cohort)2016    1.1405278 0.8931304 1.4564545 2.918823e-01
+## factor(cohort)2017    1.4508224 1.1342671 1.8557230 3.045026e-03
+## factor(cohort)2018    1.6722230 1.3023230 2.1471862 5.558193e-05</code></pre>
 </div>
 <div id="rq1b." class="section level2">
 <h2><em>RQ1b.</em></h2>
@@ -650,9 +680,29 @@ logistic.display(m1.a_bio)
 <li>IV: factor(firstgen) + factor(lowincomflag) + factor(female) + factor(urm) + scale(hsgpa) + scale(mathsr) + scale(englsr)</li>
 <li>COV: factor(crs_term)</li>
 </ul>
+<pre class="r"><code>#Bio
+m1.b_bio &lt;- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term),
+              df_BYtakers)
+summary(m1.b_bio)</code></pre>
+<pre><code>## [1] &quot;Model Parameters for RQ1b - Bio&quot;</code></pre>
+<pre><code>##  
+##                              OR lower95ci upper95ci     Pr(&gt;|Z|)
+## factor(firstgen)1     0.9919314 0.8125886 1.2108563 9.365547e-01
+## factor(lowincomflag)1 0.8255599 0.6915657 0.9855161 3.410086e-02
+## factor(female)1       0.7488713 0.6685817 0.8388030 6.704160e-07
+## factor(urm)1          0.7239805 0.6032798 0.8688303 5.379178e-04
+## scale(hsgpa)          1.1357923 1.0693442 1.2063693 3.732853e-05
+## scale(mathsr)         1.1824570 1.1049289 1.2654250 1.448605e-06
+## scale(englsr)         1.2551903 1.1741453 1.3418294 3.871251e-11
+## factor(crs_term)15    1.0093590 0.8458980 1.2044072 9.177080e-01
+## factor(crs_term)16    0.8605007 0.7240162 1.0227141 8.845368e-02
+## factor(crs_term)17    0.9218042 0.7782489 1.0918395 3.460371e-01
+## factor(crs_term)18    1.0497281 0.8878170 1.2411670 5.702780e-01
+## factor(crs_term)19    0.7206907 0.3634912 1.4289069 3.484743e-01</code></pre>
 </div>
 <div id="etc" class="section level2">
-<h2>(Etc…)</h2>
+<h2><em>(Etc…)</em></h2>
 </div>
 </div>
 

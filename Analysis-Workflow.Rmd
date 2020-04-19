@@ -23,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 *Note:* 
 
 - Specific syntax for these steps are likely to vary by institutional variable naming conventions
-- Sample code shown here; see WG1-P4 GitHub repository institutional folders for complete data cleaning examples, and shared analysis folder for complete analysis code.
+- Sample code shown here; see WG1-P4 GitHub repository institutional folders for complete data cleaning examples.
 
 ## 0. Startup
 
@@ -151,7 +151,7 @@ df_std <- df_full %>%
   mutate(st_id = EMPLID_H) %>%
   mutate(ethniccode = ETHNIC_GROUP_CD) %>%
   mutate(famincome = abs(AGI)) %>%
-  # Recoded variable
+  # Recoded variables
   mutate(firstgen = recode(FIRST_GENERATION_DESCR, "First Generation" = 1, "Not First Generation" = 0, "Unknown" = 0)) %>%
   mutate(ethniccode_cat = recode(ETHNIC_GROUP_CD, "HISPA" = 1, "BLACK" = 1, "AMIND" = 1, "PACIF" = 1, "ASIAN" = 2, "WHITE" = 0)) %>%
   mutate(urm = recode(ETHNIC_GROUP_CD, "HISPA" = 1, "BLACK" = 1, "AMIND" = 1, "PACIF" = 1, "ASIAN" = 0, "WHITE" = 0)) %>%
@@ -164,7 +164,7 @@ df_std <- df_full %>%
 ```
 
 ```{r echo = FALSE}
-sample_n(as_tibble(df_std))
+sample_n(as_tibble(df_std), 10)
 ```
 
 ## 2.	Clean Course level variables
@@ -440,7 +440,7 @@ df_ap_bio <- df_full %>%
 ```
    
 ```{r echo = FALSE}
-sample(as_tibble(df_ap_bio))
+as_tibble(df_ap_bio)
 ```
 
 ## 4. Create stacked dataset
@@ -521,7 +521,7 @@ rm(df_ap_bio, df_ap_chem, df_ap_phys,
    df_crs, df_std)
 ```
 
-### c. Should end up with something that looks like [this](https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&ouid=118183464940790632947).
+### c. Should end up with something that looks like this [Example Dataset](https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&ouid=118183464940790632947).
 
 ```{r echo = FALSE}
 head(names(df_clean), 15)
@@ -530,7 +530,8 @@ head(names(df_clean), 15)
 
 # **Data Analysis (Same Across Institutions)**
 
-*Note*: 
+*Note:* 
+
 - Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed)
 - Sample code shown here; see shared analysis folder in WG1-P4 GitHub repository for complete analysis code
 
@@ -541,7 +542,7 @@ head(names(df_clean), 15)
 if (!require("pacman")) install.packages("pacman")
 library(pacman)
 pacman::p_load("tidyverse",   # Data wrangling
-               "epiDisplay")  # Display OR for logistic regression
+               "epiDisplay")  # Display OR for logistic regressions
 ```
 
 ### b.	Load full dataset
@@ -568,6 +569,17 @@ head(names(df_clean), 15)
     + Transfer students
     + International students
     + Honors
+    
+``` {r} 
+df_clean <- df_clean %>%
+  # Include
+  filter(transfer == 0) %>%
+  filter(tookcourse_2 == 1) %>%
+  filter(cohort >= 2013 & cohort <= 2018) %>%
+  # Exclude
+  filter(international == 0)
+
+```
 
 ### d.	Create subset dataframes for each analysis sample
 
@@ -678,7 +690,8 @@ df_BYeligible.5 <- df_bio2 %>%
       
 - Sample: Took Course 2 dataframe
 - DV: aptaker
-- IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) + scale(hsgpa) +                   scale(mathsr) + scale(englsr)
+- IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+      scale(hsgpa) + scale(mathsr) + scale(englsr)
 - COV: factor(cohort) 
 
 ```{r include = FALSE}
@@ -688,7 +701,6 @@ m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(fema
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                binomial(link = "logit"), df_bio2)
 summary(m1.a_bio)
-exp(cbind("Odds Ratio" = coef(m1.a_bio), confint.default(m1.a_bio, level = 0.95)))
 logistic.display(m1.a_bio)
 
 #Chem
@@ -696,7 +708,6 @@ m1.a_chem <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(fem
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
                binomial(link = "logit"), df_chem2)
 summary(m1.a_chem)   
-exp(cbind("Odds Ratio" = coef(m1.a_chem), confint.default(m1.a_chem, level = 0.95)))
 logistic.display(m1.a_chem)
 
 #Physics
@@ -704,7 +715,6 @@ m1.a_phys <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(fem
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
                binomial(link = "logit"), df_phys2)
 summary(m1.a_phys)
-exp(cbind("Odds Ratio" = coef(m1.a_phys), confint.default(m1.a_phys, level = 0.95)))
 logistic.display(m1.a_phys)
 
 ```
@@ -721,6 +731,7 @@ logistic.display(m1.a_bio)
 ```
 
 ```{r echo = FALSE}
+print("Model Parameters for RQ1a - Bio")
 logistic.display(m1.a_bio)
 ```
 
@@ -728,7 +739,44 @@ logistic.display(m1.a_bio)
 
 - Sample: Took AP dataframe
 - DV: apscore
-- IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) + scale(hsgpa) +                   scale(mathsr) + scale(englsr)
+- IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) + 
+      scale(hsgpa) + scale(mathsr) + scale(englsr)
 - COV: factor(crs_term) 
-            
-## (Etc…)
+
+```{r include = FALSE}
+# Model 1b: Score ####
+#Bio
+m1.b_bio <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term),
+              df_BYtakers)
+summary(m1.b_bio)
+
+#Chem
+m1.b_chem <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+              df_CHtakers)
+summary(m1.b_chem)   
+
+#Physics
+m1.b_phys <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+              df_PHtakers)
+summary(m1.b_phys)   
+```
+
+``` {r eval = FALSE}
+#Bio
+m1.b_bio <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term),
+              df_BYtakers)
+summary(m1.b_bio)
+
+```
+
+```{r echo = FALSE}
+print("Model Parameters for RQ1b - Bio")
+logistic.display(m1.b_bio)
+
+```
+
+## *(Etc…)*
