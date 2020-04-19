@@ -10,9 +10,6 @@ output:
     toc: yes
     toc_depth: 2
     toc_float: yes
-  pdf_document:
-    toc: yes
-    toc_depth: '2'
 subtitle: Analysis Workflow
 ---
 
@@ -20,6 +17,11 @@ subtitle: Analysis Workflow
 
 # **Data Processing (Institution Specific)**
 (see [Data Description](https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021) for shared SEISMIC variable names)
+
+*Note:* 
+
+- Specific syntax for these steps are likely to vary by institutional variable naming conventions
+- Sample code shown here; see WG1-P4 GitHub repository institutional folders for complete data cleaning examples, and shared analysis folder for complete analysis code.
 
 ## 0. Startup
 
@@ -43,8 +45,10 @@ head(names(df_full))
 
 
 ```
-## [1] "X"                      "EMPLID_H"               "ACADEMIC_PLAN_DESCR"   
-## [4] "ACADEMIC_PROGRAM_CD"    "ACADEMIC_PROGRAM_DESCR" "BIRTH_DT"
+##  [1] "X"                      "EMPLID_H"               "ACADEMIC_PLAN_DESCR"   
+##  [4] "ACADEMIC_PROGRAM_CD"    "ACADEMIC_PROGRAM_DESCR" "BIRTH_DT"              
+##  [7] "GENDER_CD"              "ETHNIC_GROUP_CD"        "ETHNIC_AMIND_FLG"      
+## [10] "ETHNIC_ASIAN_FLG"
 ```
 
 ## 1.	Clean Student level variables
@@ -70,6 +74,24 @@ df_std <- df_full %>%
                                 if_else(AGI <= 46435, 1,0))) 
 
 # etc...
+```
+
+
+```
+## # A tibble: 6 x 24
+##   st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
+##   <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
+## 1 075E…        0 WHITE                   0     0      0      0     64365
+## 2 A743…        0 WHITE                   0     0      0      0        NA
+## 3 B579…        0 WHITE                   0     0      0      0        NA
+## 4 EA42…        1 ASIAN                   2     0      1      1     51651
+## 5 FE52…        0 WHITE                   0     0      0      0        NA
+## 6 7F05…        0 WHITE                   0     0      1      1    121485
+## # … with 16 more variables: lowincomflag <dbl>, transfer <dbl>,
+## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
+## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
+## #   cohort_2017 <dbl>, cohort_2018 <dbl>, apyear <dbl>, englsr <dbl>,
+## #   mathsr <dbl>, hsgpa <dbl>
 ```
 
 ## 2.	Clean Course level variables
@@ -100,6 +122,23 @@ df_crs <- df_full %>%
 # etc...
 ```
 
+
+```
+## # A tibble: 6 x 17
+##   st_id crs_sbj crs_catalog crs_name numgrade numgrade_w crs_retake crs_term
+##   <fct> <fct>   <fct>       <fct>       <dbl>      <dbl> <fct>         <int>
+## 1 1343… CS      0441        DISCRET…     4             0 N              2171
+## 2 1343… STAT    1000        APPLIED…     4             0 N              2174
+## 3 1343… STAT    1361        STATSTC…     3.25          0 N              2184
+## 4 1343… MATH    0240        ANALYTC…     4             0 N              2187
+## 5 1343… HPS     1616        ARTFCL …     4             0 N              2191
+## 6 1343… STAT    1631        INTERME…     3.25          0 N              2191
+## # … with 9 more variables: crs_term_yr <chr>, crs_term_sem <chr>,
+## #   summer_crs <dbl>, TERM_REF <int>, enrl_from_cohort <dbl>,
+## #   crs_credits <dbl>, crs_component <fct>, class_number <int>,
+## #   current_major <fct>
+```
+
 ### b.	For each subject course (1 and 2), create dataframe of only first time taking that course
 
 
@@ -123,9 +162,32 @@ df_crs_bio1 <- df_crs %>%
 # repeat for Bio2, Chem1, Chem2, Phys1, Phys2
 ```
 
+
+```
+## # A tibble: 7,368 x 6
+##    crs_credits crs_catalog numgrade_w crs_term_sem crs_retake_num crs_sbj
+##          <dbl> <fct>            <dbl> <chr>                 <int> <fct>  
+##  1           3 0150                 0 1                         1 BIOSC  
+##  2           3 0150                 0 1                         1 BIOSC  
+##  3           3 0150                 0 1                         1 BIOSC  
+##  4           3 0150                 0 1                         1 BIOSC  
+##  5           3 0150                 0 4                         1 BIOSC  
+##  6           3 0150                 0 1                         1 BIOSC  
+##  7           3 0150                 0 1                         1 BIOSC  
+##  8           3 0150                 0 1                         1 BIOSC  
+##  9           3 0150                 0 1                         1 BIOSC  
+## 10           3 0150                 0 1                         1 BIOSC  
+## # … with 7,358 more rows
+```
+
 ## 3.	Clean AP Level variables
 
 ### a.  For each AP subject, rename and generate/recode course level variables as needed to match common SEISMIC AP variable names
+
+*Note:*
+
+- Taking highest (max) AP score each student recieved by subject
+
 
 
 
@@ -153,7 +215,25 @@ df_ap_bio <- df_full %>%
 
 # repeat for Chem, Phys
 ```
-        
+   
+
+```
+## # A tibble: 22,976 x 6
+##    apskipper aptaker apscore apscore_full apskipper_2 tookcourse
+##        <dbl>   <dbl> <chr>          <dbl>       <dbl>      <dbl>
+##  1         0       0 <NA>               0           0          0
+##  2         0       0 <NA>               0           0          0
+##  3         0       0 <NA>               0           0          0
+##  4         0       0 <NA>               0           0          0
+##  5         0       0 <NA>               0           0          0
+##  6         0       0 <NA>               0           0          0
+##  7         1       1 5                  5           1          0
+##  8         0       0 <NA>               0           0          0
+##  9         0       0 <NA>               0           0          0
+## 10         0       0 <NA>               0           0          0
+## # … with 22,966 more rows
+```
+
 ## 4. Create stacked dataset
 
 ### a.  For each course subject, join previously create dataframes for first time taking Course1, Course2, and AP
@@ -179,6 +259,35 @@ df_bio <- df_std %>%
 # repeat for Chem, Phys
 ```
 
+
+```
+## # A tibble: 6 x 64
+##   discipline st_id firstgen ethniccode ethniccode_cat   urm gender female
+##   <chr>      <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>
+## 1 BIO        0035…        0 ASIAN                   2     0      1      1
+## 2 BIO        003E…        0 WHITE                   0     0      1      1
+## 3 BIO        0043…        0 WHITE                   0     0      1      1
+## 4 BIO        0047…        0 WHITE                   0     0      1      1
+## 5 BIO        004D…        0 WHITE                   0     0      1      1
+## 6 BIO        0061…        0 WHITE                   0     0      0      0
+## # … with 56 more variables: famincome <int>, lowincomflag <dbl>,
+## #   transfer <dbl>, international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
+## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
+## #   cohort_2017 <dbl>, cohort_2018 <dbl>, apyear <dbl>, englsr <dbl>,
+## #   mathsr <dbl>, hsgpa <dbl>, crs_sbj.x <fct>, crs_catalog.x <fct>,
+## #   crs_name.x <fct>, numgrade.x <dbl>, numgrade_w.x <dbl>, crs_retake.x <fct>,
+## #   crs_term.x <int>, crs_term_yr.x <chr>, crs_term_sem.x <chr>,
+## #   summer_crs.x <dbl>, TERM_REF.x <int>, enrl_from_cohort.x <dbl>,
+## #   crs_credits.x <dbl>, crs_component.x <fct>, class_number.x <int>,
+## #   current_major.x <fct>, crs_sbj.y <fct>, crs_catalog.y <fct>,
+## #   crs_name.y <fct>, numgrade.y <dbl>, numgrade_w.y <dbl>, crs_retake.y <fct>,
+## #   crs_term.y <int>, crs_term_yr.y <chr>, crs_term_sem.y <chr>,
+## #   summer_crs.y <dbl>, TERM_REF.y <int>, enrl_from_cohort.y <dbl>,
+## #   crs_credits.y <dbl>, crs_component.y <fct>, class_number.y <int>,
+## #   current_major.y <fct>, aptaker <dbl>, apscore <chr>, apscore_full <dbl>,
+## #   apskipper <dbl>, tookcourse <dbl>, tookcourse_2 <dbl>, skipped_1 <dbl>
+```
+
 ### b. Stack all dataframes, with course indicator
 
 ```r
@@ -199,36 +308,18 @@ rm(df_ap_bio, df_ap_chem, df_ap_phys,
 ### c. Should end up with something that looks like [this](https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&ouid=118183464940790632947).
 
 
-```r
-names(df_clean)
+```
+##  [1] "discipline"     "st_id"          "firstgen"       "ethniccode"    
+##  [5] "ethniccode_cat" "urm"            "gender"         "female"        
+##  [9] "famincome"      "lowincomflag"
 ```
 
-```
-##  [1] "discipline"         "st_id"              "firstgen"          
-##  [4] "ethniccode"         "ethniccode_cat"     "urm"               
-##  [7] "gender"             "female"             "famincome"         
-## [10] "lowincomflag"       "transfer"           "international"     
-## [13] "ell"                "us_hs"              "cohort"            
-## [16] "cohort_2013"        "cohort_2014"        "cohort_2015"       
-## [19] "cohort_2016"        "cohort_2017"        "cohort_2018"       
-## [22] "apyear"             "englsr"             "mathsr"            
-## [25] "hsgpa"              "crs_sbj_2"          "crs_catalog_2"     
-## [28] "crs_name_2"         "numgrade_2"         "numgrade_w_2"      
-## [31] "crs_retake_2"       "crs_term_2"         "crs_term_yr_2"     
-## [34] "crs_term_sem_2"     "summer_crs_2"       "TERM_REF_2"        
-## [37] "enrl_from_cohort_2" "crs_credits_2"      "crs_component_2"   
-## [40] "class_number_2"     "current_major_2"    "crs_sbj"           
-## [43] "crs_catalog"        "crs_name"           "numgrade"          
-## [46] "numgrade_w"         "crs_retake"         "crs_term"          
-## [49] "crs_termr.y"        "crs_term_sem"       "summer_crs"        
-## [52] "TERM_REF"           "enrl_from_cohort"   "crs_credits"       
-## [55] "crs_component"      "class_number"       "current_major"     
-## [58] "aptaker"            "apscore"            "apscore_full"      
-## [61] "apskipper"          "tookcourse"         "tookcourse_2"      
-## [64] "skipped_1"
-```
 
 # **Data Analysis (Same Across Institutions)**
+
+*Note*: 
+- Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed)
+- Sample code shown here; see shared analysis folder in WG1-P4 GitHub repository for complete analysis code
 
 ## 0. Startup
 
@@ -252,8 +343,9 @@ head(names(df_clean))
 
 
 ```
-## [1] "X"              "discipline"     "st_id"          "firstgen"      
-## [5] "ethniccode"     "ethniccode_cat"
+##  [1] "X"              "discipline"     "st_id"          "firstgen"      
+##  [5] "ethniccode"     "ethniccode_cat" "urm"            "gender"        
+##  [9] "female"         "famincome"
 ```
 
 ### c. Filter for student level inclusion/exclusion criteria
@@ -266,7 +358,7 @@ head(names(df_clean))
     + International students
     + Honors
 
-### d.	Create dataframes for each analysis
+### d.	Create subset dataframes for each analysis sample
         
 -	For each course: Full Sample, AP taken after test re-design
 
@@ -317,7 +409,7 @@ df_BYeligible.5 <- df_bio2 %>%
 ```
 
 ## 1.	Run Models (for each Course)
-(see also [Sample Descriptions](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174) for model specs.)
+(see [Sample Descriptions](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174) for full model specs.)
 
 ## RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?
 
@@ -335,7 +427,7 @@ df_BYeligible.5 <- df_bio2 %>%
 # Model 1a: Credits ####
 #Bio
 m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                binomial(link = "logit"), df_bio2)
 logistic.display(m1.a_bio)
 
@@ -343,31 +435,20 @@ logistic.display(m1.a_bio)
 ```
 
 
-```r
-logistic.display(m1.a_bio)
-```
-
 ```
 ##  
-##                                        OR  lower95ci  upper95ci     Pr(>|Z|)
-## factor(firstgen)1            1.061059e+00 0.77605614  1.4507279 7.103658e-01
-## factor(lowincomflag)1        9.336068e-01 0.70265811  1.2404634 6.356362e-01
-## factor(female)1              8.664525e-01 0.72289022  1.0385256 1.209106e-01
-## factor(urm)1                 1.167308e+00 0.86487668  1.5754941 3.119529e-01
-## scale(hsgpa)                 9.685349e-01 0.88305993  1.0622834 4.976338e-01
-## scale(mathsr)                1.099148e+00 0.98850133  1.2221806 8.075492e-02
-## scale(englsr)                1.036213e+00 0.93368411  1.1500009 5.033831e-01
-## factor(enrl_from_cohort)1.5  4.782860e-01 0.37706970  0.6066716 1.205953e-09
-## factor(enrl_from_cohort)1.66 8.037013e-01 0.50238773  1.2857315 3.619950e-01
-## factor(enrl_from_cohort)2    4.246465e-01 0.26461771  0.6814536 3.862889e-04
-## factor(enrl_from_cohort)2.5  7.921156e-02 0.01833322  0.3422461 6.837549e-04
-## factor(enrl_from_cohort)2.66 6.623396e-01 0.31820030  1.3786718 2.707070e-01
-## factor(enrl_from_cohort)3    9.115404e-01 0.30393872  2.7337941 8.687222e-01
-## factor(enrl_from_cohort)3.5  1.883956e+00 0.16982774 20.8993588 6.059368e-01
-## factor(enrl_from_cohort)3.66 7.875640e-01 0.25184226  2.4628793 6.814186e-01
-## factor(enrl_from_cohort)4    1.283459e-06 0.00000000        Inf 9.797858e-01
-## factor(enrl_from_cohort)4.5  7.058345e-07 0.00000000        Inf 9.788950e-01
-## factor(enrl_from_cohort)4.66 1.264938e-06 0.00000000        Inf 9.797642e-01
+##                              OR lower95ci upper95ci     Pr(>|Z|)
+## factor(firstgen)1     1.0971642 0.8163172 1.4746342 5.387752e-01
+## factor(lowincomflag)1 0.9473895 0.7262308 1.2358976 6.902949e-01
+## factor(female)1       0.8201140 0.6921092 0.9717932 2.199673e-02
+## factor(urm)1          1.0306634 0.7747606 1.3710906 8.356884e-01
+## scale(hsgpa)          0.9756179 0.8966082 1.0615900 5.667314e-01
+## scale(mathsr)         1.1669200 1.0562886 1.2891386 2.385424e-03
+## scale(englsr)         1.1020438 0.9990431 1.2156639 5.227747e-02
+## factor(cohort)2015    1.1474610 0.9050728 1.4547634 2.558981e-01
+## factor(cohort)2016    1.2694275 1.0006982 1.6103219 4.933153e-02
+## factor(cohort)2017    1.5352998 1.2029418 1.9594842 5.722756e-04
+## factor(cohort)2018    2.1862614 1.6600413 2.8792891 2.581175e-08
 ```
 
 ## *RQ1b.* 
@@ -377,4 +458,4 @@ logistic.display(m1.a_bio)
 - IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) + scale(hsgpa) +                   scale(mathsr) + scale(englsr)
 - COV: factor(crs_term) 
             
-## (Etc….)
+## (Etc…)
