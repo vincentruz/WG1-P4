@@ -11,11 +11,10 @@ select <- dplyr::select
 
 # Load FULL MERGED Dataframe ####
 df_full <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/2191_MATH_FULL.csv")     
-df_full <- df_full %>%
-  filter(CAMPUS_CD == "PIT")           # TOTAL N = 670191
-names(df_full)
+names(df_full)                        # TOTAL N = 670191
 
 #### CLEANING ####
+# (STILL MISSING: gpao, begin_term_cum_gpa, instructor_name, apyear)
 ## STABLE - Student Level ####
 df_std <- df_full %>%
   # Rename variables
@@ -29,7 +28,8 @@ df_std <- df_full %>%
   mutate(famincome = abs(AGI)) %>%
   mutate(lowincomflag = if_else(is.na(AGI), 0,
                                 if_else(AGI <= 46435, 1,0))) %>%
-  mutate(transfer = if_else(TOT_TRNSFR_CREDITS <= 16 | is.na(TOT_TRNSFR_CREDITS), 0, 1)) %>%
+  mutate(transfer = recode(FIRST_TIME_FRESHMAN, "N"=1, "Y"=0)) %>%
+  mutate(transfer_cred = TOT_TRNSFR_CREDITS) %>%
   mutate(international = if_else(CITIZENSHIP_STATUS_DESCR == "U.S. Citizen", 0, 1)) %>%
   mutate(ell = if_else(TOEFL_SCORE > 0, 0, 1)) %>%
   mutate(us_hs = if_else(is.na(HS_GPA), 0, 1)) %>%
@@ -118,10 +118,9 @@ df_crs <- df_full %>%
   mutate(numgrade = GRADE_POINTS/UNITS_TAKEN) %>%
   mutate(numgrade_w = if_else(COURSE_GRADE_CD == "W", 1, 0)) %>%
   mutate(crs_retake = REPEAT_CD) %>%
-  mutate(crs_term	= TERM_CD) %>%
   separate(as.character("TERM_CD"), c("crs_YEAR", "crs_SEMESTER"), 3, remove = FALSE) %>%
   separate(as.character("crs_YEAR"), c("crs_DEC", "crs_YEAR"), 1) %>% 
-  mutate(crs_term_yr = crs_YEAR) %>%
+  mutate(crs_term = crs_YEAR) %>%
   mutate(crs_term_sem = crs_SEMESTER) %>%
   mutate(summer_crs = if_else(endsWith(as.character(TERM_CD),"7"), 1, 0)) %>%
   mutate(TERM_REF = START_TRM_CD-TERM_CD) %>%
@@ -296,7 +295,6 @@ df_ap_phys <- df_full %>%
   summarize_at(vars(-group_cols()),max)
 
 #### Create Stacked Dataset #### 
-# (STILL MISSING: gpao, begin_term_cum_gpa, instructor_name, apyear)
 # Bio (N=3090)
 df_bio <- df_std %>%
   right_join(df_crs_bio2, by = "st_id") %>%
@@ -306,10 +304,7 @@ df_bio <- df_std %>%
   mutate(skipped_1 = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
          aptaker, apscore, apscore_full, apskipper, 
-         tookcourse, tookcourse_2, skipped_1) %>%
-  filter(transfer == 0) %>%
-  filter(international == 0) %>%
-  filter(crs_term.x > 2137 & crs_term.x < 2191)
+         tookcourse, tookcourse_2, skipped_1)
 
 #Chem (N=3019)
 df_chem <- df_std %>%
@@ -320,10 +315,7 @@ df_chem <- df_std %>%
   mutate(skipped_1 = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
          aptaker, apscore, apscore_full, apskipper, 
-         tookcourse, tookcourse_2, skipped_1) %>%
-  filter(transfer == 0) %>%
-  filter(international == 0) %>%
-  filter(crs_term.x > 2147 & crs_term.x < 2191)
+         tookcourse, tookcourse_2, skipped_1)
 
 #Phys (N=1598)
 df_phys <- df_std %>%
@@ -334,10 +326,7 @@ df_phys <- df_std %>%
   mutate(skipped_1 = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
          aptaker, apscore, apscore_full, apskipper,
-         tookcourse, tookcourse_2, skipped_1) %>%
-  filter(transfer == 0) %>%
-  filter(international == 0) %>%
-  filter(crs_term.x > 2157 & crs_term.x < 2191)
+         tookcourse, tookcourse_2, skipped_1)
 
 #Stacked data
 df_clean <- rbind(df_bio, df_chem, df_phys)

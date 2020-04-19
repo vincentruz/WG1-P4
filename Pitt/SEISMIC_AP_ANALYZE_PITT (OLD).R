@@ -4,14 +4,12 @@
 # Load packages and data
 if (!require("pacman")) install.packages("pacman")
 library(pacman)
-pacman::p_load("tidyverse", "data.table", "psych", "summarytools", "haven", "Hmisc", "forcats", 
-               "naniar", "QuantPsyc", "epiDisplay", "corrplot", "tidyselect", "mctest", 
-               "MatchIt", "WeightIt", "cobalt", "survey", "jtools","mice")
+pacman::p_load("tidyverse", "psych",                       # Data wrangling, display
+               "epiDisplay",                               # Display OR for logistic regression
+               "WeightIt", "cobalt", "survey", "jtools")   # Weights for matching
 
 # Functions and settings ####
-# Use dplyr for 'select'
-select <- dplyr::select
-# Turn off scientific notation
+# Turn off scientific notation (for OR display)
 options(scipen = 10)
 # VIF function 
 VIF <- function(linear.model, no.intercept=FALSE, all.diagnostics=FALSE, plot=FALSE) {
@@ -27,6 +25,15 @@ VIF <- function(linear.model, no.intercept=FALSE, all.diagnostics=FALSE, plot=FA
 # Load Raw Dataframe ####
 df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 names(df_clean)
+
+# Inclusion/Exclusions Criteria
+df_clean <- df_clean %>%
+  # Include
+  filter(transfer == 0) %>%
+  filter(tookcourse_2 == 1) %>%
+  filter(cohort >= 2013 & cohort <= 2018) %>%
+  # Exclude
+  filter(international == 0)
 
 # Subset Dataframes #### 
 # Bio
@@ -83,9 +90,9 @@ correl1 <- df_clean %>%
   ungroup() %>%
   select(firstgen, lowincomflag, female, urm, 
          hsgpa, mathsr, englsr, 
-         cohort_2014, cohort_2015, cohort_2016, cohort_2017, cohort_2018)
+         cohort, crs_term, enrl_from_cohort, enrl_from_cohort_2)
 corrplot1 <- cor(correl1, use="pairwise.complete.obs")
-corrplot(corrplot1,type = "lower")
+corPlot(corrplot1, upper = FALSE, symmetric = TRUE)
 
 #### RQ1 ####
 # What student characteristics are associated with student participation and success in AP courses 
