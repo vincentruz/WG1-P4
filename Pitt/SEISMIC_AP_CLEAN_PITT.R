@@ -120,8 +120,9 @@ df_crs <- df_full %>%
   mutate(crs_retake = REPEAT_CD) %>%
   separate(as.character("TERM_CD"), c("crs_YEAR", "crs_SEMESTER"), 3, remove = FALSE) %>%
   separate(as.character("crs_YEAR"), c("crs_DEC", "crs_YEAR"), 1) %>% 
-  mutate(crs_term = crs_YEAR) %>%
-  mutate(crs_term_sem = crs_SEMESTER) %>%
+  mutate(crs_term = as.numeric(crs_YEAR)) %>%
+  mutate(crs_term_sem = as.numeric(crs_SEMESTER)) %>%
+  mutate(crs_term = ifelse(crs_term >= 20, crs_term + 1900, crs_term + 2000)) %>%
   mutate(summer_crs = if_else(endsWith(as.character(TERM_CD),"7"), 1, 0)) %>%
   mutate(TERM_REF = START_TRM_CD-TERM_CD) %>%
   separate(as.character("START_TRM_CD"), c("st_YEAR", "st_SEMESTER"), 3, remove = FALSE) %>%
@@ -232,8 +233,8 @@ df_crs_phys2 <- df_crs %>%
 df_ap_bio <- df_full %>%
   mutate(st_id = EMPLID_H) %>%
   mutate(aptaker = ifelse(is.na(BY), 0, 1)) %>%
-  mutate(apskipper = ifelse(BY >= 4 & !is.na(BY), 1, 0)) %>%
-  mutate(apskipper_2 = ifelse(BY == 5 & !is.na(BY), 1, 0)) %>%
+  mutate(eligible_to_skip = ifelse(BY >= 4 & !is.na(BY), 1, 0)) %>%
+  mutate(eligible_to_skip_2 = ifelse(BY == 5 & !is.na(BY), 1, 0)) %>%
   mutate(tookcourse = ifelse(
     SUBJECT_CD == "BIOSC" & (CATALOG_NBR == "0150") & # | CATALOG_NBR == "0715") & 
       COURSE_GRADE_CD != "W", 1, 0)) %>%
@@ -251,8 +252,8 @@ df_ap_bio <- df_full %>%
 df_ap_chem <- df_full %>%
   mutate(st_id = EMPLID_H) %>%
   mutate(aptaker = ifelse(is.na(CH), 0, 1)) %>%
-  mutate(apskipper = ifelse(CH >= 3 & !is.na(CH), 1, 0)) %>%
-  mutate(apskipper_2 = ifelse(CH == 5 & !is.na(CH), 1, 0)) %>%
+  mutate(eligible_to_skip = ifelse(CH >= 3 & !is.na(CH), 1, 0)) %>%
+  mutate(eligible_to_skip_2 = ifelse(CH == 5 & !is.na(CH), 1, 0)) %>%
   mutate(tookcourse = ifelse(
     SUBJECT_CD == "CHEM" & (CATALOG_NBR == "0110") & # | CATALOG_NBR == "0710") & 
       COURSE_GRADE_CD != "W", 1, 0)) %>%
@@ -274,7 +275,7 @@ df_ap_phys <- df_full %>%
   mutate(aptaker = ifelse(aptaker_CE == 1 | aptaker_CM == 1, 1, 0)) %>%
   mutate(apskipperCE = ifelse(PHCE == 5 & !is.na(PHCE), 1, 0)) %>%
   mutate(apskipperCM = ifelse(PHCM == 5  & !is.na(PHCM), 1, 0)) %>%
-  mutate(apskipper = ifelse(apskipperCE == 1 | apskipperCM == 1, 1, 0)) %>%
+  mutate(eligible_to_skip = ifelse(apskipperCE == 1 | apskipperCM == 1, 1, 0)) %>%
   mutate(tookcourse = ifelse(
     SUBJECT_CD == "PHYS" & (CATALOG_NBR == "0174") & # | CATALOG_NBR == "0475") & 
       COURSE_GRADE_CD != "W", 1, 0)) %>%
@@ -301,10 +302,10 @@ df_bio <- df_std %>%
   full_join(df_crs_bio1, by = "st_id") %>%
   full_join(df_ap_bio, by = "st_id") %>%
   mutate(discipline = "BIO") %>%
-  mutate(skipped_1 = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
+  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
-         aptaker, apscore, apscore_full, apskipper, 
-         tookcourse, tookcourse_2, skipped_1)
+         aptaker, apscore, apscore_full, eligible_to_skip, 
+         tookcourse, tookcourse_2, skipped_course)
 
 #Chem (N=3019)
 df_chem <- df_std %>%
@@ -312,10 +313,10 @@ df_chem <- df_std %>%
   full_join(df_crs_chem1, by = "st_id") %>%
   full_join(df_ap_chem, by = "st_id") %>%
   mutate(discipline = "CHEM") %>%
-  mutate(skipped_1 = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
+  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
-         aptaker, apscore, apscore_full, apskipper, 
-         tookcourse, tookcourse_2, skipped_1)
+         aptaker, apscore, apscore_full, eligible_to_skip, 
+         tookcourse, tookcourse_2, skipped_course)
 
 #Phys (N=1598)
 df_phys <- df_std %>%
@@ -323,10 +324,10 @@ df_phys <- df_std %>%
   full_join(df_crs_phys1, by = "st_id") %>%
   full_join(df_ap_phys, by = "st_id") %>%
   mutate(discipline = "PHYS") %>%
-  mutate(skipped_1 = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
+  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
-         aptaker, apscore, apscore_full, apskipper,
-         tookcourse, tookcourse_2, skipped_1)
+         aptaker, apscore, apscore_full, eligible_to_skip,
+         tookcourse, tookcourse_2, skipped_course)
 
 #Stacked data
 df_clean <- rbind(df_bio, df_chem, df_phys)

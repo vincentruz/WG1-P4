@@ -90,9 +90,10 @@ correl1 <- df_clean %>%
   ungroup() %>%
   select(firstgen, lowincomflag, female, urm, 
          hsgpa, mathsr, englsr, 
-         cohort, crs_term, enrl_from_cohort, enrl_from_cohort_2)
-corrplot1 <- cor(correl1, use="pairwise.complete.obs")
-corPlot(corrplot1, upper = FALSE, symmetric = TRUE)
+         cohort, crs_term, enrl_from_cohort)
+corrplot1 <- cor(correl1, use="pairwise")
+dev.off()
+cor.plot(corrplot1, upper = FALSE)
 
 #### RQ1 ####
 # What student characteristics are associated with student participation and success in AP courses 
