@@ -97,16 +97,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 DDA0…        0 WHITE                   0     0      1      1    121431
-##  2 9AF5…        0 WHITE                   0     0      0      0    120271
-##  3 0E63…        0 WHITE                   0     0      1      1    107473
-##  4 2F71…        0 ASIAN                   2     0      1      1        NA
-##  5 37D2…        1 BLACK                   1     1      0      0     13000
-##  6 B4B8…        0 WHITE                   0     0      1      1    138744
-##  7 94F6…        1 WHITE                   0     0      1      1     27690
-##  8 A207…        1 WHITE                   0     0      0      0     20011
-##  9 F122…        0 WHITE                   0     0      1      1        NA
-## 10 EED6…        1 WHITE                   0     0      0      0    113031
+##  1 BD99…        0 WHITE                   0     0      1      1    111943
+##  2 7EE8…        0 WHITE                   0     0      1      1     81677
+##  3 CBD5…        0 WHITE                   0     0      0      0    169046
+##  4 1D8F…        0 WHITE                   0     0      1      1        NA
+##  5 C321…        0 WHITE                   0     0      1      1     83246
+##  6 8EC8…        1 WHITE                   0     0      0      0        NA
+##  7 E41D…        0 WHITE                   0     0      1      1     69000
+##  8 BC20…        0 WHITE                   0     0      0      0    178438
+##  9 5A42…        0 WHITE                   0     0      1      1    136000
+## 10 3BE2…        0 WHITE                   0     0      1      1     44573
 ## # … with 16 more variables: lowincomflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
@@ -420,11 +420,11 @@ head(names(df_clean))
 ## [13] "transfer_cred"  "international"  "ell"
 ```
 
-## 1. Sample selection
+## 1. Sample selection (by RQ, for each Course)
 
-### c. Filter for student level inclusion/exclusion criteria
+### a. Filter for student level inclusion/exclusion criteria
 
-#### *Note:* 
+#### *Note:*
 
 - Use [Shared Analysis Syntax](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) or see [Inclusion/Exclusion Criteria](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=727713658) for shared sample selection procedure
 
@@ -439,7 +439,7 @@ df_clean <- df_clean %>%
   filter(international == 0)
 ```
 
-### d.	Create subset dataframes for each analysis sample
+### b.	Create subset dataframes for each analysis sample
 
 #### *Note:* 
 

@@ -334,16 +334,16 @@ df_std &lt;- df_full %&gt;%
 <pre><code>## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;int&gt;
-##  1 DDA0…        0 WHITE                   0     0      1      1    121431
-##  2 9AF5…        0 WHITE                   0     0      0      0    120271
-##  3 0E63…        0 WHITE                   0     0      1      1    107473
-##  4 2F71…        0 ASIAN                   2     0      1      1        NA
-##  5 37D2…        1 BLACK                   1     1      0      0     13000
-##  6 B4B8…        0 WHITE                   0     0      1      1    138744
-##  7 94F6…        1 WHITE                   0     0      1      1     27690
-##  8 A207…        1 WHITE                   0     0      0      0     20011
-##  9 F122…        0 WHITE                   0     0      1      1        NA
-## 10 EED6…        1 WHITE                   0     0      0      0    113031
+##  1 BD99…        0 WHITE                   0     0      1      1    111943
+##  2 7EE8…        0 WHITE                   0     0      1      1     81677
+##  3 CBD5…        0 WHITE                   0     0      0      0    169046
+##  4 1D8F…        0 WHITE                   0     0      1      1        NA
+##  5 C321…        0 WHITE                   0     0      1      1     83246
+##  6 8EC8…        1 WHITE                   0     0      0      0        NA
+##  7 E41D…        0 WHITE                   0     0      1      1     69000
+##  8 BC20…        0 WHITE                   0     0      0      0    178438
+##  9 5A42…        0 WHITE                   0     0      1      1    136000
+## 10 3BE2…        0 WHITE                   0     0      1      1     44573
 ## # … with 16 more variables: lowincomflag &lt;dbl&gt;, transfer &lt;dbl&gt;,
 ## #   international &lt;dbl&gt;, ell &lt;dbl&gt;, us_hs &lt;dbl&gt;, cohort &lt;dbl&gt;,
 ## #   cohort_2013 &lt;dbl&gt;, cohort_2014 &lt;dbl&gt;, cohort_2015 &lt;dbl&gt;, cohort_2016 &lt;dbl&gt;,
@@ -606,10 +606,10 @@ head(names(df_clean))</code></pre>
 ## [13] &quot;transfer_cred&quot;  &quot;international&quot;  &quot;ell&quot;</code></pre>
 </div>
 </div>
-<div id="sample-selection" class="section level2">
-<h2>1. Sample selection</h2>
-<div id="c.-filter-for-student-level-inclusionexclusion-criteria" class="section level3">
-<h3>c. Filter for student level inclusion/exclusion criteria</h3>
+<div id="sample-selection-by-rq-for-each-course" class="section level2">
+<h2>1. Sample selection (by RQ, for each Course)</h2>
+<div id="a.-filter-for-student-level-inclusionexclusion-criteria" class="section level3">
+<h3>a. Filter for student level inclusion/exclusion criteria</h3>
 <div id="note-8" class="section level4">
 <h4><em>Note:</em></h4>
 <ul>
@@ -624,8 +624,8 @@ head(names(df_clean))</code></pre>
   filter(international == 0)</code></pre>
 </div>
 </div>
-<div id="d.-create-subset-dataframes-for-each-analysis-sample" class="section level3">
-<h3>d. Create subset dataframes for each analysis sample</h3>
+<div id="b.-create-subset-dataframes-for-each-analysis-sample" class="section level3">
+<h3>b. Create subset dataframes for each analysis sample</h3>
 <div id="note-9" class="section level4">
 <h4><em>Note:</em></h4>
 <ul>
