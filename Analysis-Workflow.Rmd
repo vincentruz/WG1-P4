@@ -595,7 +595,7 @@ head(names(df_clean), 15)
 
 ### a. Filter for student level inclusion/exclusion criteria
 
-#### *Note:* 
+#### *Note:*
 
 - Use [Shared Analysis Syntax](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) or see [Inclusion/Exclusion Criteria](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=727713658) for shared sample selection procedure
 
