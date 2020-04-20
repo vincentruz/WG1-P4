@@ -14,6 +14,9 @@ subtitle: Analysis Workflow
 
 
 
+#### - R/RStudio used for analyses
+#### - Jupyter Notebooks/Google Co-Lab used for sharing code
+
 # **I. Data Processing (Institution Specific)**
 
 #### *Note:* 
@@ -97,16 +100,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 BD99…        0 WHITE                   0     0      1      1    111943
-##  2 7EE8…        0 WHITE                   0     0      1      1     81677
-##  3 CBD5…        0 WHITE                   0     0      0      0    169046
-##  4 1D8F…        0 WHITE                   0     0      1      1        NA
-##  5 C321…        0 WHITE                   0     0      1      1     83246
-##  6 8EC8…        1 WHITE                   0     0      0      0        NA
-##  7 E41D…        0 WHITE                   0     0      1      1     69000
-##  8 BC20…        0 WHITE                   0     0      0      0    178438
-##  9 5A42…        0 WHITE                   0     0      1      1    136000
-## 10 3BE2…        0 WHITE                   0     0      1      1     44573
+##  1 1DFB…        0 WHITE                   0     0      0      0        NA
+##  2 FD72…        0 WHITE                   0     0      0      0     86937
+##  3 09E1…        0 WHITE                   0     0      1      1     61177
+##  4 4306…        1 WHITE                   0     0      1      1     94080
+##  5 529F…        0 WHITE                   0     0      0      0      8119
+##  6 7504…        0 WHITE                   0     0      0      0    104940
+##  7 C283…        0 WHITE                   0     0      1      1    253465
+##  8 AEC2…        1 WHITE                   0     0      1      1     49421
+##  9 ADB7…        0 WHITE                   0     0      1      1    146075
+## 10 2361…        0 WHITE                   0     0      1      1     40802
 ## # … with 16 more variables: lowincomflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,

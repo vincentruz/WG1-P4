@@ -16,6 +16,9 @@ subtitle: Analysis Workflow
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+#### - R/RStudio used for analyses
+#### - Jupyter Notebooks/Google Co-Lab used for sharing code
+
 # **I. Data Processing (Institution Specific)**
 
 #### *Note:* 
