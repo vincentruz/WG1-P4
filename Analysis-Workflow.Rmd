@@ -1,7 +1,6 @@
 ---
 title: "SEISMIC WG1-P4"
-author: "Eben"
-date: "4/17/2020"
+date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
 output:
   html_document:
     keep_md: true
@@ -18,12 +17,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # **I. Data Processing (Institution Specific)**
-(see [Data Description](https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021) for shared SEISMIC variable names)
 
-*Note:* 
+#### *Note:* 
 
-- Specific syntax for these steps are likely to vary by institutional variable naming conventions
-- Sample code only shown here; see [WG1-P4 GitHub repository](https://github.com/seismic2020/WG1-P4) for institution-specific data cleaning examples.
+- Exact syntax for these steps is likely to vary based on institution-specific variable naming conventions
+- See [Data Description](https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021) for shared SEISMIC variable names
+- Sample code only shown here; see [WG1-P4 GitHub repository](https://github.com/seismic2020/WG1-P4) for complete examples of institution-specific data cleaning code
 
 ## 0. Startup
 
@@ -46,12 +45,18 @@ head(names(df_full))
 ```
 
 ```{r echo = FALSE}
+print("Example RAW Varnames")
 head(names(df_full), 15)
 ```
 
 ## 1.	Clean Student level variables
 
 ### a. Rename and generate/recode student level variables as needed to match common SEISMIC AP variable names
+
+#### *Note:* 
+
+- Student level data should contain unique rows per student
+
 ```{r include = FALSE}
 ## STABLE - Student Level ####
 df_std <- df_full %>%
@@ -164,12 +169,19 @@ df_std <- df_full %>%
 ```
 
 ```{r echo = FALSE}
+print("Example Student Level Dataframe")
 sample_n(as_tibble(df_std), 10)
+
 ```
 
 ## 2.	Clean Course level variables
 
 ### a.	Rename and generate/recode course level variables as needed to match common SEISMIC AP variable names
+
+#### *Note:* 
+
+- Course level data will likely contain multiple rows for each course, per student
+
 ```{r include = FALSE}
 #### Course Level ####
 df_crs <- df_full %>%
@@ -260,10 +272,16 @@ df_crs <- df_full %>%
 ```
 
 ```{r echo = FALSE}
+print("Example Course Level Dataframe")
 as_tibble(df_crs)
 ```
 
 ### b.	For each subject course (1 and 2), create dataframe of only first time taking that course
+
+#### *Note:* 
+
+- This step selects down to only a single row per course, per student
+
 ```{r include = FALSE}
 # By Course (Taking only First Attempt) ####
 # Bio
@@ -333,16 +351,18 @@ df_crs_bio1 <- df_crs %>%
 ```
 
 ```{r echo = FALSE}
+print("Example Course Level Dataframe - First Course Only")
 as_tibble(df_crs_bio1)
+
 ```
 
 ## 3.	Clean AP Level variables
 
 ### a.  For each AP subject, rename and generate/recode course level variables as needed to match common SEISMIC AP variable names
 
-*Note:*
+#### *Note:*
 
-- Taking highest (max) AP score each student recieved by subject
+- Taking highest (max) AP score recieved; single row per AP exam, per student
 
 ``` {r include = FALSE}
 ##### AP Level ####
@@ -440,16 +460,22 @@ df_ap_bio <- df_full %>%
 ```
    
 ```{r echo = FALSE}
+print("Example AP Level Dataframe - Highest Score by Exam")
 as_tibble(df_ap_bio)
+
 ```
 
 ## 4. Create stacked dataset
 
-### a.  For each course subject, join previously create dataframes for first time taking Course1, Course2, and AP
+### a.  Join previously generated dataframes (Student, Course1, Course2, and AP) for each course subject (BIO, CHEM, PHYS) 
+
+#### *Note:*
+
 - Include new variable: “discipline” as flag for each subject
     + BIO
     + CHEM
     + PHYS
+    
 ```{r include = FALSE}
 #### Create Stacked Dataset #### 
 # Bio (N=3090)
@@ -502,10 +528,12 @@ df_bio <- df_std %>%
 ```
 
 ```{r echo = FALSE}
+print("Example Stacked BIO Dataframe")
 as_tibble(df_bio)
 ```
 
-### b. Stack all dataframes, with course indicator
+### b. Stack complete dataframes for each course subject (BIO, CHEM, PHYS), including "discipline" indicator variable
+
 ```{r}
 # Stacked dataframe with Bio, Chem, Phys
 df_clean <- rbind(df_bio, df_chem, df_phys)
@@ -521,18 +549,20 @@ rm(df_ap_bio, df_ap_chem, df_ap_phys,
    df_crs, df_std)
 ```
 
-### c. Should end up with something that looks like this [Example Dataset](https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&ouid=118183464940790632947).
+#### *Note:*
+
+- Should end up with dataset structured like this [Example Dataset](https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&ouid=118183464940790632947)
 
 ```{r echo = FALSE}
+print("Example RE-CODED Varnames")
 head(names(df_clean), 15)
 ```
 
-
 # **II. Data Analysis (Same Across Institutions)**
 
-*Note:* 
+#### *Note:* 
 
-- Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed)
+- Syntax for these steps should be the same for all institutions (once data cleaning steps above are followed)
 - Sample code shown here; use [Shared Analysis file](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) on WG1-P4 GitHub repository for complete analysis code
 
 ## 0. Startup
@@ -557,19 +587,18 @@ head(names(df_clean))
 ```
 
 ```{r echo = FALSE}
+print("Example RE-CODED Varnames")
 head(names(df_clean), 15)
 ```
 
-### c. Filter for student level inclusion/exclusion criteria
-- Include: 
-    + First time freshmen
-    + Took course 2
-    + Cohort 2013-2018
-- Exclude:
-    + Transfer students
-    + International students
-    + Honors
-    
+## 1. Sample selection (by RQ, for each Course)
+
+### a. Filter for student level inclusion/exclusion criteria
+
+#### *Note:* 
+
+- Use [Shared Analysis Syntax](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) or see [Inclusion/Exclusion Criteria](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=727713658) for shared sample selection procedure
+
 ``` {r} 
 df_clean <- df_clean %>%
   # Include
@@ -581,7 +610,11 @@ df_clean <- df_clean %>%
 
 ```
 
-### d.	Create subset dataframes for each analysis sample
+### b.	Create subset dataframes for each analysis sample
+
+#### *Note:* 
+
+- Use [Shared Analysis Syntax](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) or see [Sample Descriptions](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174) for full model specifications
 
 ```{r include = FALSE}
 # Subset Dataframes #### 
@@ -635,8 +668,6 @@ df_PHeligible.5 <- df_phys2 %>%
 
 ```        
 
-1.	For each course: Full Sample, AP taken after test re-design
-
 ```{r eval = FALSE}
 # Bio
 # Took 2nd course in sequence
@@ -647,8 +678,6 @@ df_bio2 <- df_clean %>%
 # repeat for Chem, Phys
 ```
 
-2.	For each course: Took AP
-
 ```{r eval = FALSE}   
 # Took AP 
 df_BYtakers <- df_clean %>%
@@ -658,8 +687,6 @@ df_BYtakers <- df_clean %>%
 # repeat for Chem, Phys
 ```
 
-3. For each course: Recieved a skip-eligible score 
-
 ```{r eval = FALSE}
 # Skip eligible
 df_BYeligible <- df_clean %>%
@@ -668,8 +695,6 @@ df_BYeligible <- df_clean %>%
 
 # repeat for Chem, Phys
 ```
-
-4. For each course: Recieved a skip-eligible score (at each eligible score) 
 
 ```{r eval = FALSE}
 # Skip eligible (at each eligble scores)
@@ -681,8 +706,11 @@ df_BYeligible.5 <- df_bio2 %>%
 # Repeat for Chem, Phys
 ```
 
-## 1.	Run Models (for each Course)
-(see [Sample Descriptions](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174) for full model specs.)
+## 2.	Run Models (for each Course)
+
+#### *Note:*
+
+- Use [Shared Analysis Syntax](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) or see [Sample Descriptions](https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174) for full model specifications
 
 ## RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?
 
@@ -725,7 +753,7 @@ logistic.display(m1.a_bio)
 ```
 
 ```{r echo = FALSE}
-print("Model Parameters for RQ1a - Bio")
+print("Example: Model Parameters for RQ1a - Bio")
 logistic.display(m1.a_bio)
 ```
 
@@ -763,7 +791,7 @@ summary(m1.b_bio)
 ```
 
 ```{r echo = FALSE}
-print("Model Parameters for RQ1b - Bio")
+print("Example: Model Parameters for RQ1b - Bio")
 logistic.display(m1.b_bio)
 
 ```

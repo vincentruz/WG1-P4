@@ -9,7 +9,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Eben" />
 
 
 <title>SEISMIC WG1-P4</title>
@@ -267,20 +266,21 @@ div.tocify {
 
 <h1 class="title toc-ignore">SEISMIC WG1-P4</h1>
 <h3 class="subtitle">Analysis Workflow</h3>
-<h4 class="author">Eben</h4>
-<h4 class="date">4/17/2020</h4>
+<h4 class="date">Updated: April 20, 2020</h4>
 
 </div>
 
 
 <div id="i.-data-processing-institution-specific" class="section level1">
 <h1><strong>I. Data Processing (Institution Specific)</strong></h1>
-<p>(see <a href="https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021">Data Description</a> for shared SEISMIC variable names)</p>
-<p><em>Note:</em></p>
+<div id="note" class="section level4">
+<h4><em>Note:</em></h4>
 <ul>
-<li>Specific syntax for these steps are likely to vary by institutional variable naming conventions</li>
-<li>Sample code only shown here; see <a href="https://github.com/seismic2020/WG1-P4">WG1-P4 GitHub repository</a> for institution-specific data cleaning examples.</li>
+<li>Exact syntax for these steps is likely to vary based on institution-specific variable naming conventions</li>
+<li>See <a href="https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021">Data Description</a> for shared SEISMIC variable names</li>
+<li>Sample code only shown here; see <a href="https://github.com/seismic2020/WG1-P4">WG1-P4 GitHub repository</a> for complete examples of institution-specific data cleaning code</li>
 </ul>
+</div>
 <div id="startup" class="section level2">
 <h2>0. Startup</h2>
 <div id="a.-load-r-pkgs" class="section level3">
@@ -294,6 +294,7 @@ pacman::p_load(&quot;tidyverse&quot;)   # Data wrangling</code></pre>
 <pre class="r"><code># CHANGE TO YOUR FILE PATH
 df_full &lt;- read.csv(&quot;~/YOUR FILE PATH HERE.csv&quot;)
 head(names(df_full))</code></pre>
+<pre><code>## [1] &quot;Example RAW Varnames&quot;</code></pre>
 <pre><code>##  [1] &quot;X&quot;                        &quot;EMPLID_H&quot;                
 ##  [3] &quot;ACADEMIC_PLAN_DESCR&quot;      &quot;ACADEMIC_PROGRAM_CD&quot;     
 ##  [5] &quot;ACADEMIC_PROGRAM_DESCR&quot;   &quot;BIRTH_DT&quot;                
@@ -308,6 +309,11 @@ head(names(df_full))</code></pre>
 <h2>1. Clean Student level variables</h2>
 <div id="a.-rename-and-generaterecode-student-level-variables-as-needed-to-match-common-seismic-ap-variable-names" class="section level3">
 <h3>a. Rename and generate/recode student level variables as needed to match common SEISMIC AP variable names</h3>
+<div id="note-1" class="section level4">
+<h4><em>Note:</em></h4>
+<ul>
+<li>Student level data should contain unique rows per student</li>
+</ul>
 <pre class="r"><code>## Student Level ####
 df_std &lt;- df_full %&gt;%
   # Renamed variables
@@ -324,19 +330,20 @@ df_std &lt;- df_full %&gt;%
                                 if_else(AGI &lt;= 46435, 1,0))) 
 
 # etc...</code></pre>
+<pre><code>## [1] &quot;Example Student Level Dataframe&quot;</code></pre>
 <pre><code>## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;int&gt;
-##  1 BD8B…        0 BLACK                   1     1      0      0     96085
-##  2 846B…        0 WHITE                   0     0      0      0        NA
-##  3 BEB7…        1 MULTI                  NA    NA      1      1    101458
-##  4 BDB7…        1 WHITE                   0     0      1      1     94857
-##  5 E496…        0 WHITE                   0     0      1      1        NA
-##  6 86D6…        0 WHITE                   0     0      1      1    120944
-##  7 BF88…        0 MULTI                  NA    NA      1      1    357315
-##  8 49FF…        0 ASIAN                   2     0      1      1    222955
-##  9 9736…        0 WHITE                   0     0      1      1        NA
-## 10 CBD0…        0 ASIAN                   2     0      1      1        NA
+##  1 DDA0…        0 WHITE                   0     0      1      1    121431
+##  2 9AF5…        0 WHITE                   0     0      0      0    120271
+##  3 0E63…        0 WHITE                   0     0      1      1    107473
+##  4 2F71…        0 ASIAN                   2     0      1      1        NA
+##  5 37D2…        1 BLACK                   1     1      0      0     13000
+##  6 B4B8…        0 WHITE                   0     0      1      1    138744
+##  7 94F6…        1 WHITE                   0     0      1      1     27690
+##  8 A207…        1 WHITE                   0     0      0      0     20011
+##  9 F122…        0 WHITE                   0     0      1      1        NA
+## 10 EED6…        1 WHITE                   0     0      0      0    113031
 ## # … with 16 more variables: lowincomflag &lt;dbl&gt;, transfer &lt;dbl&gt;,
 ## #   international &lt;dbl&gt;, ell &lt;dbl&gt;, us_hs &lt;dbl&gt;, cohort &lt;dbl&gt;,
 ## #   cohort_2013 &lt;dbl&gt;, cohort_2014 &lt;dbl&gt;, cohort_2015 &lt;dbl&gt;, cohort_2016 &lt;dbl&gt;,
@@ -344,10 +351,16 @@ df_std &lt;- df_full %&gt;%
 ## #   mathsr &lt;dbl&gt;, hsgpa &lt;dbl&gt;</code></pre>
 </div>
 </div>
+</div>
 <div id="clean-course-level-variables" class="section level2">
 <h2>2. Clean Course level variables</h2>
 <div id="a.-rename-and-generaterecode-course-level-variables-as-needed-to-match-common-seismic-ap-variable-names" class="section level3">
 <h3>a. Rename and generate/recode course level variables as needed to match common SEISMIC AP variable names</h3>
+<div id="note-2" class="section level4">
+<h4><em>Note:</em></h4>
+<ul>
+<li>Course level data will likely contain multiple rows for each course, per student</li>
+</ul>
 <pre class="r"><code>## Course Level ####
 df_crs &lt;- df_full %&gt;%
   # Renamed variables
@@ -367,6 +380,7 @@ df_crs &lt;- df_full %&gt;%
   mutate(summer_crs = if_else(endsWith(as.character(TERM_CD),&quot;7&quot;), 1, 0))
 
 # etc...</code></pre>
+<pre><code>## [1] &quot;Example Course Level Dataframe&quot;</code></pre>
 <pre><code>## # A tibble: 670,191 x 17
 ##    st_id crs_sbj crs_catalog crs_name numgrade numgrade_w crs_retake crs_term
 ##    &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;       &lt;fct&gt;       &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;         &lt;int&gt;
@@ -385,8 +399,14 @@ df_crs &lt;- df_full %&gt;%
 ## #   enrl_from_cohort &lt;dbl&gt;, crs_credits &lt;dbl&gt;, crs_component &lt;fct&gt;,
 ## #   class_number &lt;int&gt;, current_major &lt;fct&gt;</code></pre>
 </div>
+</div>
 <div id="b.-for-each-subject-course-1-and-2-create-dataframe-of-only-first-time-taking-that-course" class="section level3">
 <h3>b. For each subject course (1 and 2), create dataframe of only first time taking that course</h3>
+<div id="note-3" class="section level4">
+<h4><em>Note:</em></h4>
+<ul>
+<li>This step selects down to only a single row per course, per student</li>
+</ul>
 <pre class="r"><code># By Course (Taking only First Attempt) ####
 # Bio
 df_crs_bio1 &lt;- df_crs %&gt;%
@@ -398,6 +418,7 @@ df_crs_bio1 &lt;- df_crs %&gt;%
   filter(crs_retake_num == 1) 
 
 # repeat for Bio2, Chem1, Chem2, Phys1, Phys2</code></pre>
+<pre><code>## [1] &quot;Example Course Level Dataframe - First Course Only&quot;</code></pre>
 <pre><code>## # A tibble: 7,368 x 18
 ##    st_id crs_sbj crs_catalog crs_name numgrade numgrade_w crs_retake crs_term
 ##    &lt;fct&gt; &lt;fct&gt;   &lt;fct&gt;       &lt;fct&gt;       &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;         &lt;int&gt;
@@ -417,13 +438,15 @@ df_crs_bio1 &lt;- df_crs %&gt;%
 ## #   class_number &lt;int&gt;, current_major &lt;fct&gt;, crs_retake_num &lt;int&gt;</code></pre>
 </div>
 </div>
+</div>
 <div id="clean-ap-level-variables" class="section level2">
 <h2>3. Clean AP Level variables</h2>
 <div id="a.-for-each-ap-subject-rename-and-generaterecode-course-level-variables-as-needed-to-match-common-seismic-ap-variable-names" class="section level3">
 <h3>a. For each AP subject, rename and generate/recode course level variables as needed to match common SEISMIC AP variable names</h3>
-<p><em>Note:</em></p>
+<div id="note-4" class="section level4">
+<h4><em>Note:</em></h4>
 <ul>
-<li>Taking highest (max) AP score each student recieved by subject</li>
+<li>Taking highest (max) AP score recieved; single row per AP exam, per student</li>
 </ul>
 <pre class="r"><code>##### AP Level ####
 # By course ####
@@ -447,6 +470,7 @@ df_ap_bio &lt;- df_full %&gt;%
   summarize_at(vars(-group_cols()),max)
 
 # repeat for Chem, Phys</code></pre>
+<pre><code>## [1] &quot;Example AP Level Dataframe - Highest Score by Exam&quot;</code></pre>
 <pre><code>## # A tibble: 22,976 x 8
 ##    st_id aptaker eligible_to_skip eligible_to_ski… tookcourse tookcourse_2
 ##    &lt;fct&gt;   &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;
@@ -464,10 +488,13 @@ df_ap_bio &lt;- df_full %&gt;%
 ## #   apscore_full &lt;dbl&gt;</code></pre>
 </div>
 </div>
+</div>
 <div id="create-stacked-dataset" class="section level2">
 <h2>4. Create stacked dataset</h2>
-<div id="a.-for-each-course-subject-join-previously-create-dataframes-for-first-time-taking-course1-course2-and-ap" class="section level3">
-<h3>a. For each course subject, join previously create dataframes for first time taking Course1, Course2, and AP</h3>
+<div id="a.-join-previously-generated-dataframes-student-course1-course2-and-ap-for-each-course-subject-bio-chem-phys" class="section level3">
+<h3>a. Join previously generated dataframes (Student, Course1, Course2, and AP) for each course subject (BIO, CHEM, PHYS)</h3>
+<div id="note-5" class="section level4">
+<h4><em>Note:</em></h4>
 <ul>
 <li>Include new variable: “discipline” as flag for each subject
 <ul>
@@ -488,6 +515,7 @@ df_bio &lt;- df_std %&gt;%
          tookcourse, tookcourse_2, skipped_course) 
 
 # repeat for Chem, Phys</code></pre>
+<pre><code>## [1] &quot;Example Stacked BIO Dataframe&quot;</code></pre>
 <pre><code>## # A tibble: 22,976 x 64
 ##    discipline st_id firstgen ethniccode ethniccode_cat   urm gender female
 ##    &lt;chr&gt;      &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
@@ -519,8 +547,9 @@ df_bio &lt;- df_std %&gt;%
 ## #   aptaker &lt;dbl&gt;, apscore &lt;chr&gt;, apscore_full &lt;dbl&gt;, eligible_to_skip &lt;dbl&gt;,
 ## #   tookcourse &lt;dbl&gt;, tookcourse_2 &lt;dbl&gt;, skipped_course &lt;dbl&gt;</code></pre>
 </div>
-<div id="b.-stack-all-dataframes-with-course-indicator" class="section level3">
-<h3>b. Stack all dataframes, with course indicator</h3>
+</div>
+<div id="b.-stack-complete-dataframes-for-each-course-subject-bio-chem-phys-including-discipline-indicator-variable" class="section level3">
+<h3>b. Stack complete dataframes for each course subject (BIO, CHEM, PHYS), including “discipline” indicator variable</h3>
 <pre class="r"><code># Stacked dataframe with Bio, Chem, Phys
 df_clean &lt;- rbind(df_bio, df_chem, df_phys)
 df_clean &lt;- df_clean %&gt;%
@@ -533,9 +562,12 @@ rm(df_ap_bio, df_ap_chem, df_ap_phys,
    df_bio, df_chem, df_phys, 
    df_crs_bio1, df_crs_bio2, df_crs_chem1, df_crs_chem2, df_crs_phys1, df_crs_phys2,
    df_crs, df_std)</code></pre>
-</div>
-<div id="c.-should-end-up-with-something-that-looks-like-this-example-dataset." class="section level3">
-<h3>c. Should end up with something that looks like this <a href="https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&amp;ouid=118183464940790632947">Example Dataset</a>.</h3>
+<div id="note-6" class="section level4">
+<h4><em>Note:</em></h4>
+<ul>
+<li>Should end up with dataset structured like this <a href="https://docs.google.com/spreadsheets/d/1Sj5kaFNGUkBhRoOH3cIPm-97UEBZmcFkbKGjzBbKWc0/edit?usp=drive_open&amp;ouid=118183464940790632947">Example Dataset</a></li>
+</ul>
+<pre><code>## [1] &quot;Example RE-CODED Varnames&quot;</code></pre>
 <pre><code>##  [1] &quot;discipline&quot;     &quot;st_id&quot;          &quot;firstgen&quot;       &quot;ethniccode&quot;    
 ##  [5] &quot;ethniccode_cat&quot; &quot;urm&quot;            &quot;gender&quot;         &quot;female&quot;        
 ##  [9] &quot;famincome&quot;      &quot;lowincomflag&quot;   &quot;transfer&quot;       &quot;international&quot; 
@@ -543,13 +575,16 @@ rm(df_ap_bio, df_ap_chem, df_ap_phys,
 </div>
 </div>
 </div>
+</div>
 <div id="ii.-data-analysis-same-across-institutions" class="section level1">
 <h1><strong>II. Data Analysis (Same Across Institutions)</strong></h1>
-<p><em>Note:</em></p>
+<div id="note-7" class="section level4">
+<h4><em>Note:</em></h4>
 <ul>
-<li>Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed)</li>
+<li>Syntax for these steps should be the same for all institutions (once data cleaning steps above are followed)</li>
 <li>Sample code shown here; use <a href="https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis">Shared Analysis file</a> on WG1-P4 GitHub repository for complete analysis code</li>
 </ul>
+</div>
 <div id="startup-1" class="section level2">
 <h2>0. Startup</h2>
 <div id="a.-load-r-pkgs-1" class="section level3">
@@ -564,26 +599,21 @@ pacman::p_load(&quot;tidyverse&quot;,   # Data wrangling
 <pre class="r"><code># CHANGE TO YOUR FILE PATH
 df_clean &lt;- read.csv(&quot;~/YOUR FILE PATH HERE.csv&quot;)
 head(names(df_clean))</code></pre>
+<pre><code>## [1] &quot;Example RE-CODED Varnames&quot;</code></pre>
 <pre><code>##  [1] &quot;X&quot;              &quot;discipline&quot;     &quot;st_id&quot;          &quot;firstgen&quot;      
 ##  [5] &quot;ethniccode&quot;     &quot;ethniccode_cat&quot; &quot;urm&quot;            &quot;gender&quot;        
 ##  [9] &quot;female&quot;         &quot;famincome&quot;      &quot;lowincomflag&quot;   &quot;transfer&quot;      
 ## [13] &quot;transfer_cred&quot;  &quot;international&quot;  &quot;ell&quot;</code></pre>
 </div>
+</div>
+<div id="sample-selection" class="section level2">
+<h2>1. Sample selection</h2>
 <div id="c.-filter-for-student-level-inclusionexclusion-criteria" class="section level3">
 <h3>c. Filter for student level inclusion/exclusion criteria</h3>
+<div id="note-8" class="section level4">
+<h4><em>Note:</em></h4>
 <ul>
-<li>Include:
-<ul>
-<li>First time freshmen</li>
-<li>Took course 2</li>
-<li>Cohort 2013-2018</li>
-</ul></li>
-<li>Exclude:
-<ul>
-<li>Transfer students</li>
-<li>International students</li>
-<li>Honors</li>
-</ul></li>
+<li>Use <a href="https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis">Shared Analysis Syntax</a> or see <a href="https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=727713658">Inclusion/Exclusion Criteria</a> for shared sample selection procedure</li>
 </ul>
 <pre class="r"><code>df_clean &lt;- df_clean %&gt;%
   # Include
@@ -593,11 +623,14 @@ head(names(df_clean))</code></pre>
   # Exclude
   filter(international == 0)</code></pre>
 </div>
+</div>
 <div id="d.-create-subset-dataframes-for-each-analysis-sample" class="section level3">
 <h3>d. Create subset dataframes for each analysis sample</h3>
-<ol style="list-style-type: decimal">
-<li>For each course: Full Sample, AP taken after test re-design</li>
-</ol>
+<div id="note-9" class="section level4">
+<h4><em>Note:</em></h4>
+<ul>
+<li>Use <a href="https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis">Shared Analysis Syntax</a> or see <a href="https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174">Sample Descriptions</a> for full model specifications</li>
+</ul>
 <pre class="r"><code># Bio
 # Took 2nd course in sequence
 df_bio2 &lt;- df_clean %&gt;%
@@ -605,27 +638,18 @@ df_bio2 &lt;- df_clean %&gt;%
   subset(apyear &gt;= 2013)
 
 # repeat for Chem, Phys</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>For each course: Took AP</li>
-</ol>
 <pre class="r"><code># Took AP 
 df_BYtakers &lt;- df_clean %&gt;%
   subset(discipline == &quot;BIO&quot;) %&gt;%
   subset(aptaker == 1)
 
 # repeat for Chem, Phys</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>For each course: Recieved a skip-eligible score</li>
-</ol>
 <pre class="r"><code># Skip eligible
 df_BYeligible &lt;- df_clean %&gt;%
   subset(discipline == &quot;BIO&quot;) %&gt;%
   subset(eligible_to_skip == 1)
 
 # repeat for Chem, Phys</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>For each course: Recieved a skip-eligible score (at each eligible score)</li>
-</ol>
 <pre class="r"><code># Skip eligible (at each eligble scores)
 df_BYeligible.4 &lt;- df_bio2 %&gt;%
   subset(apscore == 4)
@@ -635,9 +659,15 @@ df_BYeligible.5 &lt;- df_bio2 %&gt;%
 # Repeat for Chem, Phys</code></pre>
 </div>
 </div>
+</div>
 <div id="run-models-for-each-course" class="section level2">
-<h2>1. Run Models (for each Course)</h2>
-<p>(see <a href="https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174">Sample Descriptions</a> for full model specs.)</p>
+<h2>2. Run Models (for each Course)</h2>
+<div id="note-10" class="section level4">
+<h4><em>Note:</em></h4>
+<ul>
+<li>Use <a href="https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis">Shared Analysis Syntax</a> or see <a href="https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174">Sample Descriptions</a> for full model specifications</li>
+</ul>
+</div>
 </div>
 <div id="rq1-what-student-characteristics-are-associated-with-student-participation-and-success-in-ap-courses-for-students-enrolled-at-the-selected-universities" class="section level2">
 <h2>RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?</h2>
@@ -652,7 +682,7 @@ m1.a_bio &lt;- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(f
 logistic.display(m1.a_bio)
 
 # Repeat for Chem, Phys</code></pre>
-<pre><code>## [1] &quot;Model Parameters for RQ1a - Bio&quot;</code></pre>
+<pre><code>## [1] &quot;Example: Model Parameters for RQ1a - Bio&quot;</code></pre>
 <pre><code>##  
 ##                              OR lower95ci upper95ci     Pr(&gt;|Z|)
 ## factor(firstgen)1     1.1327672 0.8458207 1.5170610 4.029029e-01
@@ -674,7 +704,7 @@ m1.b_bio &lt;- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + fa
                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term),
               df_BYtakers)
 summary(m1.b_bio)</code></pre>
-<pre><code>## [1] &quot;Model Parameters for RQ1b - Bio&quot;</code></pre>
+<pre><code>## [1] &quot;Example: Model Parameters for RQ1b - Bio&quot;</code></pre>
 <pre><code>##  
 ##                              OR lower95ci upper95ci     Pr(&gt;|Z|)
 ## factor(firstgen)1     0.9919314 0.8125886 1.2108563 9.365547e-01
