@@ -273,13 +273,13 @@ div.tocify {
 </div>
 
 
-<div id="data-processing-institution-specific" class="section level1">
-<h1><strong>Data Processing (Institution Specific)</strong></h1>
+<div id="i.-data-processing-institution-specific" class="section level1">
+<h1><strong>I. Data Processing (Institution Specific)</strong></h1>
 <p>(see <a href="https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021">Data Description</a> for shared SEISMIC variable names)</p>
 <p><em>Note:</em></p>
 <ul>
 <li>Specific syntax for these steps are likely to vary by institutional variable naming conventions</li>
-<li>Sample code shown here; see WG1-P4 GitHub repository institutional folders for complete data cleaning examples.</li>
+<li>Sample code only shown here; see <a href="https://github.com/seismic2020/WG1-P4">WG1-P4 GitHub repository</a> for institution-specific data cleaning examples.</li>
 </ul>
 <div id="startup" class="section level2">
 <h2>0. Startup</h2>
@@ -327,16 +327,16 @@ df_std &lt;- df_full %&gt;%
 <pre><code>## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;int&gt;
-##  1 012C…        0 WHITE                   0     0      0      0    350771
-##  2 3DAE…        0 WHITE                   0     0      1      1        NA
-##  3 D11C…        0 WHITE                   0     0      0      0        NA
-##  4 DC90…        0 WHITE                   0     0      1      1        NA
-##  5 2574…        1 WHITE                   0     0      1      1     56784
-##  6 5C44…        1 WHITE                   0     0      1      1     67283
-##  7 D8F1…        0 ASIAN                   2     0      0      0     16582
-##  8 6B18…        0 OTHER                  NA    NA      0      0        NA
-##  9 6F6E…        0 HISPA                   1     1      1      1    205623
-## 10 5871…        0 WHITE                   0     0      1      1    131000
+##  1 BD8B…        0 BLACK                   1     1      0      0     96085
+##  2 846B…        0 WHITE                   0     0      0      0        NA
+##  3 BEB7…        1 MULTI                  NA    NA      1      1    101458
+##  4 BDB7…        1 WHITE                   0     0      1      1     94857
+##  5 E496…        0 WHITE                   0     0      1      1        NA
+##  6 86D6…        0 WHITE                   0     0      1      1    120944
+##  7 BF88…        0 MULTI                  NA    NA      1      1    357315
+##  8 49FF…        0 ASIAN                   2     0      1      1    222955
+##  9 9736…        0 WHITE                   0     0      1      1        NA
+## 10 CBD0…        0 ASIAN                   2     0      1      1        NA
 ## # … with 16 more variables: lowincomflag &lt;dbl&gt;, transfer &lt;dbl&gt;,
 ## #   international &lt;dbl&gt;, ell &lt;dbl&gt;, us_hs &lt;dbl&gt;, cohort &lt;dbl&gt;,
 ## #   cohort_2013 &lt;dbl&gt;, cohort_2014 &lt;dbl&gt;, cohort_2015 &lt;dbl&gt;, cohort_2016 &lt;dbl&gt;,
@@ -543,12 +543,12 @@ rm(df_ap_bio, df_ap_chem, df_ap_phys,
 </div>
 </div>
 </div>
-<div id="data-analysis-same-across-institutions" class="section level1">
-<h1><strong>Data Analysis (Same Across Institutions)</strong></h1>
+<div id="ii.-data-analysis-same-across-institutions" class="section level1">
+<h1><strong>II. Data Analysis (Same Across Institutions)</strong></h1>
 <p><em>Note:</em></p>
 <ul>
 <li>Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed)</li>
-<li>Sample code shown here; see shared analysis folder in WG1-P4 GitHub repository for complete analysis code</li>
+<li>Sample code shown here; use <a href="https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis">Shared Analysis file</a> on WG1-P4 GitHub repository for complete analysis code</li>
 </ul>
 <div id="startup-1" class="section level2">
 <h2>0. Startup</h2>
@@ -642,14 +642,8 @@ df_BYeligible.5 &lt;- df_bio2 %&gt;%
 <div id="rq1-what-student-characteristics-are-associated-with-student-participation-and-success-in-ap-courses-for-students-enrolled-at-the-selected-universities" class="section level2">
 <h2>RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?</h2>
 </div>
-<div id="rq1a-who-takes-ap" class="section level2">
-<h2><em>RQ1a: Who takes AP?</em></h2>
-<ul>
-<li>Sample: Took Course 2 dataframe</li>
-<li>DV: aptaker</li>
-<li>IV: factor(firstgen) + factor(lowincomflag) + factor(female) + factor(urm) + scale(hsgpa) + scale(mathsr) + scale(englsr)</li>
-<li>COV: factor(cohort)</li>
-</ul>
+<div id="rq1a-who-takes-ap-exams" class="section level2">
+<h2><em>RQ1a: Who takes AP exams?</em></h2>
 <pre class="r"><code># Model 1a: Credits ####
 #Bio
 m1.a_bio &lt;- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
@@ -673,14 +667,8 @@ logistic.display(m1.a_bio)
 ## factor(cohort)2017    1.4508224 1.1342671 1.8557230 3.045026e-03
 ## factor(cohort)2018    1.6722230 1.3023230 2.1471862 5.558193e-05</code></pre>
 </div>
-<div id="rq1b." class="section level2">
-<h2><em>RQ1b.</em></h2>
-<ul>
-<li>Sample: Took AP dataframe</li>
-<li>DV: apscore</li>
-<li>IV: factor(firstgen) + factor(lowincomflag) + factor(female) + factor(urm) + scale(hsgpa) + scale(mathsr) + scale(englsr)</li>
-<li>COV: factor(crs_term)</li>
-</ul>
+<div id="rq1b-who-gets-what-score-on-ap-exams" class="section level2">
+<h2><em>RQ1b: Who gets what score on AP exams?</em></h2>
 <pre class="r"><code>#Bio
 m1.b_bio &lt;- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term),
@@ -744,7 +732,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
+  window.initializeCodeFolding("hide" === "show");
 });
 </script>
 

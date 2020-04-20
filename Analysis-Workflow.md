@@ -5,7 +5,7 @@ date: "4/17/2020"
 output:
   html_document:
     keep_md: true
-    code_folding: show
+    code_folding: hide
     theme: cosmo
     toc: yes
     toc_depth: 2
@@ -15,13 +15,13 @@ subtitle: Analysis Workflow
 
 
 
-# **Data Processing (Institution Specific)**
+# **I. Data Processing (Institution Specific)**
 (see [Data Description](https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021) for shared SEISMIC variable names)
 
 *Note:* 
 
 - Specific syntax for these steps are likely to vary by institutional variable naming conventions
-- Sample code shown here; see WG1-P4 GitHub repository institutional folders for complete data cleaning examples.
+- Sample code only shown here; see [WG1-P4 GitHub repository](https://github.com/seismic2020/WG1-P4) for institution-specific data cleaning examples.
 
 ## 0. Startup
 
@@ -85,16 +85,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 012C…        0 WHITE                   0     0      0      0    350771
-##  2 3DAE…        0 WHITE                   0     0      1      1        NA
-##  3 D11C…        0 WHITE                   0     0      0      0        NA
-##  4 DC90…        0 WHITE                   0     0      1      1        NA
-##  5 2574…        1 WHITE                   0     0      1      1     56784
-##  6 5C44…        1 WHITE                   0     0      1      1     67283
-##  7 D8F1…        0 ASIAN                   2     0      0      0     16582
-##  8 6B18…        0 OTHER                  NA    NA      0      0        NA
-##  9 6F6E…        0 HISPA                   1     1      1      1    205623
-## 10 5871…        0 WHITE                   0     0      1      1    131000
+##  1 BD8B…        0 BLACK                   1     1      0      0     96085
+##  2 846B…        0 WHITE                   0     0      0      0        NA
+##  3 BEB7…        1 MULTI                  NA    NA      1      1    101458
+##  4 BDB7…        1 WHITE                   0     0      1      1     94857
+##  5 E496…        0 WHITE                   0     0      1      1        NA
+##  6 86D6…        0 WHITE                   0     0      1      1    120944
+##  7 BF88…        0 MULTI                  NA    NA      1      1    357315
+##  8 49FF…        0 ASIAN                   2     0      1      1    222955
+##  9 9736…        0 WHITE                   0     0      1      1        NA
+## 10 CBD0…        0 ASIAN                   2     0      1      1        NA
 ## # … with 16 more variables: lowincomflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
@@ -332,12 +332,12 @@ rm(df_ap_bio, df_ap_chem, df_ap_phys,
 ```
 
 
-# **Data Analysis (Same Across Institutions)**
+# **II. Data Analysis (Same Across Institutions)**
 
 *Note:* 
 
 - Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed)
-- Sample code shown here; see shared analysis folder in WG1-P4 GitHub repository for complete analysis code
+- Sample code shown here; use [Shared Analysis file](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) on WG1-P4 GitHub repository for complete analysis code
 
 ## 0. Startup
 
@@ -448,13 +448,7 @@ df_BYeligible.5 <- df_bio2 %>%
 
 ## RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?
 
-## *RQ1a: Who takes AP?*
-      
-- Sample: Took Course 2 dataframe
-- DV: aptaker
-- IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
-      scale(hsgpa) + scale(mathsr) + scale(englsr)
-- COV: factor(cohort) 
+## *RQ1a: Who takes AP exams?*
 
 
 
@@ -491,13 +485,7 @@ logistic.display(m1.a_bio)
 ## factor(cohort)2018    1.6722230 1.3023230 2.1471862 5.558193e-05
 ```
 
-## *RQ1b.* 
-
-- Sample: Took AP dataframe
-- DV: apscore
-- IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) + 
-      scale(hsgpa) + scale(mathsr) + scale(englsr)
-- COV: factor(crs_term) 
+## *RQ1b: Who gets what score on AP exams?* 
 
 
 

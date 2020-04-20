@@ -5,7 +5,7 @@ date: "4/17/2020"
 output:
   html_document:
     keep_md: true
-    code_folding: show
+    code_folding: hide
     theme: cosmo
     toc: yes
     toc_depth: 2
@@ -17,13 +17,13 @@ subtitle: Analysis Workflow
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# **Data Processing (Institution Specific)**
+# **I. Data Processing (Institution Specific)**
 (see [Data Description](https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021) for shared SEISMIC variable names)
 
 *Note:* 
 
 - Specific syntax for these steps are likely to vary by institutional variable naming conventions
-- Sample code shown here; see WG1-P4 GitHub repository institutional folders for complete data cleaning examples.
+- Sample code only shown here; see [WG1-P4 GitHub repository](https://github.com/seismic2020/WG1-P4) for institution-specific data cleaning examples.
 
 ## 0. Startup
 
@@ -528,12 +528,12 @@ head(names(df_clean), 15)
 ```
 
 
-# **Data Analysis (Same Across Institutions)**
+# **II. Data Analysis (Same Across Institutions)**
 
 *Note:* 
 
 - Syntax for these steps should be able to be the same for all institutions (once data cleaning steps above are followed)
-- Sample code shown here; see shared analysis folder in WG1-P4 GitHub repository for complete analysis code
+- Sample code shown here; use [Shared Analysis file](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) on WG1-P4 GitHub repository for complete analysis code
 
 ## 0. Startup
 
@@ -686,13 +686,7 @@ df_BYeligible.5 <- df_bio2 %>%
 
 ## RQ1: What student characteristics are associated with student participation and success in AP courses for students enrolled at the selected universities?
 
-## *RQ1a: Who takes AP?*
-      
-- Sample: Took Course 2 dataframe
-- DV: aptaker
-- IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
-      scale(hsgpa) + scale(mathsr) + scale(englsr)
-- COV: factor(cohort) 
+## *RQ1a: Who takes AP exams?*
 
 ```{r include = FALSE}
 # Model 1a: Credits ####
@@ -705,14 +699,14 @@ logistic.display(m1.a_bio)
 
 #Chem
 m1.a_chem <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                binomial(link = "logit"), df_chem2)
 summary(m1.a_chem)   
 logistic.display(m1.a_chem)
 
 #Physics
 m1.a_phys <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                binomial(link = "logit"), df_phys2)
 summary(m1.a_phys)
 logistic.display(m1.a_phys)
@@ -735,13 +729,7 @@ print("Model Parameters for RQ1a - Bio")
 logistic.display(m1.a_bio)
 ```
 
-## *RQ1b.* 
-
-- Sample: Took AP dataframe
-- DV: apscore
-- IV: factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) + 
-      scale(hsgpa) + scale(mathsr) + scale(englsr)
-- COV: factor(crs_term) 
+## *RQ1b: Who gets what score on AP exams?* 
 
 ```{r include = FALSE}
 # Model 1b: Score ####
