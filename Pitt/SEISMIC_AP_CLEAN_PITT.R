@@ -273,9 +273,9 @@ df_ap_phys <- df_full %>%
   mutate(aptaker_CE = ifelse(is.na(PHCE), 0, 1)) %>%
   mutate(aptaker_CM = ifelse(is.na(PHCM), 0, 1)) %>%
   mutate(aptaker = ifelse(aptaker_CE == 1 | aptaker_CM == 1, 1, 0)) %>%
-  mutate(apskipperCE = ifelse(PHCE == 5 & !is.na(PHCE), 1, 0)) %>%
-  mutate(apskipperCM = ifelse(PHCM == 5  & !is.na(PHCM), 1, 0)) %>%
-  mutate(eligible_to_skip = ifelse(apskipperCE == 1 | apskipperCM == 1, 1, 0)) %>%
+  mutate(eligible_to_skipCE = ifelse(PHCE == 5 & !is.na(PHCE), 1, 0)) %>%
+  mutate(eligible_to_skipCM = ifelse(PHCM == 5  & !is.na(PHCM), 1, 0)) %>%
+  mutate(eligible_to_skip = ifelse(eligible_to_skipCE == 1 | eligible_to_skipCM == 1, 1, 0)) %>%
   mutate(tookcourse = ifelse(
     SUBJECT_CD == "PHYS" & (CATALOG_NBR == "0174") & # | CATALOG_NBR == "0475") & 
       COURSE_GRADE_CD != "W", 1, 0)) %>%
@@ -283,15 +283,9 @@ df_ap_phys <- df_full %>%
     SUBJECT_CD == "PHYS" & (CATALOG_NBR == "0175") & # | CATALOG_NBR == "0476") & 
       COURSE_GRADE_CD != "W", 1, 0)) %>%
   #mutate(apyear = ?) %>%
-  mutate(apscore_CE = PHCE) %>%
-  mutate(apscore_CM = PHCM) %>%
-  mutate(apscore = ifelse(is.na(PHCM), PHCE, PHCM)) %>%
-  mutate(apscore = as.numeric(apscore)) %>%
-  mutate(apscore_CE_full = ifelse(is.na(PHCE), 0, PHCE)) %>%
-  mutate(apscore_CM_full = ifelse(is.na(PHCM), 0, PHCM)) %>%
-  mutate(apscore_full = ifelse(is.na(PHCM), PHCE, PHCM)) %>%
-  mutate(apscore_full = ifelse(is.na(apscore_full), 0, apscore_full)) %>%
-  select(st_id, aptaker:apscore_full) %>%
+  mutate(apscore = (pmax(PHCM, PHCE, na.rm = TRUE))) %>%
+  mutate(apscore_full = ifelse(is.na(apscore), 0, apscore)) %>%
+  select(st_id, PHCE, PHCM, aptaker:apscore_full) %>%
   group_by(st_id) %>%
   summarize_at(vars(-group_cols()),max)
 
