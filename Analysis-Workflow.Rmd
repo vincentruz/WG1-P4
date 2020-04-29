@@ -593,7 +593,7 @@ pacman::p_load("tidyverse",   # Data wrangling
 # etc...
 ```
 
-### b.	Load full dataset
+### b.	Load clean dataset
 ```{r include = FALSE}
 df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 ```
@@ -822,3 +822,13 @@ logistic.display(m1.b_bio)
 ```
 
 ## *(Etc…)*
+
+## 3.	Run Propensity Matching Models (for each Course) - COMING SOON!
+
+#### *Note:*
+ - We are using inverse probability weight (IPW). The idea is to assign greater weights for those less likely to receive treatment (i.e., skipping a course). This is because in the presence of confounding, estimate for the average treated and control outcomes may be biased.
+ - More details about propensity score matching methods can be found here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/
+ - A demonstration of WeightIt for IPW: https://cran.r-project.org/web/packages/WeightIt/vignettes/WeightIt_A0_basic_use.html
+
+## 4.	Generate Model Plots (for each Course) - COMING SOON!
+

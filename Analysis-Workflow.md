@@ -1,6 +1,6 @@
 ---
 title: "SEISMIC WG1-P4"
-date: "Updated: April 28, 2020"
+date: "Updated: April 29, 2020"
 output:
   html_document:
     keep_md: true
@@ -102,16 +102,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 2831…        0 WHITE                   0     0      1      1    228738
-##  2 F369…        0 WHITE                   0     0      1      1        NA
-##  3 7DEA…        0 WHITE                   0     0      0      0     24000
-##  4 D896…        0 WHITE                   0     0      1      1    191722
-##  5 A207…        1 WHITE                   0     0      0      0     20011
-##  6 8E65…        0 WHITE                   0     0      1      1        NA
-##  7 2FA8…        0 WHITE                   0     0      1      1        NA
-##  8 46CB…        0 WHITE                   0     0      0      0         0
-##  9 1509…        0 WHITE                   0     0      0      0        NA
-## 10 5700…        0 WHITE                   0     0      0      0    167294
+##  1 6D7D…        0 "BLACK"                 1     1      1      1    115956
+##  2 B1CF…        0 "WHITE"                 0     0      1      1    153992
+##  3 7D93…        0 "MULTI"                NA    NA      0      0     57681
+##  4 4021…        0 "WHITE"                 0     0      0      0        NA
+##  5 D848…        0 ""                     NA    NA     NA     NA        NA
+##  6 7F10…        0 "HISPA"                 1     1      1      1    206836
+##  7 2B3E…        0 "WHITE"                 0     0      0      0        NA
+##  8 EEC6…        0 "WHITE"                 0     0      0      0     81515
+##  9 710E…        0 "WHITE"                 0     0      0      0    113845
+## 10 BEC9…        0 "UNKNW"                NA    NA      0      0      7304
 ## # … with 16 more variables: lowincomflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
@@ -401,7 +401,7 @@ pacman::p_load("tidyverse",   # Data wrangling
 # etc...
 ```
 
-### b.	Load full dataset
+### b.	Load clean dataset
 
 
 
@@ -582,3 +582,13 @@ summary(m1.b_bio)
 ```
 
 ## *(Etc…)*
+
+## 3.	Run Propensity Matching Models (for each Course) - COMING SOON!
+
+#### *Note:*
+ - We are using inverse probability weight (IPW). The idea is to assign greater weights for those less likely to receive treatment (i.e., skipping a course). This is because in the presence of confounding, estimate for the average treated and control outcomes may be biased.
+ - More details about propensity score matching methods can be found here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/
+ - A demonstration of WeightIt for IPW: https://cran.r-project.org/web/packages/WeightIt/vignettes/WeightIt_A0_basic_use.html
+
+## 4.	Generate Model Plots (for each Course) - COMING SOON!
+
