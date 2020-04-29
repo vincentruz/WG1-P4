@@ -6,16 +6,16 @@ library(pacman)
 pacman::p_load("tidyverse", "psych", "data.table",  # Data wrangling and descriptive stats
                "epiDisplay", "sjstats")             # Reporting Odds Ratio and Std. Betas
 
-# Load full dataset
-df_full <- read.csv("~/YOUR FILE PATH HERE.csv")
+# Load clean dataset
+df_clean <- read.csv("~/YOUR RECODED FILE PATH HERE.csv")
 
 # View data 
 # Note: Variable names should follow SEISMIC conventions found here: https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021
-names(df_full)
-head(df_full)
+names(df_clean)
+head(df_clean)
 
 # Filter for student level inclusion/exclusion criteria
-df_full <- df_full %>%
+df_clean <- df_clean %>%
   # Include
   filter(transfer == 0) %>%
   filter(tookcourse_2 == 1) %>%
