@@ -1,6 +1,6 @@
 ---
 title: "SEISMIC WG1-P4"
-date: "Updated: April 20, 2020"
+date: "Updated: April 28, 2020"
 output:
   html_document:
     keep_md: true
@@ -33,6 +33,8 @@ subtitle: Analysis Workflow
 if (!require("pacman")) install.packages("pacman")
 library(pacman)
 pacman::p_load("tidyverse")   # Data wrangling
+
+# etc...
 ```
 
 ### b.	Load full dataset
@@ -100,16 +102,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 1DFB…        0 WHITE                   0     0      0      0        NA
-##  2 FD72…        0 WHITE                   0     0      0      0     86937
-##  3 09E1…        0 WHITE                   0     0      1      1     61177
-##  4 4306…        1 WHITE                   0     0      1      1     94080
-##  5 529F…        0 WHITE                   0     0      0      0      8119
-##  6 7504…        0 WHITE                   0     0      0      0    104940
-##  7 C283…        0 WHITE                   0     0      1      1    253465
-##  8 AEC2…        1 WHITE                   0     0      1      1     49421
-##  9 ADB7…        0 WHITE                   0     0      1      1    146075
-## 10 2361…        0 WHITE                   0     0      1      1     40802
+##  1 2831…        0 WHITE                   0     0      1      1    228738
+##  2 F369…        0 WHITE                   0     0      1      1        NA
+##  3 7DEA…        0 WHITE                   0     0      0      0     24000
+##  4 D896…        0 WHITE                   0     0      1      1    191722
+##  5 A207…        1 WHITE                   0     0      0      0     20011
+##  6 8E65…        0 WHITE                   0     0      1      1        NA
+##  7 2FA8…        0 WHITE                   0     0      1      1        NA
+##  8 46CB…        0 WHITE                   0     0      0      0         0
+##  9 1509…        0 WHITE                   0     0      0      0        NA
+## 10 5700…        0 WHITE                   0     0      0      0    167294
 ## # … with 16 more variables: lowincomflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
@@ -195,6 +197,7 @@ df_crs_bio1 <- df_crs %>%
   mutate(crs_retake_num = row_number()) %>%
   filter(crs_retake_num == 1) 
 
+# etc...
 # repeat for Bio2, Chem1, Chem2, Phys1, Phys2
 ```
 
@@ -256,6 +259,7 @@ df_ap_bio <- df_full %>%
   group_by(st_id) %>%
   summarize_at(vars(-group_cols()),max)
 
+# etc...
 # repeat for Chem, Phys
 ```
    
@@ -308,6 +312,7 @@ df_bio <- df_std %>%
          aptaker, apscore, apscore_full, eligible_to_skip, 
          tookcourse, tookcourse_2, skipped_course) 
 
+# etc...
 # repeat for Chem, Phys
 ```
 
@@ -352,19 +357,12 @@ df_bio <- df_std %>%
 ### b. Stack complete dataframes for each course subject (BIO, CHEM, PHYS), including "discipline" indicator variable
 
 
+
 ```r
 # Stacked dataframe with Bio, Chem, Phys
 df_clean <- rbind(df_bio, df_chem, df_phys)
-df_clean <- df_clean %>%
-  rename_at(vars(ends_with(".x")), 
-            ~(str_replace(., ".x", "_2"))) %>%
-  rename_at(vars(ends_with(".y")), 
-            ~(str_replace(., ".y", "")))
 
-rm(df_ap_bio, df_ap_chem, df_ap_phys, 
-   df_bio, df_chem, df_phys, 
-   df_crs_bio1, df_crs_bio2, df_crs_chem1, df_crs_chem2, df_crs_phys1, df_crs_phys2,
-   df_crs, df_std)
+# etc...
 ```
 
 #### *Note:*
@@ -399,6 +397,8 @@ if (!require("pacman")) install.packages("pacman")
 library(pacman)
 pacman::p_load("tidyverse",   # Data wrangling
                "epiDisplay")  # Display OR for logistic regressions
+
+# etc...
 ```
 
 ### b.	Load full dataset
@@ -440,6 +440,8 @@ df_clean <- df_clean %>%
   filter(cohort >= 2013 & cohort <= 2018) %>%
   # Exclude
   filter(international == 0)
+
+# etc...
 ```
 
 ### b.	Create subset dataframes for each analysis sample
@@ -458,6 +460,7 @@ df_bio2 <- df_clean %>%
   subset(discipline == "BIO") %>%
   subset(apyear >= 2013)
 
+# etc...
 # repeat for Chem, Phys
 ```
 
@@ -468,6 +471,7 @@ df_BYtakers <- df_clean %>%
   subset(discipline == "BIO") %>%
   subset(aptaker == 1)
 
+# etc...
 # repeat for Chem, Phys
 ```
 
@@ -478,17 +482,19 @@ df_BYeligible <- df_clean %>%
   subset(discipline == "BIO") %>%
   subset(eligible_to_skip == 1)
 
+# etc...
 # repeat for Chem, Phys
 ```
 
 
 ```r
-# Skip eligible (at each eligble scores)
+# Skip eligible, at each eligble score (NOTE: THESE WILL DIFFER BY INSTITUTION!)
 df_BYeligible.4 <- df_bio2 %>%
   subset(apscore == 4)
 df_BYeligible.5 <- df_bio2 %>%
   subset(apscore == 5)
 
+# etc...
 # Repeat for Chem, Phys
 ```
 
@@ -513,6 +519,7 @@ m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(fema
                binomial(link = "logit"), df_bio2)
 logistic.display(m1.a_bio)
 
+# etc...
 # Repeat for Chem, Phys
 ```
 
@@ -548,6 +555,8 @@ m1.b_bio <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + facto
                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term),
               df_BYtakers)
 summary(m1.b_bio)
+
+# etc...
 ```
 
 
