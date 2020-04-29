@@ -977,7 +977,7 @@ shinyApp(ui = ui, server = server)
 ```
 
 
-``` {r include = FALSE}
+``` {r echo = FALSE}
 # Define UI ####
 ui <- fluidPage(
   titlePanel("Grades by AP Score"),
