@@ -26,7 +26,7 @@ df_std <- df_full %>%
   mutate(gender = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
   mutate(female = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
   mutate(famincome = abs(AGI)) %>%
-  mutate(lowincomflag = if_else(is.na(AGI), 0,
+  mutate(lowincomeflag = if_else(is.na(AGI), 0,
                                 if_else(AGI <= 46435, 1,0))) %>%
   mutate(transfer = recode(FIRST_TIME_FRESHMAN, "N"=1, "Y"=0)) %>%
   mutate(transfer_cred = TOT_TRNSFR_CREDITS) %>%
@@ -242,7 +242,7 @@ df_ap_bio <- df_full %>%
     SUBJECT_CD == "BIOSC" & (CATALOG_NBR == "0160") & # | CATALOG_NBR == "0716") & 
       COURSE_GRADE_CD != "W", 1, 0)) %>%
   #mutate(apyear = ?) %>%
-  mutate(apscore = as.character(BY)) %>%
+  mutate(apscore = as.numeric(BY)) %>%
   mutate(apscore_full = ifelse(is.na(BY), 0, BY)) %>%
   select(st_id, aptaker:apscore_full) %>%
   group_by(st_id) %>%
@@ -261,7 +261,7 @@ df_ap_chem <- df_full %>%
     SUBJECT_CD == "CHEM" & (CATALOG_NBR == "0120") & # | CATALOG_NBR == "0720") & 
       COURSE_GRADE_CD != "W", 1, 0)) %>%
   #mutate(apyear = ?) %>%
-  mutate(apscore = as.character(CH)) %>%
+  mutate(apscore = as.numeric(CH)) %>%
   mutate(apscore_full = ifelse(is.na(CH), 0, CH)) %>%
   select(st_id, aptaker:apscore_full) %>%
   group_by(st_id) %>%
@@ -286,7 +286,7 @@ df_ap_phys <- df_full %>%
   mutate(apscore_CE = PHCE) %>%
   mutate(apscore_CM = PHCM) %>%
   mutate(apscore = ifelse(is.na(PHCM), PHCE, PHCM)) %>%
-  mutate(apscore = as.character(apscore)) %>%
+  mutate(apscore = as.numeric(apscore)) %>%
   mutate(apscore_CE_full = ifelse(is.na(PHCE), 0, PHCE)) %>%
   mutate(apscore_CM_full = ifelse(is.na(PHCM), 0, PHCM)) %>%
   mutate(apscore_full = ifelse(is.na(PHCM), PHCE, PHCM)) %>%

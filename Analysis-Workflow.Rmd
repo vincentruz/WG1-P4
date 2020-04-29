@@ -1,6 +1,7 @@
 ---
 title: "SEISMIC WG1-P4"
 date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
+runtime: shiny
 output:
   html_document:
     keep_md: true
@@ -74,7 +75,7 @@ df_std <- df_full %>%
   mutate(gender = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
   mutate(female = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
   mutate(famincome = abs(AGI)) %>%
-  mutate(lowincomflag = if_else(is.na(AGI), 0,
+  mutate(lowincomeflag = if_else(is.na(AGI), 0,
                                 if_else(AGI <= 46435, 1,0))) %>%
   mutate(transfer = if_else(TOT_TRNSFR_CREDITS <= 16 | is.na(TOT_TRNSFR_CREDITS), 0, 1)) %>%
   mutate(international = if_else(CITIZENSHIP_STATUS_DESCR == "U.S. Citizen", 0, 1)) %>%
@@ -167,7 +168,7 @@ df_std <- df_full %>%
   mutate(urm = recode(ETHNIC_GROUP_CD, "HISPA" = 1, "BLACK" = 1, "AMIND" = 1, "PACIF" = 1, "ASIAN" = 0, "WHITE" = 0)) %>%
   mutate(gender = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
   mutate(female = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
-  mutate(lowincomflag = if_else(is.na(AGI), 0,
+  mutate(lowincomeflag = if_else(is.na(AGI), 0,
                                 if_else(AGI <= 46435, 1,0))) 
 
 # etc...
@@ -742,21 +743,21 @@ df_BYeligible.5 <- df_bio2 %>%
 ```{r include = FALSE}
 # Model 1a: Credits ####
 #Bio
-m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                binomial(link = "logit"), df_bio2)
 summary(m1.a_bio)
 logistic.display(m1.a_bio)
 
 #Chem
-m1.a_chem <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_chem <- glm(aptaker ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                binomial(link = "logit"), df_chem2)
 summary(m1.a_chem)   
 logistic.display(m1.a_chem)
 
 #Physics
-m1.a_phys <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_phys <- glm(aptaker ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                binomial(link = "logit"), df_phys2)
 summary(m1.a_phys)
@@ -767,7 +768,7 @@ logistic.display(m1.a_phys)
 ```{r eval = FALSE}
 # Model 1a: Credits ####
 #Bio
-m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.a_bio <- glm(aptaker ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                binomial(link = "logit"), df_bio2)
 logistic.display(m1.a_bio)
@@ -786,19 +787,19 @@ logistic.display(m1.a_bio)
 ```{r include = FALSE}
 # Model 1b: Score ####
 #Bio
-m1.b_bio <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.b_bio <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term),
               df_BYtakers)
 summary(m1.b_bio)
 
 #Chem
-m1.b_chem <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.b_chem <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
               df_CHtakers)
 summary(m1.b_chem)   
 
 #Physics
-m1.b_phys <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.b_phys <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
               df_PHtakers)
 summary(m1.b_phys)   
@@ -807,7 +808,7 @@ summary(m1.b_phys)
 
 ``` {r eval = FALSE}
 #Bio
-m1.b_bio <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomflag)  + factor(female) + factor(urm) +
+m1.b_bio <- lm(scale(apscore) ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term),
               df_BYtakers)
 summary(m1.b_bio)
@@ -831,4 +832,177 @@ logistic.display(m1.b_bio)
  - A demonstration of WeightIt for IPW: https://cran.r-project.org/web/packages/WeightIt/vignettes/WeightIt_A0_basic_use.html
 
 ## 4.	Generate Model Plots (for each Course) - COMING SOON!
+
+### a.	For each subject, generate column of fitted values; then combine disciplines into single dataframe for viz
+``` {r include = FALSE}
+# BIO
+# Generate estimates
+fit_bio <- lm(scale(numgrade) ~ scale(apscore) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+              df_bio2, na.action=na.exclude)
+# Add column of fitted values
+df_bio2 <- df_bio2 %>%
+  cbind(fitted = fitted(fit_bio))
+  
+#CHEM
+# Generate estimates
+fit_chem <- lm(scale(numgrade) ~ scale(apscore) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+              df_chem2, na.action=na.exclude)
+# Add column of fitted values
+df_chem2 <- df_chem2 %>%
+  cbind(fitted = fitted(fit_chem))
+
+#PHYSICS
+# Generate estimates
+fit_phys <- lm(scale(numgrade) ~ scale(apscore) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+              df_phys2, na.action=na.exclude)
+# Add column of fitted values
+df_phys2 <- df_phys2 %>%
+  cbind(fitted = fitted(fit_phys))
+```
+
+``` {r echo = FALSE}
+# BIO
+# Generate estimates
+fit_bio <- lm(scale(numgrade) ~ scale(apscore) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+              df_bio2, na.action=na.exclude)
+# Add column of fitted values
+df_bio2 <- df_bio2 %>%
+  cbind(fitted = fitted(fit_bio))
+```
+
+``` {r}
+#Combine Disciplines
+df_viz <- bind_rows(df_bio2, df_chem2, df_phys2)
+
+head(df_viz)
+```
+
+## 1. Build interactive viz using Shiny
+
+``` {r echo = FALSE}
+# Define UI ####
+ui <- fluidPage(
+  titlePanel("Grades by AP Score"),
+  sidebarLayout(
+    sidebarPanel(
+      #Select course to plot
+      selectInput(inputId = "discipline", 
+                  label = "Select a course:",
+                  choices = unique(df_viz$discipline), 
+                  selected = unique(df_viz$discipline)[1]),
+      #Select y min and max for the uncontrolled model
+      sliderInput("y.range.uncontrolled", "Uncontrolled Model: Y Limits", min=1, max=4, step=0.25, value=c(1,4)),
+      #Select y min and max for the Fitted model
+      sliderInput("y.range.fitted", "Fitted Model: Y Limits", min=1, max=4, step=0.25, value=c(1,4))
+    ),
+  mainPanel(tabPanel(
+    "Plot",
+    fluidRow(
+      plotOutput("linePlotUncontrolled"),
+      plotOutput("linePlotFitted"),
+      plotOutput("histogram")
+    )
+  )))
+)
+
+# Define Server ####
+server <- function(input, output) {
+  #Subset data based on the given course sequence
+  #though we'll let ggplot do most of the summary later, we'll precalculate some of the means and standard errors to use for error bars
+  chartData <- reactive({
+    df_viz %>%
+      filter(discipline == input$discipline) %>%
+      group_by(apscore_full, skipped_course) %>%
+      mutate(n = n()) %>%
+      mutate(numgrade_2.mean = mean(numgrade_2, na.rm = TRUE),
+             numgrade_2.sd = sd(numgrade_2, na.rm = TRUE),
+             numgrade_2.n = sum(!is.na(numgrade_2)),
+             numgrade_2.se = numgrade_2.sd / sqrt(numgrade_2.n),
+             fitted.mean = mean(fitted, na.rm = TRUE),
+             fitted.sd = sd(fitted, na.rm = TRUE),
+             fitted.n = sum(!is.na(fitted)),
+             fitted.se = fitted.sd / sqrt(fitted.n))
+  })
+  
+  #Get a string based on the chosen course to use in figure labels
+  #Modify this to match the strings in your discipline variable
+  subj.label <- reactive({
+    case_when(
+      #input$discipline == "BIO" ~ "Biology",
+      input$discipline == "CHEM" ~ "Chemistry",
+      input$discipline == "PHYS"~ "Physics"
+      )
+    })
+  
+  output$linePlotUncontrolled <- renderPlot({
+    ggplot(data=chartData(), aes(y = numgrade_2, x = apscore_full, color = skipped_course, fill = skipped_course,
+                                 na.omit = TRUE)) +
+      geom_point(stat = 'summary', fun.y = 'mean', size=3) +
+      geom_smooth(stat = 'summary', method = 'loess') + #use shaded fill to indicate the size of the standard error
+      geom_errorbar(aes(ymin = numgrade_2.mean - numgrade_2.se, ymax = numgrade_2.mean + numgrade_2.se), width=0.1) + #add standard error bars
+      #on y and x axes: sec.axis = dup_axis(labels = NULL) adds tick marks to the opposite side of the bounding box without adding duplicated labels
+      #x axis: since non-AP takers are coded as 0, manually relabel the tick marks to replace "0" with "Didn't Take"
+      scale_x_continuous(sec.axis = dup_axis(labels = NULL), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+      #y-axis: set breaks to every 0.5 grade points
+      scale_y_continuous(sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+      #use coord_cartesian to limit the display without cutting out error bars that may fall outside the chosen range
+      coord_cartesian(ylim=c(input$y.range.uncontrolled[1], input$y.range.uncontrolled[2])) +
+      theme_classic() +
+      theme(
+        panel.border = element_rect(color = "black", fill=NA), #put a border around the whole plot
+        axis.title.x.top = element_blank(), #no x axis title on top
+        axis.title.y.right = element_blank(), #no y axis title on the right
+        legend.position=c(0.25, 0.85), #position the legend inside the plot (may want to make this adjustable with Shiny input options)
+        legend.background = element_blank(),
+        legend.box.background = element_rect(color = "black") #black rectangle surrounding the legend
+      ) +
+      #construct labels using the subj.label() defined earlier
+      labs(x = "AP Score", y = paste("Mean Grade in", subj.label(), "2"), title= paste(subj.label(), "Uncontrolled Model"))
+  })
+  
+  output$linePlotFitted <- renderPlot({
+    ggplot(data=chartData(), aes(y = fitted, x = apscore_full, color = skipped_course, fill = skipped_course, na.omit = TRUE)) +
+      geom_point(stat = 'summary', fun.y = 'mean', size=3) +
+      geom_errorbar(aes(ymin = fitted.mean - fitted.se, ymax = fitted.mean + fitted.se), width=0.1) +
+      geom_smooth(stat = 'summary', method = 'loess') +
+      scale_x_continuous(sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+      scale_y_continuous(sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+      coord_cartesian(ylim=c(input$y.range.fitted[1], input$y.range.fitted[2])) +
+      theme_classic() +
+      theme(
+        panel.border = element_rect(color = "black", fill=NA),
+        axis.title.x.top = element_blank(),
+        axis.title.y.right = element_blank(),
+        legend.position=c(0.25, 0.85),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(color = "black")
+      ) +
+      labs(x = "AP Score", y = paste("Mean Grade in", subj.label(), "2"), title= paste(subj.label(), "Fitted Model"))
+  })
+  
+  output$histogram <- renderPlot({
+    ggplot(data=chartData() %>% filter(AP != 0), aes(x = AP, color = SKIP, fill = SKIP, na.omit = TRUE)) +
+      geom_histogram(stat='count', position = position_dodge(preserve = "single")) +
+      scale_x_continuous(sec.axis = dup_axis(labels = NULL)) +
+      scale_y_continuous(sec.axis = dup_axis(labels = NULL)) +
+      theme_classic() +
+      theme(
+        panel.border = element_rect(color = "black", fill=NA),
+        axis.title.x.top = element_blank(),
+        axis.title.y.right = element_blank(),
+        legend.position=c(0.25, 0.85),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(color = "black")
+      ) +
+      labs(x = "AP Score", y = "Number of Students", title= paste("Histogram of AP", subj.label(), "Scores"))
+  })
+}
+  
+  # Launch Shiny App ####
+  shinyApp(ui = ui, server = server) # The link in the output wouldn't run anymore since I paused analyses on my kernel
+  # but if you run the codes in your local computer it should take you to a Shiny app with your own data.
 
