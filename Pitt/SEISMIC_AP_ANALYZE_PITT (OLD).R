@@ -11,6 +11,8 @@ pacman::p_load("tidyverse", "psych",                       # Data wrangling, dis
 # Functions and settings ####
 # Turn off scientific notation (for OR display)
 options(scipen = 10)
+# Use dyplr for select
+select <- dplyr::select
 # VIF function 
 VIF <- function(linear.model, no.intercept=FALSE, all.diagnostics=FALSE, plot=FALSE) {
   require(mctest)
