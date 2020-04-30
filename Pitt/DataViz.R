@@ -13,8 +13,8 @@ pacman::p_load("tidyverse", "dplyr", "shiny", "gridExtra")
 #   skipped_course: A string indicating whether or not the student skipped the first course in the sequence
 
 # Load clean dataset
-# df_clean <- read.csv("~/YOUR FILE PATH HERE.csv")
-df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
+df_clean <- read.csv("~/YOUR FILE PATH HERE.csv")
+# df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 
 # Filter for student level inclusion/exclusion criteria
 df_clean <- df_clean %>%
