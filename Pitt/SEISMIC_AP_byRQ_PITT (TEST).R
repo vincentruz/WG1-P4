@@ -11,6 +11,15 @@ options(scipen=999)
 df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 names(df_clean)
 
+# Filter for student level inclusion/exclusion criteria
+df_clean <- df_clean %>%
+  # Include
+  filter(transfer == 0) %>%
+  filter(tookcourse_2 == 1) %>%
+  filter(cohort >= 2013 & cohort <= 2018) %>%
+  # Exclude
+  filter(international == 0)
+
 # Generate Subset Dataframes ####
 df_full <- df_clean %>%
   filter(discipline == "BIO" & apyear >= 2013 |
@@ -35,19 +44,19 @@ df_skipeligible_bio.5 <- df_clean %>%
   filter(discipline == "BIO" & apyear >= 2013 & aptaker == 1 & eligible_to_skip == 1 & apscore == 5)
 # Chem
 df_skipeligible_chem.3 <- df_clean %>%
-  filter(discipline == "CHEM" & apyear >= 2013 & aptaker == 1 & eligible_to_skip == 1 & apscore == 3)
+  filter(discipline == "CHEM" & apyear >= 2014 & aptaker == 1 & eligible_to_skip == 1 & apscore == 3)
 df_skipeligible_chem.4 <- df_clean %>%
-  filter(discipline == "CHEM" & apyear >= 2013 & aptaker == 1 & eligible_to_skip == 1 & apscore == 4)
+  filter(discipline == "CHEM" & apyear >= 2014 & aptaker == 1 & eligible_to_skip == 1 & apscore == 4)
 df_skipeligible_chem.5 <- df_clean %>%
-  filter(discipline == "CHEM" & apyear >= 2013 & aptaker == 1 & eligible_to_skip == 1 & apscore == 5)
+  filter(discipline == "CHEM" & apyear >= 2014 & aptaker == 1 & eligible_to_skip == 1 & apscore == 5)
 # Phys
 df_skipeligible_phys.5 <- df_clean %>%
-  filter(discipline == "PHYS" & apyear >= 2013 & aptaker == 1 & eligible_to_skip == 1 & apscore == 5)
+  filter(discipline == "PHYS" & apyear >= 2015 & aptaker == 1 & eligible_to_skip == 1 & apscore == 5)
 
 # Model 1a: Credits ####
 RQ1a <- df_full %>%
   group_by(discipline) %>%
-  do(mod = glm(aptaker ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
+  do(mod = glm(aptaker ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(ethniccode_cat) +
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                family = binomial, data = .))
 
@@ -70,8 +79,9 @@ write.csv(RQ1a, file = "SEISMIC_AP_Output_RQ1a.csv")
 # Model 1b: Score ####
 RQ1b <- df_aptakers %>%
   group_by(discipline) %>%
-  do(mod = lm(scale(apscore) ~ factor(firstgen) + factor(lowincomeflag)  + female + urm +
-                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
+  do(mod = lm(scale(apscore) ~ 
+                factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
                 data = .))
 
 RQ1b <- RQ1b %>%
@@ -87,8 +97,8 @@ write.csv(RQ1b, file = "SEISMIC_AP_Output_RQ1b.csv")
 # Model 1c: Eligible to Skip ####
 RQ1c <- df_full %>%
   group_by(discipline) %>%
-  do(mod = glm(eligible_to_skip ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
+  do(mod = glm(eligible_to_skip ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
                family = binomial, data = .))
 
 RQ1c <- RQ1c %>%
@@ -111,8 +121,9 @@ write.csv(RQ1c, file = "SEISMIC_AP_Output_RQ1c.csv")
 # Model 2a: Skipped if eligible ####
 RQ2a <- df_skipeligible %>%
   group_by(discipline) %>%
-  do(mod = glm(skipped_course_course ~ factor(firstgen) + factor(lowincomeflag)  + factor(female) + factor(urm) +
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_yr_2) + factor(crs_term_sem_2),
+  do(mod = glm(skipped_course ~ 
+                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
                family = binomial, data = .))
 
 RQ2a <- RQ2a %>%
@@ -135,7 +146,7 @@ write.csv(RQ2a, file = "SEISMIC_AP_Output_RQ2a.csv")
 # Eligibility at Each Cut Score 
 #Bio if apscore=4
 m2.a4_BY <- lm(skipped_course_course ~ factor(firstgen) + factor(lowincomeflag)  + female + urm +
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_yr_2) + factor(crs_term_sem_2), 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                df_skipeligible_bio.4)
 summary(m2.a4_BY)
 exp(cbind("Odds Ratio" = coef(m2.a4_BY), confint.default(m2.a_PH, level = 0.95)))

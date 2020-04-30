@@ -10,7 +10,7 @@ pacman::p_load("tidyverse", "psych",                       # Data wrangling, dis
 
 # Functions and settings ####
 # Turn off scientific notation (for OR display)
-options(scipen = 10)
+options(scipen = 15)
 # Use dyplr for select
 select <- dplyr::select
 # VIF function 
