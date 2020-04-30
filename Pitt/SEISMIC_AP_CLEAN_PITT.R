@@ -327,11 +327,13 @@ df_phys <- df_std %>%
 #Stacked data
 df_clean <- rbind(df_bio, df_chem, df_phys)
 df_clean <- df_clean %>%
-  mutate(apyear = if_else(discipline = "CHEM", cohort - 1, cohort)) %>%
   rename_at(vars(ends_with(".x")), 
             ~(str_replace(., ".x", "_2"))) %>%
   rename_at(vars(ends_with(".y")), 
-            ~(str_replace(., ".y", "")))
+            ~(str_replace(., ".y", ""))) %>%
+  filter(crs_term <= 2018 | is.na(crs_term)) %>%
+  filter(crs_term_2 <= 2018 | is.na(crs_term_2)) %>%
+  mutate(apyear = if_else(discipline == "CHEM", cohort - 1, cohort)) 
 
 rm(df_ap_bio, df_ap_chem, df_ap_phys, 
    df_bio, df_chem, df_phys, 
