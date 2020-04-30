@@ -21,7 +21,8 @@ df_std <- df_full %>%
   mutate(st_id = EMPLID_H) %>%
   mutate(firstgen = recode(FIRST_GENERATION_DESCR, "First Generation" = 1, "Not First Generation" = 0, "Unknown" = 0)) %>%
   mutate(ethniccode = ETHNIC_GROUP_CD) %>%
-  mutate(ethniccode_cat = recode(ETHNIC_GROUP_CD, "HISPA" = 1, "BLACK" = 1, "AMIND" = 1, "PACIF" = 1, "ASIAN" = 2, "WHITE" = 0)) %>%
+  mutate(ethniccode_cat = recode(as.factor(ETHNIC_GROUP_CD), "HISPA" = 1, "BLACK" = 1, "AMIND" = 1, "PACIF" = 1, "ASIAN" = 2, "WHITE" = 0)) %>%
+  mutate(ethniccode_cat = relevel(as.factor(ethniccode_cat), ref= "1")) %>%
   mutate(urm = recode(ETHNIC_GROUP_CD, "HISPA" = 1, "BLACK" = 1, "AMIND" = 1, "PACIF" = 1, "ASIAN" = 0, "WHITE" = 0)) %>%
   mutate(gender = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
   mutate(female = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
@@ -43,8 +44,7 @@ df_std <- df_full %>%
   mutate(cohort_2016 = ifelse(cohort == 2016, 1,0)) %>%
   mutate(cohort_2017 = ifelse(cohort == 2017, 1,0)) %>%
   mutate(cohort_2018 = ifelse(cohort == 2018, 1,0)) %>%
-  #HACK for apyear (cohort year - 1)
-  mutate(apyear = cohort - 1) %>%
+ # mutate(apyear = cohort-1) %>%
   mutate(englsr = if_else(ACT_HIGH_ENGL == 36, 800,
 if_else(ACT_HIGH_ENGL == 35, 780,
 if_else(ACT_HIGH_ENGL == 34, 760,
@@ -327,6 +327,7 @@ df_phys <- df_std %>%
 #Stacked data
 df_clean <- rbind(df_bio, df_chem, df_phys)
 df_clean <- df_clean %>%
+  mutate(apyear = if_else(discipline = "CHEM", cohort - 1, cohort)) %>%
   rename_at(vars(ends_with(".x")), 
             ~(str_replace(., ".x", "_2"))) %>%
   rename_at(vars(ends_with(".y")), 
