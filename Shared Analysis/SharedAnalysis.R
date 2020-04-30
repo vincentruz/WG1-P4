@@ -3,8 +3,8 @@
 # Load libraries
 if (!require("pacman")) install.packages("pacman")
 library(pacman)
-pacman::p_load("tidyverse", "psych", "data.table",  # Data wrangling and descriptive stats
-               "epiDisplay", "sjstats")             # Reporting Odds Ratio and Std. Betas
+pacman::p_load("tidyverse", "psych", "data.table", "broom",   # Data wrangling and descriptive stats
+               "epiDisplay", "sjstats")                       # Reporting Odds Ratio and Std. Betas
 
 # Load clean dataset
 # df_clean <- read.csv("~/YOUR RECODED FILE PATH HERE.csv")
@@ -44,7 +44,7 @@ df_bio_skeligible <- df_clean %>%
 # Took 2nd course in sequence
 df_chem2 <- df_clean %>%
   subset(discipline == "CHEM") %>%
-  subset(apyear >= 2013)
+  subset(apyear >= 2014)
 # Took AP 
 df_chem_aptakers <- df_clean %>%
   subset(discipline == "CHEM") %>%
@@ -58,7 +58,7 @@ df_chem_skeligible <- df_clean %>%
 # Took 2nd course in sequence
 df_phys2 <- df_clean %>%
   subset(discipline == "PHYS") %>%
-  subset(apyear >= 2013)
+  subset(apyear >= 2015)
 # Took AP 
 df_phys_aptakers <- df_clean %>%
   subset(discipline == "PHYS") %>%
