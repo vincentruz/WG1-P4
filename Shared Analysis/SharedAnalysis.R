@@ -7,7 +7,8 @@ pacman::p_load("tidyverse", "psych", "data.table",  # Data wrangling and descrip
                "epiDisplay", "sjstats")             # Reporting Odds Ratio and Std. Betas
 
 # Load clean dataset
-df_clean <- read.csv("~/YOUR RECODED FILE PATH HERE.csv")
+# df_clean <- read.csv("~/YOUR RECODED FILE PATH HERE.csv")
+df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 
 # View data 
 # Note: Variable names should follow SEISMIC conventions found here: https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021
@@ -117,7 +118,7 @@ logistic.display(bio_rq2a)
 # RQ2b - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
 bio_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_bio_aptakers)
 summary(bio_rq2b)
 #std_beta(bio_rq2b)
@@ -125,7 +126,7 @@ summary(bio_rq2b)
 # RQ2c - Of everyone, what grade did they get in the 2nd course (controlling for AP score)? 
 bio_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_bio2)
 summary(bio_rq2c)
 #std_beta(bio_rq2c)
@@ -133,7 +134,7 @@ summary(bio_rq2c)
 # RQ2d - Of everyone who took AP, what grade did they get in the 2nd course?
 bio_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_bio_aptakers)
 summary(bio_rq2d)
 #std_beta(bio_rq2d)
@@ -141,7 +142,7 @@ summary(bio_rq2d)
 # RQ2e - Of everyone who took AP and skipped, what grade did they get in the 2nd course?
 bio_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_bio2)
 summary(bio_rq2d)
 #std_beta(bio_rq2d)
@@ -149,7 +150,7 @@ summary(bio_rq2d)
 # RQ2f - Course grade, Skip eligible for those who took AP
 bio_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_bio_aptakers)
 summary(bio_rq2f)
 
@@ -158,7 +159,7 @@ summary(bio_rq2f)
 # RQ2g -  Skip eligible, full sample
 bio_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
               data=df_bio2)
 summary(bio_rq2g)
 #std_beta(bio_rq2g)
@@ -209,7 +210,7 @@ logistic.display(chem_rq2a)
 # RQ2b - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
 chem_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_chem_aptakers)
 summary(chem_rq2b)
 #std_beta(chem_rq2b)
@@ -217,7 +218,7 @@ summary(chem_rq2b)
 # RQ2c - Of everyone, what grade did they get in the 2nd course (controlling for AP score)? 
 chem_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_chem2)
 summary(chem_rq2c)
 #std_beta(chem_rq2c)
@@ -225,7 +226,7 @@ summary(chem_rq2c)
 # RQ2d - Of everyone who took AP, what grade did they get in the 2nd course?
 chem_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_chem_aptakers)
 summary(chem_rq2d)
 #std_beta(chem_rq2d)
@@ -233,7 +234,7 @@ summary(chem_rq2d)
 # RQ2e - Of everyone who took AP and skipped, what grade did they get in the 2nd course?
 chem_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_chem2)
 summary(chem_rq2d)
 #std_beta(chem_rq2d)
@@ -241,7 +242,7 @@ summary(chem_rq2d)
 # RQ2f - Course grade, Skip eligible for those who took AP
 chem_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_chem_aptakers)
 summary(chem_rq2f)
 
@@ -250,7 +251,7 @@ summary(chem_rq2f)
 # RQ2g -  Skip eligible, full sample
 chem_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_chem2)
 summary(chem_rq2g)
 #std_beta(chem_rq2g)
@@ -301,7 +302,7 @@ logistic.display(phys_rq2a)
 # RQ2b - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
 phys_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_phys_aptakers)
 summary(phys_rq2b)
 #std_beta(phys_rq2b)
@@ -309,7 +310,7 @@ summary(phys_rq2b)
 # RQ2c - Of everyone, what grade did they get in the 2nd course (controlling for AP score)? 
 phys_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_phys2)
 summary(phys_rq2c)
 #std_beta(phys_rq2c)
@@ -317,7 +318,7 @@ summary(phys_rq2c)
 # RQ2d - Of everyone who took AP, what grade did they get in the 2nd course?
 phys_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_phys_aptakers)
 summary(phys_rq2d)
 #std_beta(phys_rq2d)
@@ -325,7 +326,7 @@ summary(phys_rq2d)
 # RQ2e - Of everyone who took AP and skipped, what grade did they get in the 2nd course?
 phys_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_phys2)
 summary(phys_rq2d)
 #std_beta(phys_rq2d)
@@ -333,7 +334,7 @@ summary(phys_rq2d)
 # RQ2f - Course grade, Skip eligible for those who took AP
 phys_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                 data=df_phys_aptakers)
 summary(phys_rq2f)
 
@@ -342,7 +343,7 @@ summary(phys_rq2f)
 # RQ2g -  Skip eligible, full sample
 phys_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_phys2)
 summary(phys_rq2g)
 #std_beta(phys_rq2g)
