@@ -1,6 +1,6 @@
 ---
 title: "SEISMIC WG1-P4"
-date: "Updated: April 29, 2020"
+date: "Updated: April 30, 2020"
 output:
   html_document:
     keep_md: true
@@ -102,16 +102,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 271D…        0 BLACK                   1     1      0      0     35254
-##  2 BA0C…        0 ASIAN                   2     0      1      1     50789
-##  3 9042…        0 ASIAN                   2     0      1      1        NA
-##  4 1710…        0 WHITE                   0     0      1      1     80961
-##  5 E882…        1 WHITE                   0     0      1      1     34013
-##  6 FC03…        0 WHITE                   0     0      1      1        NA
-##  7 C658…        0 WHITE                   0     0      0      0     90802
-##  8 786E…        0 WHITE                   0     0      0      0        NA
-##  9 7C15…        0 WHITE                   0     0      0      0    421888
-## 10 3DDD…        0 WHITE                   0     0      0      0    255331
+##  1 4C0C…        1 WHITE                   0     0      0      0     29516
+##  2 35FA…        0 WHITE                   0     0      0      0    130000
+##  3 0C3A…        0 WHITE                   0     0      1      1    124275
+##  4 43EB…        0 WHITE                   0     0      1      1     42221
+##  5 B77F…        0 WHITE                   0     0      1      1        NA
+##  6 CD65…        0 HISPA                   1     1      0      0    257176
+##  7 BC79…        0 WHITE                   0     0      1      1     29514
+##  8 BB3A…        0 WHITE                   0     0      1      1    279121
+##  9 286D…        0 WHITE                   0     0      0      0        NA
+## 10 2E57…        0 WHITE                   0     0      0      0    353154
 ## # … with 16 more variables: lowincomeflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
