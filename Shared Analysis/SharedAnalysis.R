@@ -123,7 +123,7 @@ bio_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) +
 summary(bio_rq2b)
 #std_beta(bio_rq2b)
 
-# RQ2c - Of everyone, what grade did they get in the 2nd course (controlling for AP score)? 
+# RQ2c - Of everyone, what was the effect of skipping on 2nd course grade (controlling for AP score)? 
 bio_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -131,7 +131,7 @@ bio_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) +
 summary(bio_rq2c)
 #std_beta(bio_rq2c)
 
-# RQ2d - Of everyone who took AP, what grade did they get in the 2nd course?
+# RQ2d - Of everyone who took AP, what was the effect of skipping on 2nd course grade?
 bio_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -139,7 +139,7 @@ bio_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) +
 summary(bio_rq2d)
 #std_beta(bio_rq2d)
 
-# RQ2e - Of everyone who took AP and skipped, what grade did they get in the 2nd course?
+# RQ2e - Of everyone who took AP and skipped, what was the effect of skipping on 2nd course grade?
 bio_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
