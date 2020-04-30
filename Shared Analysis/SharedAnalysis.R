@@ -34,10 +34,12 @@ df_bio2 <- df_clean %>%
 # Took AP 
 df_bio_aptakers <- df_clean %>%
   subset(discipline == "BIO") %>%
+  subset(apyear >= 2013) %>%
   subset(aptaker == 1)
 # Skip eligible
 df_bio_skeligible <- df_clean %>%
   subset(discipline == "BIO") %>%
+  subset(apyear >= 2013) %>%
   subset(eligible_to_skip == 1)
 
 # Chem
@@ -48,10 +50,12 @@ df_chem2 <- df_clean %>%
 # Took AP 
 df_chem_aptakers <- df_clean %>%
   subset(discipline == "CHEM") %>%
+  subset(apyear >= 2014) %>%
   subset(aptaker == 1)
 # Skip eligible
 df_chem_skeligible <- df_clean %>%
   subset(discipline == "CHEM") %>%
+  subset(apyear >= 2014) %>%
   subset(eligible_to_skip == 1)
 
 # Phys
@@ -62,10 +66,12 @@ df_phys2 <- df_clean %>%
 # Took AP 
 df_phys_aptakers <- df_clean %>%
   subset(discipline == "PHYS") %>%
+  subset(apyear >= 2015) %>%
   subset(aptaker == 1)
 # Skip eligible
 df_phys_skeligible <- df_clean %>%
   subset(discipline == "PHYS") %>%
+  subset(apyear >= 2015) %>%
   subset(eligible_to_skip == 1)
 
 # Run Models (for each discipline)
