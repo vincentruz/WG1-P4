@@ -102,16 +102,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 9B9E…        0 ASIAN                   2     0      1      1    151125
-##  2 BF07…        0 ASIAN                   2     0      1      1        NA
-##  3 4856…        0 BLACK                   1     1      1      1    118000
-##  4 5218…        0 WHITE                   0     0      1      1        NA
-##  5 6857…        0 WHITE                   0     0      0      0     11667
-##  6 7A63…        0 WHITE                   0     0      0      0     73714
-##  7 82AF…        0 MULTI                  NA    NA      0      0     41211
-##  8 CB55…        0 WHITE                   0     0      1      1    243118
-##  9 D35C…        1 HISPA                   1     1      1      1     44612
-## 10 8BE0…        0 WHITE                   0     0      0      0    126737
+##  1 271D…        0 BLACK                   1     1      0      0     35254
+##  2 BA0C…        0 ASIAN                   2     0      1      1     50789
+##  3 9042…        0 ASIAN                   2     0      1      1        NA
+##  4 1710…        0 WHITE                   0     0      1      1     80961
+##  5 E882…        1 WHITE                   0     0      1      1     34013
+##  6 FC03…        0 WHITE                   0     0      1      1        NA
+##  7 C658…        0 WHITE                   0     0      0      0     90802
+##  8 786E…        0 WHITE                   0     0      0      0        NA
+##  9 7C15…        0 WHITE                   0     0      0      0    421888
+## 10 3DDD…        0 WHITE                   0     0      0      0    255331
 ## # … with 16 more variables: lowincomeflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
@@ -674,10 +674,10 @@ df_viz <- bind_rows(df_viz_bio, df_viz_chem, df_viz_phys) %>%
 
 ## 1.	Generate Model Plots (for each Course)
 
+### a. Build interactive viz using RShiny package
+
 #### *Note:*
 - Sample code shown here for static graphs - see [DataViz](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) for runnable code to generate interactive graphs 
-
-### a. Build interactive viz using RShiny package
 
 
 ```r
