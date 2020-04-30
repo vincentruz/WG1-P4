@@ -22,7 +22,6 @@ df_std <- df_full %>%
   mutate(firstgen = recode(FIRST_GENERATION_DESCR, "First Generation" = 1, "Not First Generation" = 0, "Unknown" = 0)) %>%
   mutate(ethniccode = ETHNIC_GROUP_CD) %>%
   mutate(ethniccode_cat = recode(as.factor(ETHNIC_GROUP_CD), "HISPA" = 1, "BLACK" = 1, "AMIND" = 1, "PACIF" = 1, "ASIAN" = 2, "WHITE" = 0)) %>%
-  mutate(ethniccode_cat = relevel(as.factor(ethniccode_cat), ref= "1")) %>%
   mutate(urm = recode(ETHNIC_GROUP_CD, "HISPA" = 1, "BLACK" = 1, "AMIND" = 1, "PACIF" = 1, "ASIAN" = 0, "WHITE" = 0)) %>%
   mutate(gender = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%
   mutate(female = recode(GENDER_CD, "F"=1, "M"=0, "m"=0, "U" = 2)) %>%

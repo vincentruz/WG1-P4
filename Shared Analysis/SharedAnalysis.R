@@ -22,7 +22,9 @@ df_clean <- df_clean %>%
   filter(tookcourse_2 == 1) %>%
   filter(cohort >= 2013 & cohort <= 2018) %>%
   # Exclude
-  filter(international == 0)
+  filter(international == 0) %>%
+  # Set URM as reference group
+  mutate(ethniccode_cat = relevel(as.factor(ethniccode_cat), ref= "1"))
 
 # Create subset dataframes for each analysis sample (for each discipline)
 
