@@ -15,7 +15,8 @@ df_clean <- df_clean %>%
   filter(tookcourse_2 == 1) %>%
   filter(cohort >= 2013 & cohort <= 2018) %>%
   # Exclude
-  filter(international == 0)
+  filter(international == 0) %>%
+  mutate(ethniccode_cat = relevel(as.factor(ethniccode_cat), ref= "1"))
 
 # Create subset dataframes for each analysis sample (for each discipline)
 
@@ -29,13 +30,13 @@ df_bio2 <- df_clean %>%
 # Took 2nd course in sequence
 df_chem2 <- df_clean %>%
   subset(discipline == "CHEM") %>%
-  subset(apyear >= 2013)
+  subset(apyear >= 2014)
 
 # Phys
 # Took 2nd course in sequence
 df_phys2 <- df_clean %>%
   subset(discipline == "PHYS") %>%
-  subset(apyear >= 2013)
+  subset(apyear >= 2015)
 
 
 # For each Course
