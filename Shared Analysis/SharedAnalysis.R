@@ -108,7 +108,7 @@ logistic.display(bio_rq1cii)
 # RQ2a - Of everyone who was eligible to skip, who actually skipped?
 bio_rq2a <- glm(skipped_course ~ 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
                 data=df_bio_skeligible, binomial(link="logit"))
 summary(bio_rq2a)
 logistic.display(bio_rq2a)
@@ -200,7 +200,7 @@ logistic.display(chem_rq1cii)
 # RQ2a - Of everyone who was eligible to skip, who actually skipped?
 chem_rq2a <- glm(skipped_course ~ 
                    factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
                  data=df_chem_skeligible, binomial(link="logit"))
 summary(chem_rq2a)
 logistic.display(chem_rq2a)
@@ -292,7 +292,7 @@ logistic.display(phys_rq1cii)
 # RQ2a - Of everyone who was eligible to skip, who actually skipped?
 phys_rq2a <- glm(skipped_course ~ 
                    factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
+                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
                  data=df_phys_skeligible, binomial(link="logit"))
 summary(phys_rq2a)
 logistic.display(phys_rq2a)
