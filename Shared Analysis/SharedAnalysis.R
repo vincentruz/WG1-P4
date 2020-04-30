@@ -147,7 +147,7 @@ bio_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
 summary(bio_rq2d)
 #std_beta(bio_rq2d)
 
-# RQ2f - Course grade, Skip eligible for those who took AP
+# RQ2f - Of everyone who took AP, what was the effect of being eligible to skip on 2nd course grade?
 bio_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -156,7 +156,7 @@ summary(bio_rq2f)
 
 #std_beta(bio_rq2f)
 
-# RQ2g -  Skip eligible, full sample
+# RQ2g -  Of everyone, what was the effect of being eligible to skip on 2nd course grade?
 bio_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -215,7 +215,7 @@ chem_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) +
 summary(chem_rq2b)
 #std_beta(chem_rq2b)
 
-# RQ2c - Of everyone, what grade did they get in the 2nd course (controlling for AP score)? 
+# RQ2c - Of everyone, what was the effect of skipping on 2nd course grade (controlling for AP score)? 
 chem_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -223,7 +223,7 @@ chem_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) +
 summary(chem_rq2c)
 #std_beta(chem_rq2c)
 
-# RQ2d - Of everyone who took AP, what grade did they get in the 2nd course?
+# RQ2d - Of everyone who took AP, what was the effect of skipping on 2nd course grade?
 chem_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -231,7 +231,7 @@ chem_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) +
 summary(chem_rq2d)
 #std_beta(chem_rq2d)
 
-# RQ2e - Of everyone who took AP and skipped, what grade did they get in the 2nd course?
+# RQ2e - Of everyone who took AP and skipped, what was the effect of skipping on 2nd course grade?
 chem_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -239,7 +239,7 @@ chem_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
 summary(chem_rq2d)
 #std_beta(chem_rq2d)
 
-# RQ2f - Course grade, Skip eligible for those who took AP
+# RQ2f - Of everyone who took AP, what was the effect of being eligible to skip on 2nd course grade?
 chem_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -248,7 +248,7 @@ summary(chem_rq2f)
 
 #std_beta(chem_rq2f)
 
-# RQ2g -  Skip eligible, full sample
+# RQ2g -  Of everyone, what was the effect of being eligible to skip on 2nd course grade?
 chem_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -307,7 +307,7 @@ phys_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) +
 summary(phys_rq2b)
 #std_beta(phys_rq2b)
 
-# RQ2c - Of everyone, what grade did they get in the 2nd course (controlling for AP score)? 
+# RQ2c - Of everyone, what was the effect of skipping on 2nd course grade (controlling for AP score)? 
 phys_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -315,7 +315,7 @@ phys_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) +
 summary(phys_rq2c)
 #std_beta(phys_rq2c)
 
-# RQ2d - Of everyone who took AP, what grade did they get in the 2nd course?
+# RQ2d - Of everyone who took AP, what was the effect of skipping on 2nd course grade?
 phys_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -323,7 +323,7 @@ phys_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) +
 summary(phys_rq2d)
 #std_beta(phys_rq2d)
 
-# RQ2e - Of everyone who took AP and skipped, what grade did they get in the 2nd course?
+# RQ2e - Of everyone who took AP and skipped, what was the effect of skipping on 2nd course grade?
 phys_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -331,7 +331,7 @@ phys_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
 summary(phys_rq2d)
 #std_beta(phys_rq2d)
 
-# RQ2f - Course grade, Skip eligible for those who took AP
+# RQ2f - Of everyone who took AP, what was the effect of being eligible to skip on 2nd course grade?
 phys_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
@@ -340,7 +340,7 @@ summary(phys_rq2f)
 
 #std_beta(phys_rq2f)
 
-# RQ2g -  Skip eligible, full sample
+# RQ2g -  Of everyone, what was the effect of being eligible to skip on 2nd course grade?
 phys_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
