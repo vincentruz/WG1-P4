@@ -106,7 +106,7 @@ logistic.display(bio_rq1cii)
 #robustse(bio_rq1cii, coef="odd.ratio")
 
 # RQ2a - Of everyone who was eligible to skip, who actually skipped?
-bio_rq2a <- glm(eligible_to_skip ~ 
+bio_rq2a <- glm(skipped_course ~ 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
                 data=df_bio_skeligible, binomial(link="logit"))
@@ -198,7 +198,7 @@ logistic.display(chem_rq1cii)
 #robustse(rq1ci, coef="odd.ratio")
 
 # RQ2a - Of everyone who was eligible to skip, who actually skipped?
-chem_rq2a <- glm(eligible_to_skip ~ 
+chem_rq2a <- glm(skipped_course ~ 
                    factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
                    scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
                  data=df_chem_skeligible, binomial(link="logit"))
@@ -290,7 +290,7 @@ logistic.display(phys_rq1cii)
 #robustse(rq1ci, coef="odd.ratio")
 
 # RQ2a - Of everyone who was eligible to skip, who actually skipped?
-phys_rq2a <- glm(eligible_to_skip ~ 
+phys_rq2a <- glm(skipped_course ~ 
                    factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
                    scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term), 
                  data=df_phys_skeligible, binomial(link="logit"))
