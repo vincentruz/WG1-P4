@@ -360,24 +360,24 @@ summary(phys_rq2g)
 # Create Regression Output Tables
 # By Discipline and RQ
 BIO_RQ1models <- tab_model(bio_rq1a, bio_rq1b, bio_rq1ci, bio_rq1cii,
-                           title = "BIO RQ1 Models", file = "BIO RQ1 Models.htm")
+                           title = "BIO RQ1 Models", file = "BIO RQ1 Models.htm", digits = 3)
 print(BIO_RQ1models)
 BIO_RQ2models <- tab_model(bio_rq2a, bio_rq2b, bio_rq2c, bio_rq2d, bio_rq2e, bio_rq2f, bio_rq2g, 
-                           title = "BIO RQ2 Models", file = "BIO RQ2 Models.htm")
-print(BIO_RQ1models)
+                           title = "BIO RQ2 Models", file = "BIO RQ2 Models.htm", digits = 3)
+print(BIO_RQ2models)
 
 CHEM_RQ1models <- tab_model(chem_rq1a, chem_rq1b, chem_rq1ci, chem_rq1cii, 
-                            title = "CHEM RQ1 Models", file = "CHEM RQ1 Models.htm")
+                            title = "CHEM RQ1 Models", file = "CHEM RQ1 Models.htm", digits = 3)
 print(CHEM_RQ1models)
 CHEM_RQ2models <- tab_model(chem_rq2a, chem_rq2b, chem_rq2c, chem_rq2d, chem_rq2e, chem_rq2f, chem_rq2g,
-                            title = "CHEM RQ2 Models", file = "CHEM RQ2 Models.htm")
+                            title = "CHEM RQ2 Models", file = "CHEM RQ2 Models.htm", digits = 3)
 print(CHEM_RQ2models)
 
 PHYS_RQ1models <- tab_model(phys_rq1a, phys_rq1b, phys_rq1ci, phys_rq1cii, 
-                            title = "PHYS RQ1 Models", file = "PHYS RQ1 Models.htm")
+                            title = "PHYS RQ1 Models", file = "PHYS RQ1 Models.htm", digits = 3)
 print(PHYS_RQ1models)
 PHYS_RQ2models <- tab_model(phys_rq2a, phys_rq2b, phys_rq2c, phys_rq2d, phys_rq2e, phys_rq2f, phys_rq2g,
-                            title = "PHYS RQ2 Models", file = "PHYS RQ2 Models.htm")
+                            title = "PHYS RQ2 Models", file = "PHYS RQ2 Models.htm", digits = 3)
 print(PHYS_RQ2models)
 
 
