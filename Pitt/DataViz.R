@@ -13,8 +13,8 @@ pacman::p_load("tidyverse", "dplyr", "shiny", "gridExtra")
 #   skipped_course: A string indicating whether or not the student skipped the first course in the sequence
 
 # Load clean dataset
-df_clean <- read.csv("~/YOUR FILE PATH HERE.csv")
-# df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
+# df_clean <- read.csv("~/YOUR FILE PATH HERE.csv")
+df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 
 # Filter for student level inclusion/exclusion criteria
 df_clean <- df_clean %>%
@@ -91,13 +91,20 @@ ui <- fluidPage(
       selectInput(inputId = "discipline", 
                   label = "Select a course:",
                   choices = unique(df_viz$discipline), 
-                  selected = "CHEM")
+                  selected = "CHEM"),
+      #Select interaction terms
+      selectInput(inputId = "var1", 
+                  label = "Select a variable:",
+                  choices = c("gender", "firstgen", "lowincomeflag", "ethniccode_cat", "urm"), 
+                  selected = "gender")
     ),
   mainPanel(tabPanel(
       "Plot",
       fluidRow(
-        plotOutput("linePlotUncontrolled"),
-        plotOutput("linePlotFitted"),
+        plotOutput("linePlotUncontrolled1"),
+        plotOutput("linePlotUncontrolled2"),
+        plotOutput("linePlotFitted1"),
+        plotOutput("linePlotFitted2"),
         plotOutput("histogram")
       )
     )))
@@ -110,17 +117,7 @@ server <- function(input, output) {
   chartData <- reactive({
     df_viz %>%
       filter(!is.na(skipped_course)) %>%
-      filter(discipline == input$discipline) %>%
-      group_by(apscore_full, skipped_course) %>%
-      mutate(n = n()) %>%
-      mutate(numgrade_2.mean = mean(numgrade_2, na.rm = TRUE),
-             numgrade_2.sd = sd(numgrade_2, na.rm = TRUE),
-             numgrade_2.n = sum(!is.na(numgrade_2)),
-             numgrade_2.se = numgrade_2.sd / sqrt(numgrade_2.n),
-             numgrade_2.fitted.mean = mean(numgrade_2.fitted, na.rm = TRUE),
-             numgrade_2.fitted.sd = sd(numgrade_2.fitted, na.rm = TRUE),
-             numgrade_2.fitted.n = sum(!is.na(numgrade_2.fitted)),
-             numgrade_2.fitted.se = numgrade_2.fitted.sd / sqrt(numgrade_2.fitted.n))
+      filter(discipline == input$discipline) 
   })
   
   #Get a string based on the chosen course to use in figure labels
@@ -132,23 +129,20 @@ server <- function(input, output) {
       input$discipline == "PHYS"~ "Physics"
     )
   })
-  
-  output$linePlotUncontrolled <- renderPlot({
+
+  output$linePlotUncontrolled1 <- renderPlot({
     ggplot(data=chartData(), aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
       geom_point(stat = 'summary', fun.y = 'mean', size=3) +
-      geom_errorbar(aes(ymin = numgrade_2.mean - numgrade_2.se, ymax = numgrade_2.mean + numgrade_2.se), width=0.1) + #add standard error bars
+      stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
       geom_smooth(stat = 'summary', method = 'loess') + 
-      #on y and x axes: sec.axis = dup_axis(labels = NULL) adds tick marks to the opposite side of the bounding box without adding duplicated labels
-      #x axis: since non-apscore_full takers are coded as 0, manually relabel the tick marks to replace "0" with "Didn't Take"
-      scale_x_continuous(sec.axis = dup_axis(labels = NULL), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
-      #y-axis: set breaks to every 0.5 grade points
-      scale_y_continuous(sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+      scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+      scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
       theme_classic() +
       theme(
         panel.border = element_rect(color = "black", fill=NA), #put a border around the whole plot
         axis.title.x.top = element_blank(), #no x axis title on top
         axis.title.y.right = element_blank(), #no y axis title on the right
-        legend.position=c(0.25, 0.85), #position the legend inside the plot (may want to make this adjustable with Shiny input options)
+        legend.position=c(0.85, 0.25), #position the legend inside the plot (may want to make this adjustable with Shiny input options)
         legend.background = element_blank(),
         legend.box.background = element_rect(color = "black") #black rectangle surrounding the legend
       ) +
@@ -156,19 +150,60 @@ server <- function(input, output) {
       labs(x = "AP Score", y = paste("Mean Grade in", subj.label(), "2"), title= paste(subj.label(), "Uncontrolled Model"))
   })
   
-  output$linePlotFitted <- renderPlot({
+  output$linePlotUncontrolled2 <- renderPlot({
+    ggplot(data=chartData(), aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
+      facet_wrap(input$var1) +
+      geom_point(stat = 'summary', fun.y = 'mean', size=3) +
+      stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
+      geom_smooth(stat = 'summary', method = 'loess') + 
+      scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+      scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+      theme_classic() +
+      theme(
+        panel.border = element_rect(color = "black", fill=NA), #put a border around the whole plot
+        axis.title.x.top = element_blank(), #no x axis title on top
+        axis.title.y.right = element_blank(), #no y axis title on the right
+        legend.position=c(0.85, 0.25), #position the legend inside the plot (may want to make this adjustable with Shiny input options)
+        legend.background = element_blank(),
+        legend.box.background = element_rect(color = "black") #black rectangle surrounding the legend
+      ) +
+      #construct labels using the subj.label() defined earlier
+      labs(x = "AP Score", y = paste("Mean Grade in", subj.label(), "2"), title= paste(subj.label(), "Uncontrolled Model"))
+  })
+  
+  output$linePlotFitted1 <- renderPlot({
     ggplot(data=chartData(), aes(y = numgrade_2.fitted, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
       geom_point(stat = 'summary', fun.y = 'mean', size=3) +
-      geom_errorbar(aes(ymin = numgrade_2.fitted.mean - numgrade_2.fitted.se, ymax = numgrade_2.fitted.mean + numgrade_2.fitted.se), width=0.1) +
+      stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
       geom_smooth(stat = 'summary', method = 'loess') +
-      scale_x_continuous(sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
-      scale_y_continuous(sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+      scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+      scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
       theme_classic() +
       theme(
         panel.border = element_rect(color = "black", fill=NA),
         axis.title.x.top = element_blank(),
         axis.title.y.right = element_blank(),
-        legend.position=c(0.25, 0.85),
+        legend.position=c(0.85, 0.25),
+        legend.background = element_blank(),
+        legend.box.background = element_rect(color = "black")
+      ) +
+      labs(x = "AP Score", y = paste("Mean Grade in", subj.label(), "2"), title= paste(subj.label(), "Fitted Model"))
+    })
+  
+  output$linePlotFitted2 <- renderPlot({
+    ggplot(data=chartData(), aes(y = numgrade_2.fitted, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
+      facet_wrap(input$var1) +
+      geom_point(stat = 'summary', fun.y = 'mean', size=3) +
+      stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
+      geom_smooth(stat = 'summary', method = 'loess') +
+      scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+      scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+      theme_classic() +
+      theme(
+        panel.border = element_rect(color = "black", fill=NA),
+        axis.title.x.top = element_blank(),
+        axis.title.y.right = element_blank(),
+        legend.position=c(0.85, 0.25),
         legend.background = element_blank(),
         legend.box.background = element_rect(color = "black")
       ) +
@@ -177,6 +212,7 @@ server <- function(input, output) {
   
   output$histogram <- renderPlot({
     ggplot(data=chartData() %>% filter(apscore_full != 0), aes(x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
+      facet_wrap(input$var1) +
       geom_histogram(stat='count', position = position_dodge(preserve = "single")) +
       scale_x_continuous(sec.axis = dup_axis(labels = NULL)) +
       scale_y_continuous(sec.axis = dup_axis(labels = NULL)) +
@@ -185,12 +221,12 @@ server <- function(input, output) {
         panel.border = element_rect(color = "black", fill=NA),
         axis.title.x.top = element_blank(),
         axis.title.y.right = element_blank(),
-        legend.position=c(0.25, 0.85),
+        legend.position=c(0.85, 0.25),
         legend.background = element_blank(),
         legend.box.background = element_rect(color = "black")
       ) +
       labs(x = "AP Score", y = "Number of Students", title= paste("Histogram of AP", subj.label(), "Scores"))
-  })
+    })
 }
 
 # Launch Shiny App ####
