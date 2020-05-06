@@ -29,12 +29,12 @@ df_clean <- df_clean %>%
 # Descriptive Stats
 # Full Dataset
 summary_all <- df_clean %>% 
-  descr(stats = c("mean", "sd", "q1", "med", "q3"), transpose = TRUE)
+  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
 view(summary_all)
 # By Discipline
 summary_disc <- df_clean %>%
   group_by(discipline) %>%
-  descr(stats = c("mean", "sd", "q1", "med", "q3"), transpose = TRUE)
+  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
 view(summary_disc)
 
 # Create subset dataframes for each analysis sample (for each discipline)
