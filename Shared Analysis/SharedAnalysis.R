@@ -1,5 +1,6 @@
 # Before running this code, check https://github.com/seismic2020/WG1-P4/blob/master/Analysis-Workflow.md for variable naming and data cleaning steps.
 
+#### Setup ####
 # Load libraries
 if (!require("pacman")) install.packages("pacman")
 library(pacman)
@@ -15,7 +16,7 @@ df_clean <- read.csv("~/YOUR RECODED FILE PATH HERE.csv")
 names(df_clean)
 head(df_clean)
 
-# Filter for student level inclusion/exclusion criteria
+## Filter for student level inclusion/exclusion criteria ####
 df_clean <- df_clean %>%
   # Include
   filter(transfer == 0) %>%
@@ -26,19 +27,8 @@ df_clean <- df_clean %>%
   # Set URM as reference group
   mutate(ethniccode_cat = relevel(as.factor(ethniccode_cat), ref= "1"))
 
-# Descriptive Stats
-# Full Dataset
-summary_all <- df_clean %>% 
-  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
-view(summary_all)
-# By Discipline
-summary_disc <- df_clean %>%
-  group_by(discipline) %>%
-  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
-view(summary_disc)
 
-# Create subset dataframes for each analysis sample (for each discipline)
-
+## Create subset dataframes for each analysis sample (for each discipline) ####
 # Bio
 # Took 2nd course in sequence
 df_bio2 <- df_clean %>%
@@ -127,7 +117,30 @@ df_phys_skeligible.5 <- df_clean %>%
   subset(apyear >= 2015) %>%
   subset(apscore == 5)
 
-# Run Models (for each discipline)
+#### Descriptive Stats ####
+# Full Dataset
+view(dfSummary(df_clean))
+summary_clean <- df_clean %>% 
+  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
+view(summary_clean)
+# By Discipline
+# Bio
+view(dfSummary(df_bio2))
+summary_bio2 <- df_bio2 %>%
+  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
+view(summary_bio2)
+# Chem
+view(dfSummary(df_chem2))
+summary_chem2 <- df_chem2 %>%
+  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
+view(summary_chem2)
+# Phys
+view(dfSummary(df_phsy2))
+summary_phys2 <- df_phys2 %>%
+         descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
+view(summary_phys2)
+         
+#### Run Models (for each discipline) ####
 # Note: For model specifications, check: https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174
 
 # BIO
@@ -504,7 +517,8 @@ phys_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) +
 summary(phys_rq2g)
 #std_beta(phys_rq2g)
 
-# Create Regression Output Tables
+
+#### Create Regression Output Tables ####
 # By Discipline and RQ
 BIO_RQ1models <- tab_model(bio_rq1a, bio_rq1b, bio_rq1ci, bio_rq1cii, bio_rq2a,
                            title = "BIO RQ1 Models", file = "BIO RQ1 Models.htm", 
