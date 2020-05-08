@@ -118,27 +118,23 @@ df_phys_skeligible.5 <- df_clean %>%
   subset(apscore == 5)
 
 #### Descriptive Stats ####
+# Vector of Continuous Vars
+contVar <- c("numgrade", "numgrade_2", "mathsr", "englsr", "hsgpa", "apscore")
+
 # Full Dataset
 view(dfSummary(df_clean))
-summary_clean <- df_clean %>% 
-  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
-view(summary_clean)
+lapply(df_chem2[contVar], function(x) summary(x))
+
 # By Discipline
 # Bio
 view(dfSummary(df_bio2))
-summary_bio2 <- df_bio2 %>%
-  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
-view(summary_bio2)
+lapply(df_bio2[contVar], function(x) summary(x))
 # Chem
 view(dfSummary(df_chem2))
-summary_chem2 <- df_chem2 %>%
-  descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
-view(summary_chem2)
+lapply(df_chem2[contVar], function(x) summary(x))
 # Phys
 view(dfSummary(df_phsy2))
-summary_phys2 <- df_phys2 %>%
-         descr(stats = c("mean", "sd", "q1", "med", "q3", "n.valid"), transpose = TRUE)
-view(summary_phys2)
+lapply(df_phys2[contVar], function(x) summary(x))
          
 #### Run Models (for each discipline) ####
 # Note: For model specifications, check: https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174
