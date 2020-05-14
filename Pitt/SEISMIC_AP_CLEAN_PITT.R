@@ -115,7 +115,8 @@ df_crs <- df_full %>%
   mutate(crs_sbj = SUBJECT_CD) %>%
   mutate(crs_catalog = CATALOG_NBR) %>%
   mutate(crs_name	= CLASS_TITLE) %>%
-  mutate(numgrade = GRADE_POINTS/UNITS_TAKEN) %>%
+  mutate(numgrade = ifelse(COURSE_GRADE_CD %in% c("G", "H", "I", "N", "NC", "NG", "R", "S", "U"), NA, 
+                           GRADE_POINTS/UNITS_TAKEN)) %>%
   mutate(numgrade_w = if_else(COURSE_GRADE_CD == "W", 1, 0)) %>%
   mutate(crs_retake = REPEAT_CD) %>%
   separate(as.character("TERM_CD"), c("crs_YEAR", "crs_SEMESTER"), 3, remove = FALSE) %>%
@@ -296,7 +297,7 @@ df_bio <- df_std %>%
   full_join(df_crs_bio1, by = "st_id") %>%
   full_join(df_ap_bio, by = "st_id") %>%
   mutate(discipline = "BIO") %>%
-  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
+  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1 & eligible_to_skip == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
          aptaker, apscore, apscore_full, eligible_to_skip, 
          tookcourse, tookcourse_2, skipped_course)
@@ -307,7 +308,7 @@ df_chem <- df_std %>%
   full_join(df_crs_chem1, by = "st_id") %>%
   full_join(df_ap_chem, by = "st_id") %>%
   mutate(discipline = "CHEM") %>%
-  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
+  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1 & eligible_to_skip == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
          aptaker, apscore, apscore_full, eligible_to_skip, 
          tookcourse, tookcourse_2, skipped_course)
@@ -318,7 +319,7 @@ df_phys <- df_std %>%
   full_join(df_crs_phys1, by = "st_id") %>%
   full_join(df_ap_phys, by = "st_id") %>%
   mutate(discipline = "PHYS") %>%
-  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1, 1, 0)) %>%
+  mutate(skipped_course = ifelse(tookcourse == 0 & tookcourse_2 == 1 & eligible_to_skip == 1, 1, 0)) %>%
   select(discipline, st_id:hsgpa, crs_sbj.x:current_major.x, crs_sbj.y:current_major.y, 
          aptaker, apscore, apscore_full, eligible_to_skip,
          tookcourse, tookcourse_2, skipped_course)
