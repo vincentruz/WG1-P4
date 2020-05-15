@@ -106,7 +106,7 @@ if_else(ACT_HIGH_MATH == 10,	260, NaN )))))))))))))))))))))))))))) %>%
   # Remove any duplicate cases
   distinct()
 
-write.csv(df_std, file = "SEISMIC_AP_STUDENT_CLEAN.csv")          #UNIQUE N = 22976
+#write.csv(df_std, file = "SEISMIC_AP_STUDENT_CLEAN.csv")          #UNIQUE N = 22976
 
 #### Course Level ####
 df_crs <- df_full %>%
@@ -170,7 +170,7 @@ df_crs <- df_full %>%
   #mutate(instructor_name = NA) %>%
   mutate(crs_component= CLASS_COMPONENT_DESCR) %>%
   mutate(class_number	= CLASS_NBR) %>%
-  mutate(current_major = ACADEMIC_SUBPLAN_DESCR) %>%
+  mutate(current_major = ACADEMIC_SUBPLAN_DESCR) 
   # Select only common-named variables used in analysis
   select(st_id, crs_sbj:current_major)
 
