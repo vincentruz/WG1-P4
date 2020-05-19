@@ -29,33 +29,21 @@ df_clean <- df_clean %>%
   filter(international == 0) 
 
 ## Create subset dataframes for each discipline ####
-modelVars <- c("numgrade_2", "apscore", "apscore_full", "eligible_to_skip", "skipped_course", 
-               "firstgen", "lowincomeflag", "female", "urm", "ethniccode_cat", 
-               "hsgpa", "mathsr", "englsr", "enrl_from_cohort_2", "cohort", "crs_term_2")
-coVars <- c("firstgen", "lowincomeflag", "female", "urm", "ethniccode_cat", 
-                         "hsgpa", "mathsr", "englsr", "enrl_from_cohort_2", "cohort", "crs_term_2")
-
 # Bio (complete info, after 2013)
 df_bio2 <- df_clean %>%
   subset(discipline == "BIO") %>%
-  subset(apyear >= 2013) %>%
-  select(modelVars) %>%
-  filter_at(vars(coVars), all_vars(complete.cases(.)))
+  subset(apyear >= 2013) 
 
 # Chem (complete info, after 2014)
 df_chem2 <- df_clean %>%
   subset(discipline == "CHEM") %>%
-  subset(apyear >= 2014) %>%
-  select(modelVars) %>%
-  filter_at(vars(coVars), all_vars(complete.cases(.)))
+  subset(apyear >= 2014)
 
 # Phys (complete info, after 2015)
 # Took 2nd course in sequence
 df_phys2 <- df_clean %>%
   subset(discipline == "PHYS") %>%
-  subset(apyear >= 2015) %>%
-  select(modelVars) %>%
-  filter_at(vars(coVars), all_vars(complete.cases(.)))
+  subset(apyear >= 2015) 
 
 #### Descriptive Stats ####
 # Vector of Continuous Vars
@@ -76,17 +64,24 @@ lapply(df_chem2[contVar], function(x) summary(x))
 view(dfSummary(df_phsy2))
 lapply(df_phys2[contVar], function(x) summary(x))
 
-#### Weighting ####
+#### Matching (using Weights) ####
 ## Bio 
+# Data with no missing
+df_bio2_comp <- df_bio2 %>%  
+  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.))
+
 # Check balance before weighting
 bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + ethniccode_cat +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort_2),
-        data = df_bio2, estimand = "ATT", m.threshold = .05)
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
+        data = df_bio2_comp, estimand = "ATT", m.threshold = .05)
 
 # Estimate weights
 bio.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + ethniccode_cat +
-                      scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort_2),
-                    data = df_bio2, estimand = "ATT")
+                      scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
+                    data = df_bio2_comp, estimand = "ATT")
 summary(bio.out) 
 
 # Check balance after weighting
@@ -94,23 +89,24 @@ bal.tab(bio.out, m.threshold = .05, disp.v.ratio = TRUE)
 
 # Extract weights
 bio.w <- svydesign(ids = ~1, weights = bio.out$weights,
-                   data = df_bio2)
+                   data = df_bio2_comp)
 
 ## Chem Weighting 
 # Data with no missing
 df_gchem2_comp <- df_chem2 %>%  
-  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, firstgen, lowincomeflag, female, urm, 
-         hsgpa, mathsr, englsr, enrl_from_cohort) %>%
+  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
   filter(complete.cases(.))
 
 # Check balance before weighting
 bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + urm +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
         data = df_gchem2_comp, estimand = "ATT", m.threshold = .05)
 
 # Estimate weights
 chem.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + urm +
-                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
+                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                      data = df_gchem2_comp, estimand = "ATT")
 summary(chem.out) 
 
@@ -124,18 +120,19 @@ chem.w <- svydesign(ids = ~1, weights = chem.out$weights,
 ## Phys Weighting 
 # Data with no missing
 df_phys2_comp <- df_phys2 %>%  
-  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, firstgen, lowincomeflag, female, urm, 
-         hsgpa, mathsr, englsr, enrl_from_cohort) %>%
+  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, urm, cohort,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
   filter(complete.cases(.))
 
 # Check balance before weighting
 bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + urm +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
         data = df_phys2_comp, estimand = "ATT", m.threshold = .05)
 
 # Estimate weights
 phys.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + urm +
-                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
+                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
                      data = df_phys2_comp, estimand = "ATT")
 summary(phys.out) 
 
@@ -155,42 +152,42 @@ df_bio_aptakers <- bio.w %>%
 df_bio_skeligible <- bio.w %>%
   subset(eligible_to_skip == 1)
 # Skip eligible (at each score)
-df_bio_skeligible.3 <- df_bio2 %>%
-  subset(apscore == 3)
-df_bio_skeligible.4 <- df_bio2 %>%
-  subset(apscore == 4)
-df_bio_skeligible.5 <- df_bio2 %>%
-  subset(apscore == 5)
+df_bio_skeligible.3 <- bio.w %>%
+  subset(apscore_full == 3)
+df_bio_skeligible.4 <- bio.w %>%
+  subset(apscore_full == 4)
+df_bio_skeligible.5 <- bio.w %>%
+  subset(apscore_full == 5)
 
 # Chem
 # Took AP 
-df_chem_aptakers <- df_chem2 %>%
+df_chem_aptakers <- chem.w %>%
   subset(aptaker == 1)
 # Skip eligible
-df_chem_skeligible <- df_chem2 %>%
+df_chem_skeligible <- chem.w %>%
   subset(eligible_to_skip == 1)
 # Skip eligible (at each score)
-df_chem_skeligible.3 <- df_chem2 %>%
-  subset(apscore == 3)
-df_chem_skeligible.4 <- df_chem2 %>%
-  subset(apscore == 4)
-df_chem_skeligible.5 <- df_chem2 %>%
-  subset(apscore == 5)
+df_chem_skeligible.3 <- chem.w %>%
+  subset(apscore_full == 3)
+df_chem_skeligible.4 <- chem.w %>%
+  subset(apscore_full == 4)
+df_chem_skeligible.5 <- chem.w %>%
+  subset(apscore_full == 5)
 
 # Phys
 # Took AP 
-df_phys_aptakers <- df_phys2 %>%
+df_phys_aptakers <- phys.w %>%
   subset(aptaker == 1)
 # Skip eligible
-df_phys_skeligible <- df_phys2 %>%
+df_phys_skeligible <- phys.w %>%
   subset(eligible_to_skip == 1)
 # Skip eligible (at each score)
-df_phys_skeligible.3 <- df_phys2 %>%
-  subset(apscore == 3)
-df_phys_skeligible.4 <- df_phys2 %>%
-  subset(apscore == 4)
-df_phys_skeligible.5 <- df_phys2 %>%
-  subset(apscore == 5)
+df_phys_skeligible.3 <- phys.w %>%
+  subset(apscore_full == 3)
+df_phys_skeligible.4 <- phys.w %>%
+  subset(apscore_full == 4)
+df_phys_skeligible.5 <- phys.w %>%
+  subset(apscore_full == 5)
 
 #### Run Models (for each discipline) ####
 # Note: For model specifications, check: https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174
@@ -216,469 +213,43 @@ logistic.display(bio_rq2a)
 
 # RQ3A - Out of everyone, what was the effect of skipping on 2nd course grade (at each AP score)? 
 # (Formerly 2b.)
-bio_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course)*factor(apscore), 
+bio_rq3a <- lm(scale(numgrade_2) ~ factor(skipped_course)*factor(apscore), 
                data=df_bio2)
-summary(bio_rq2b)
-#std_beta(bio_rq2b)
+summary(bio_rq3a)
+#std_beta(bio_rq3a)
 
-# (When Score  = 3)
-bio_rq2b.3 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
+# RQ3B - In a matched sample, what was the effect of skipping on 2nd course grade?
+# (Formerly 2b1.)
+bio_rq3a.3 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
+                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                 data=df_bio2)
+summary(bio_rq3a.3)
+#std_beta(bio_rq3a.3)
+
+# RQ3B (When Score  = 3)
+bio_rq3a.3 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_bio_skeligible.3)
-summary(bio_rq2b.3)
-#std_beta(bio_rq2b.3)
+               data=df_bio2)
+summary(bio_rq3a.3)
+#std_beta(bio_rq3a.3)
 
-# (When Score  = 4)
-bio_rq2b.4 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
+# RQ3B (When Score  = 4)
+bio_rq3a.4 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_bio_skeligible.4)
-summary(bio_rq2b.4)
-#std_beta(bio_rq2b.4)
+summary(bio_rq3a.4)
+#std_beta(bio_rq3a.4)
 
-# (When Score  = 5)
-bio_rq2b.5 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
+# RQ3B (When Score  = 5)
+bio_rq3a.5 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                data=df_bio_skeligible.5)
-summary(bio_rq2b.5)
-#std_beta(bio_rq2b.5)
-
-
-# RQ2c - Of everyone, what was the effect of skipping on 2nd course grade (controlling for AP score)? 
-bio_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_bio2)
-summary(bio_rq2c)
-#std_beta(bio_rq2c)
-
-# RQ2d - Of everyone who took AP, what was the effect of skipping on 2nd course grade?
-bio_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_bio_aptakers)
-summary(bio_rq2d)
-#std_beta(bio_rq2d)
-
-# RQ2e - Of everyone who took AP and skipped, what was the effect of skipping on 2nd course grade?
-bio_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_bio2)
-summary(bio_rq2d)
-#std_beta(bio_rq2d)
-
-# RQ2f - Of everyone who took AP, what was the effect of being eligible to skip on 2nd course grade?
-bio_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_bio_aptakers)
-summary(bio_rq2f)
-
-#std_beta(bio_rq2f)
-
-# RQ2g -  Of everyone, what was the effect of being eligible to skip on 2nd course grade?
-bio_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
-                factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-              data=df_bio2)
-summary(bio_rq2g)
-#std_beta(bio_rq2g)
-
-# CHEM
-# RQ1a - Who takes AP?
-chem_rq1a <- glm(aptaker ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                 data=df_chem2, binomial(link="logit"))
-summary(chem_rq1a)
-robustse(chem_rq1a, coef="odd.ratio") #robustse is a command from sjstats package
-logistic.display(chem_rq1a)
-
-# RQ1b - Who gets what score on AP exams? (DV: apscore, Sample: Took AP)
-chem_rq1b <- lm(scale(apscore) ~ 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                data=df_chem_aptakers)
-summary(chem_rq1b)
-std_beta(chem_rq1b) # from sjstats package
-
-# RQ1c.i - Of everyone, who earns an AP score that makes them eligible to skip? 
-chem_rq1ci <- glm(eligible_to_skip ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                    scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                  data=df_chem2, binomial(link="logit"))
-summary(chem_rq1ci)
-logistic.display(chem_rq1ci)
-#robustse(chem_rq1ci, coef="odd.ratio")
-
-# RQ1c.ii - Of those who take AP, who earns an AP score that makes them eligible to skip?
-chem_rq1cii <- glm(eligible_to_skip ~ 
-                     factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                     scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                   data=df_chem_aptakers, binomial(link="logit"))
-summary(chem_rq1cii)
-logistic.display(chem_rq1cii)
-#robustse(rq1ci, coef="odd.ratio")
-
-# RQ2a - Of everyone who was eligible to skip, who actually skipped?
-chem_rq2a <- glm(skipped_course ~ 
-                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                 data=df_chem_skeligible, binomial(link="logit"))
-summary(chem_rq2a)
-logistic.display(chem_rq2a)
-#robustse(chem_rq2a, coef="odd.ratio")
-
-# RQ2b - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-chem_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_chem_skeligible)
-summary(chem_rq2b)
-#std_beta(chem_rq2b)
-
-# RQ2b.3 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-chem_rq2b.3 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_chem_skeligible.3)
-summary(chem_rq2b.3)
-#std_beta(chem_rq2b.3)
-
-# RQ2b.4 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-chem_rq2b.4 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_chem_skeligible.4)
-summary(chem_rq2b.4)
-#std_beta(chem_rq2b.4)
-
-# RQ2b.5 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-chem_rq2b.5 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_chem_skeligible.5)
-summary(chem_rq2b.5)
-#std_beta(chem_rq2b.5)
-
-# RQ2c - Of everyone, what was the effect of skipping on 2nd course grade (controlling for AP score)? 
-chem_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_chem2)
-summary(chem_rq2c)
-#std_beta(chem_rq2c)
-
-# RQ2d - Of everyone who took AP, what was the effect of skipping on 2nd course grade?
-chem_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_chem_aptakers)
-summary(chem_rq2d)
-#std_beta(chem_rq2d)
-
-# RQ2e - Of everyone who took AP and skipped, what was the effect of skipping on 2nd course grade?
-chem_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_chem2)
-summary(chem_rq2d)
-#std_beta(chem_rq2d)
-
-# RQ2f - Of everyone who took AP, what was the effect of being eligible to skip on 2nd course grade?
-chem_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_chem_aptakers)
-summary(chem_rq2f)
-
-#std_beta(chem_rq2f)
-
-# RQ2g -  Of everyone, what was the effect of being eligible to skip on 2nd course grade?
-chem_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_chem2)
-summary(chem_rq2g)
-#std_beta(chem_rq2g)
-
-# PHYS
-# RQ1a - Who takes AP?
-phys_rq1a <- glm(aptaker ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                 data=df_phys2, binomial(link="logit"))
-summary(phys_rq1a)
-robustse(phys_rq1a, coef="odd.ratio") #robustse is a command from sjstats package
-logistic.display(phys_rq1a)
-
-# RQ1b - Who gets what score on AP exams? (DV: apscore, Sample: Took AP)
-phys_rq1b <- lm(scale(apscore) ~ 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                data=df_phys_aptakers)
-summary(phys_rq1b)
-std_beta(phys_rq1b) # from sjstats package
-
-# RQ1c.i - Of everyone, who earns an AP score that makes them eligible to skip? 
-phys_rq1ci <- glm(eligible_to_skip ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                    scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                  data=df_phys2, binomial(link="logit"))
-summary(phys_rq1ci)
-logistic.display(phys_rq1ci)
-#robustse(phys_rq1ci, coef="odd.ratio")
-
-# RQ1c.ii - Of those who take AP, who earns an AP score that makes them eligible to skip?
-phys_rq1cii <- glm(eligible_to_skip ~ 
-                     factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                     scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                   data=df_phys_aptakers, binomial(link="logit"))
-summary(phys_rq1cii)
-logistic.display(phys_rq1cii)
-#robustse(rq1ci, coef="odd.ratio")
-
-# RQ2a - Of everyone who was eligible to skip, who actually skipped?
-phys_rq2a <- glm(skipped_course ~ 
-                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                 data=df_phys_skeligible, binomial(link="logit"))
-summary(phys_rq2a)
-logistic.display(phys_rq2a)
-#robustse(phys_rq2a, coef="odd.ratio")
-
-# RQ2b - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-phys_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_phys_skeligible)
-summary(phys_rq2b)
-#std_beta(phys_rq2b)
-
-# RQ2b.3 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-phys_rq2b.3 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_phys_skeligible.3)
-summary(phys_rq2b.3)
-#std_beta(phys_rq2b.3)
-
-# RQ2b.4 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-phys_rq2b.4 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_phys_skeligible.4)
-summary(phys_rq2b.4)
-#std_beta(phys_rq2b.4)
-
-# RQ2b.5 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-phys_rq2b.5 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_phys_skeligible.5)
-summary(phys_rq2b.5)
-#std_beta(phys_rq2b.5)
-
-# RQ2b.3 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-phys_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_bio_skeligible)
-summary(phys_rq2b)
-#std_beta(phys_rq2b)
-
-# RQ2b.4 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-phys_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_bio_skeligible)
-summary(phys_rq2b)
-#std_beta(phys_rq2b)
-
-# RQ2b.5 - Of those who were eligible to skip, what was the effect of skipping on 2nd course grade (controlling for AP score)?
-phys_rq2b <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_bio_skeligible.5)
-summary(phys_rq2b)
-#std_beta(phys_rq2b)
-
-# RQ2c - Of everyone, what was the effect of skipping on 2nd course grade (controlling for AP score)? 
-phys_rq2c <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_phys2)
-summary(phys_rq2c)
-#std_beta(phys_rq2c)
-
-# RQ2d - Of everyone who took AP, what was the effect of skipping on 2nd course grade?
-phys_rq2d <- lm(scale(numgrade_2) ~ factor(skipped_course) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_phys_aptakers)
-summary(phys_rq2d)
-#std_beta(phys_rq2d)
-
-# RQ2e - Of everyone who took AP and skipped, what was the effect of skipping on 2nd course grade?
-phys_rq2e <- lm(scale(numgrade_2) ~ factor(skipped_course) +
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_phys2)
-summary(phys_rq2d)
-#std_beta(phys_rq2d)
-
-# RQ2f - Of everyone who took AP, what was the effect of being eligible to skip on 2nd course grade?
-phys_rq2f <- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
-                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                data=df_phys_aptakers)
-summary(phys_rq2f)
-
-#std_beta(phys_rq2f)
-
-# RQ2g -  Of everyone, what was the effect of being eligible to skip on 2nd course grade?
-phys_rq2g<- lm(scale(numgrade_2) ~ factor(eligible_to_skip) + 
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_phys2)
-summary(phys_rq2g)
-#std_beta(phys_rq2g)
-
-##### Weighting ####
-# Bio Weighting ####
-#Data with no missing
-df_bio2_comp <- df_bio2 %>%  
-  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, firstgen, lowincomeflag, female, urm, 
-         hsgpa, mathsr, englsr, enrl_from_cohort) %>%
-  filter(complete.cases(.))
-
-# Check balance before weighting
-bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + urm +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
-        data = df_bio2_comp, estimand = "ATT", m.threshold = .05)
-
-# Estimate weights
-bio.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + urm +
-                      scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
-                    data = df_bio2_comp, estimand = "ATT")
-summary(bio.out) 
-
-# Check balance after weighting
-bal.tab(bio.out, m.threshold = .05, disp.v.ratio = TRUE)
-
-#Extract weights
-bio.w <- svydesign(ids = ~1, weights = bio.out$weights,
-                   data = df_bio2_comp)
-
-# Chem Weighting ####
-#Data with no missing
-df_gchem2_comp <- df_chem2 %>%  
-  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, firstgen, lowincomeflag, female, urm, 
-         hsgpa, mathsr, englsr, enrl_from_cohort) %>%
-  filter(complete.cases(.))
-
-# Check balance before weighting
-bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + urm +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
-        data = df_gchem2_comp, estimand = "ATT", m.threshold = .05)
-
-# Estimate weights
-chem.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + urm +
-                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
-                     data = df_gchem2_comp, estimand = "ATT")
-summary(chem.out) 
-
-# Check balance after weighting
-bal.tab(chem.out, m.threshold = .05, disp.v.ratio = TRUE)
-
-#Extract weights
-chem.w <- svydesign(ids = ~1, weights = chem.out$weights,
-                    data = df_gchem2_comp)
-
-# Phys Weighting ####
-#Data with no missing
-df_phys2_comp <- df_phys2 %>%  
-  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, firstgen, lowincomeflag, female, urm, 
-         hsgpa, mathsr, englsr, enrl_from_cohort) %>%
-  filter(complete.cases(.))
-
-# Check balance before weighting
-bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + urm +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
-        data = df_phys2_comp, estimand = "ATT", m.threshold = .05)
-
-# Estimate weights
-phys.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + urm +
-                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort),
-                     data = df_phys2_comp, estimand = "ATT")
-summary(phys.out) 
-
-# Check balance after weighting
-bal.tab(phys.out, m.threshold = .05, disp.v.ratio = TRUE)
-
-#Extract weights
-phys.w <- svydesign(ids = ~1, weights = phys.out$weights,
-                    data = df_phys2_comp)
-
-# Model 2e.2: Grade for everyone (c.skipped_course, no score) ####
-#Bio
-m2e.2_BY <- svyglm(scale(numgrade_2) ~ skipped_course + firstgen + factor(lowincomeflag) + female + urm +
-                     scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort), design = bio.w)
-summary(m2e.2_BY)
-cbind("Beta" = coef(m2e.2_BY), confint.default(m2e.2_BY, level = 0.95))
-
-# w/ Robust SE 
-summ(m2e.2_BY, confint = TRUE, 
-     model.fit = FALSE, model.info = FALSE) 
-
-#Chem
-m2e.2_CH <- svyglm(scale(numgrade_2) ~ skipped_course + firstgen + factor(lowincomeflag) + female + urm +
-                     scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort), design = chem.w)
-summary(m2e.2_CH)
-cbind("Beta" = coef(m2e.2_CH), confint.default(m2e.2_CH, level = 0.95))
-
-# w/ Robust SE 
-summ(m2e.2_CH, confint = TRUE, 
-     model.fit = FALSE, model.info = FALSE) 
-
-#Phys
-m2e.2_PH <- svyglm(scale(numgrade_2) ~ skipped_course + firstgen + factor(lowincomeflag) + female + urm +
-                     scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort), design = phys.w)
-summary(m2e.2_PH)
-cbind("Beta" = coef(m2e.2_PH), confint.default(m2e.2_PH, level = 0.95))
-
-# w/ Robust SE 
-summ(m2e.2_PH, confint = TRUE, 
-     model.fit = FALSE, model.info = FALSE) 
-
-# Model 2g.2: Grade for everyone (c.skip eligible, no score) ####
-#Bio
-m2g.2_BY <- svyglm(scale(numgrade_2) ~ eligible_to_skip + firstgen + factor(lowincomeflag) + female + urm +
-                     scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort), design = bio.w)
-summary(m2g.2_BY)
-cbind("Beta" = coef(m2g.2_BY), confint.default(m2g.2_BY, level = 0.95))
-
-summ(m2g.2_BY, confint = TRUE, 
-     model.fit = FALSE, model.info = FALSE) 
-
-#Chem
-m2g.2_CH <- svyglm(scale(numgrade_2) ~ eligible_to_skip + firstgen + factor(lowincomeflag) + female + urm +
-                     scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort), design = chem.w)
-summary(m2g.2_CH)
-cbind("Beta" = coef(m2g.2_CH), confint.default(m2g.2_CH, level = 0.95))
-
-# w/ Robust SE 
-summ(m2e.2_CH, confint = TRUE, 
-     model.fit = FALSE, model.info = FALSE) 
-
-#Phys
-m2e.2_PH <- svyglm(scale(numgrade_2) ~ eligible_to_skip + firstgen + factor(lowincomeflag) + female + urm +
-                     scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(enrl_from_cohort), design = phys.w)
-summary(m2e.2_PH)
-cbind("Beta" = coef(m2e.2_PH), confint.default(m2e.2_PH, level = 0.95))
-
-# w/ Robust SE 
-summ(m2e.2_PH, confint = TRUE, 
-     model.fit = FALSE, model.info = FALSE) 
+summary(bio_rq3a.5)
+#std_beta(bio_rq3a.5)
 
 
 #### Create Regression Output Tables ####

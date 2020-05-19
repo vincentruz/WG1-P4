@@ -170,7 +170,7 @@ df_crs <- df_full %>%
   #mutate(instructor_name = NA) %>%
   mutate(crs_component= CLASS_COMPONENT_DESCR) %>%
   mutate(class_number	= CLASS_NBR) %>%
-  mutate(current_major = ACADEMIC_SUBPLAN_DESCR) 
+  mutate(current_major = ACADEMIC_SUBPLAN_DESCR) %>%
   # Select only common-named variables used in analysis
   select(st_id, crs_sbj:current_major)
 

@@ -1,14 +1,17 @@
 ---
 title: "SEISMIC WG1-P4"
-date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
   html_document:
-    keep_md: true
     code_folding: hide
+    keep_md: yes
     theme: cosmo
     toc: yes
     toc_depth: 2
     toc_float: yes
+date: "Updated: `r format(Sys.time(), '%B %d, %Y')`"
 subtitle: Analysis Workflow
 ---
 
