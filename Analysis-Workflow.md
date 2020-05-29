@@ -1,14 +1,20 @@
 ---
 title: "SEISMIC WG1-P4"
-date: "Updated: April 30, 2020"
 output:
   html_document:
-    keep_md: true
     code_folding: hide
+    keep_md: yes
     theme: cosmo
     toc: yes
     toc_depth: 2
     toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+  word_document:
+    toc: yes
+    toc_depth: '2'
+date: "Updated: May 19, 2020"
 subtitle: Analysis Workflow
 ---
 
@@ -102,16 +108,16 @@ df_std <- df_full %>%
 ## # A tibble: 10 x 24
 ##    st_id firstgen ethniccode ethniccode_cat   urm gender female famincome
 ##    <fct>    <dbl> <fct>               <dbl> <dbl>  <dbl>  <dbl>     <int>
-##  1 4C0C…        1 WHITE                   0     0      0      0     29516
-##  2 35FA…        0 WHITE                   0     0      0      0    130000
-##  3 0C3A…        0 WHITE                   0     0      1      1    124275
-##  4 43EB…        0 WHITE                   0     0      1      1     42221
-##  5 B77F…        0 WHITE                   0     0      1      1        NA
-##  6 CD65…        0 HISPA                   1     1      0      0    257176
-##  7 BC79…        0 WHITE                   0     0      1      1     29514
-##  8 BB3A…        0 WHITE                   0     0      1      1    279121
-##  9 286D…        0 WHITE                   0     0      0      0        NA
-## 10 2E57…        0 WHITE                   0     0      0      0    353154
+##  1 3F16…        0 MULTI                  NA    NA      1      1    296259
+##  2 B619…        1 WHITE                   0     0      0      0     34414
+##  3 1A76…        0 WHITE                   0     0      0      0      3017
+##  4 A96D…        0 WHITE                   0     0      1      1        NA
+##  5 7601…        0 WHITE                   0     0      0      0        NA
+##  6 E1FC…        0 WHITE                   0     0      0      0    152984
+##  7 7A3B…        1 ASIAN                   2     0      0      0     54489
+##  8 EF4B…        0 WHITE                   0     0      1      1    151947
+##  9 0C82…        0 MULTI                  NA    NA      1      1    168199
+## 10 F295…        0 WHITE                   0     0      0      0    183921
 ## # … with 16 more variables: lowincomeflag <dbl>, transfer <dbl>,
 ## #   international <dbl>, ell <dbl>, us_hs <dbl>, cohort <dbl>,
 ## #   cohort_2013 <dbl>, cohort_2014 <dbl>, cohort_2015 <dbl>, cohort_2016 <dbl>,
@@ -531,17 +537,18 @@ logistic.display(m1.a_bio)
 ```
 ##  
 ##                               OR lower95ci upper95ci     Pr(>|Z|)
-## factor(firstgen)1      1.1327672 0.8458207 1.5170610 4.029029e-01
-## factor(lowincomeflag)1 0.9091437 0.7067043 1.1695730 4.585982e-01
-## factor(female)1        0.8449690 0.7144546 0.9993253 4.908547e-02
-## factor(urm)1           0.9912676 0.7515754 1.3074024 9.504824e-01
-## scale(hsgpa)           0.9925281 0.9133099 1.0786175 8.597277e-01
-## scale(mathsr)          1.1684125 1.0582577 1.2900335 2.064939e-03
-## scale(englsr)          1.1098205 1.0067102 1.2234916 3.622537e-02
-## factor(cohort)2015     1.1675600 0.9138517 1.4917041 2.152381e-01
-## factor(cohort)2016     1.1405278 0.8931304 1.4564545 2.918823e-01
-## factor(cohort)2017     1.4508224 1.1342671 1.8557230 3.045026e-03
-## factor(cohort)2018     1.6722230 1.3023230 2.1471862 5.558193e-05
+## factor(firstgen)1      1.0839026 0.8285885  1.417887 5.565976e-01
+## factor(lowincomeflag)1 0.9257913 0.7290026  1.175701 5.271245e-01
+## factor(female)1        0.8636020 0.7363766  1.012808 7.131839e-02
+## factor(urm)1           0.9646356 0.7417146  1.254555 7.882842e-01
+## scale(hsgpa)           0.9837005 0.9087208  1.064867 6.845533e-01
+## scale(mathsr)          1.2179055 1.1133348  1.332298 1.678186e-05
+## scale(englsr)          1.0259311 0.9393439  1.120500 5.693163e-01
+## factor(cohort)2014     1.1887481 0.9177678  1.539738 1.902389e-01
+## factor(cohort)2015     1.3856350 1.0709123  1.792849 1.309643e-02
+## factor(cohort)2016     1.3837122 1.0708700  1.787948 1.300699e-02
+## factor(cohort)2017     1.7817311 1.3726503  2.312727 1.425023e-05
+## factor(cohort)2018     2.5481683 1.9140613  3.392348 1.485664e-10
 ```
 
 ### *RQ1b: Who gets what score on AP exams?* 
@@ -567,18 +574,18 @@ summary(m1.b_bio)
 ```
 ##  
 ##                               OR lower95ci upper95ci     Pr(>|Z|)
-## factor(firstgen)1      0.9919314 0.8125886 1.2108563 9.365547e-01
-## factor(lowincomeflag)1 0.8255599 0.6915657 0.9855161 3.410086e-02
-## factor(female)1        0.7488713 0.6685817 0.8388030 6.704160e-07
-## factor(urm)1           0.7239805 0.6032798 0.8688303 5.379178e-04
-## scale(hsgpa)           1.1357923 1.0693442 1.2063693 3.732853e-05
-## scale(mathsr)          1.1824570 1.1049289 1.2654250 1.448605e-06
-## scale(englsr)          1.2551903 1.1741453 1.3418294 3.871251e-11
-## factor(crs_term)2015   1.0093590 0.8458980 1.2044072 9.177080e-01
-## factor(crs_term)2016   0.8605007 0.7240162 1.0227141 8.845368e-02
-## factor(crs_term)2017   0.9218042 0.7782489 1.0918395 3.460371e-01
-## factor(crs_term)2018   1.0497281 0.8878170 1.2411670 5.702780e-01
-## factor(crs_term)2019   0.7206907 0.3634912 1.4289069 3.484743e-01
+## factor(firstgen)1      1.0445422 0.8669833 1.2584653 6.467208e-01
+## factor(lowincomeflag)1 0.8774990 0.7426503 1.0368333 1.250205e-01
+## factor(female)1        0.7815049 0.7017255 0.8703546 7.874963e-06
+## factor(urm)1           0.7084578 0.5934068 0.8458152 1.445518e-04
+## scale(hsgpa)           1.1339354 1.0712224 1.2003198 1.609665e-05
+## scale(mathsr)          1.2288801 1.1572551 1.3049382 2.635409e-11
+## scale(englsr)          1.3051871 1.2292475 1.3858180 9.581728e-18
+## factor(crs_term)2014   0.7680279 0.6358375 0.9277006 6.256180e-03
+## factor(crs_term)2015   0.7889513 0.6531683 0.9529614 1.403018e-02
+## factor(crs_term)2016   0.6750136 0.5608454 0.8124225 3.438879e-05
+## factor(crs_term)2017   0.7171274 0.5970589 0.8613417 3.898370e-04
+## factor(crs_term)2018   0.8390635 0.6962436 1.0111800 6.553994e-02
 ```
 
 ### *(Etc…)*
@@ -590,143 +597,5 @@ summary(m1.b_bio)
  - More details about propensity score matching methods can be found here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3144483/
  - A demonstration of WeightIt for IPW: https://cran.r-project.org/web/packages/WeightIt/vignettes/WeightIt_A0_basic_use.html
 
-# **III. Data Visualization (Same Across Institutions)**
-
-## 0.	Startup
-
-### a. Load R pkgs
-
-```r
-# Load required package
-if (!require("pacman")) install.packages("pacman")
-library(pacman)
-pacman::p_load("tidyverse",  # For data wrangling
-               "shiny")      # Interactive visualizations
-```
-
-### b. Add column of fitted values to the "Took 2nd course" dataframe (i.e., df_bio2) 
-
-
-
-```r
-# For each Course
-# BIO
-# Generate estimates
-fit_bio <- lm(numgrade_2 ~ scale(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-              df_bio2, na.action=na.exclude)
-
-# Add column of fitted values
-df_viz_bio <- df_bio2 %>%
-  mutate(numgrade_2.fitted = fitted(fit_bio))
-
-# etc...
-# Repeat for Chem, Phys
-```
-
-### c. Combine disciplines into single dataframe for viz
-
-```r
-#Combine disciplines into one dataframe for viz
-df_viz <- bind_rows(df_viz_bio, df_viz_chem, df_viz_phys) %>%
-# Only count as skipped if skipped with eligible AP score
-  mutate(skipped_course = if_else(eligible_to_skip == 0 & skipped_course == 1, 
-                                  as.numeric(NA), as.numeric(skipped_course)))
-```
-
-
-```
-## [1] "Example Data Viz Dataframe"
-```
-
-```
-## # A tibble: 6,795 x 65
-##        X discipline st_id firstgen ethniccode ethniccode_cat   urm gender female
-##    <int> <fct>      <fct>    <int> <fct>               <int> <int>  <int>  <int>
-##  1     6 BIO        0061…        0 WHITE                   0     0      0      0
-##  2     8 BIO        0076…        0 WHITE                   0     0      0      0
-##  3     9 BIO        0080…        0 WHITE                   0     0      0      0
-##  4    10 BIO        0085…        1 ASIAN                   2     0      0      0
-##  5    11 BIO        0091…        1 WHITE                   0     0      1      1
-##  6    13 BIO        0099…        0 ASIAN                   2     0      1      1
-##  7    14 BIO        00A3…        0 WHITE                   0     0      1      1
-##  8    17 BIO        00BF…        0 WHITE                   0     0      1      1
-##  9    18 BIO        00C0…        0 MULTI                  NA    NA      0      0
-## 10    19 BIO        00CC…        0 WHITE                   0     0      1      1
-## # … with 6,785 more rows, and 56 more variables: famincome <int>,
-## #   lowincomeflag <int>, transfer <int>, transfer_cred <dbl>,
-## #   international <int>, ell <int>, us_hs <int>, cohort <int>,
-## #   cohort_2013 <int>, cohort_2014 <int>, cohort_2015 <int>, cohort_2016 <int>,
-## #   cohort_2017 <int>, cohort_2018 <int>, apyear <int>, englsr <int>,
-## #   mathsr <int>, hsgpa <dbl>, crs_sbj_2 <fct>, crs_catalog_2 <int>,
-## #   crs_name_2 <fct>, numgrade_2 <dbl>, numgrade_w_2 <int>, crs_retake_2 <fct>,
-## #   crs_term_2 <int>, crs_term_sem_2 <int>, summer_crs_2 <int>,
-## #   TERM_REF_2 <int>, enrl_from_cohort_2 <dbl>, crs_credits_2 <int>,
-## #   crs_component_2 <fct>, class_number_2 <int>, current_major_2 <fct>,
-## #   crs_sbj <fct>, crs_catalog <int>, crs_name <fct>, numgrade <dbl>,
-## #   numgrade_w <int>, crs_retake <fct>, crs_term <int>, crs_term_sem <int>,
-## #   summer_crs <int>, TERM_REF <int>, enrl_from_cohort <dbl>,
-## #   crs_credits <int>, crs_component <fct>, class_number <int>,
-## #   current_major <fct>, aptaker <int>, apscore <int>, apscore_full <int>,
-## #   eligible_to_skip <int>, tookcourse <int>, tookcourse_2 <int>,
-## #   skipped_course <dbl>, numgrade_2.fitted <dbl>
-```
-
-## 1.	Generate Model Plots (for each Course)
-
-### a. Build interactive viz using RShiny package
-
-#### *Note:*
-- Sample code shown here for static graphs - see [DataViz](https://github.com/seismic2020/WG1-P4/tree/master/Shared%20Analysis) for runnable code to generate interactive graphs 
-
-
-```r
-# Set up User Interface
-ui <- fluidPage(
-  titlePanel("Grades by AP Score"),
-  sidebarLayout(
-    sidebarPanel(
-      #Select course to plot
-      selectInput(inputId = "discipline", 
-                  label = "Select a course:",
-                  choices = unique(df_viz$discipline), 
-                  selected = "CHEM")
-# etc...
-
-# Define Server 
-server <- function(input, output) {
-  #Subset data based on the given course sequence
-  #though we'll let ggplot do most of the summary later, we'll precalculate some of the means and standard errors to use for error bars
-  chartData <- reactive({
-    df_viz %>%
-      filter(!is.na(skipped_course)) %>%
-      filter(discipline == input$discipline) %>%
-      group_by(apscore_full, skipped_course) %>%
-      mutate(n = n()) %>%
-
-# etc...
-      
-# Build and Render Plots
-  output$linePlotUncontrolled <- renderPlot({
-    ggplot(data=chartData(), aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
-      geom_point(stat = 'summary', fun.y = 'mean', size=3) +
-      
-# etc...
-      
-# Launch Shiny App ####
-shinyApp(ui = ui, server = server) 
-```
-
-
-
-
-![](Analysis-Workflow_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
-
-
-
-![](Analysis-Workflow_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
-  
-
-
-![](Analysis-Workflow_files/figure-html/unnamed-chunk-50-1.png)<!-- -->
+# **III. Data Visualization (Same Across Institutions) - COMING SOON!**
 

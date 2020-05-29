@@ -1,20 +1,26 @@
 # Before running this code, check https://github.com/seismic2020/WG1-P4/blob/master/Analysis-Workflow.md for variable naming and data cleaning steps.
 
-#### Setup ####
+# Setup ####
 # Load libraries
 if (!require("pacman")) install.packages("pacman")
 library(pacman)
-pacman::p_load("tidyverse", "psych", "data.table", "broom", "summarytools",   # Data wrangling and descriptive stats
-               "BaylorEdPsych", "mvnmle",                                     # Littles MCAR test
-               "mice",                                                        # Multiple imputation
-               "epiDisplay", "sjstats",                                       # Reporting Odds Ratio and Std. Betas
-               "WeightIt", "cobalt", "survey",                                # Propensity score matching
-               "sjPlot")                                                      # Generating regression tables
+pacman::p_load("tidyverse", "psych", "data.table", "broom",         # Data wrangling
+              "summarytools", "corrplot",                           # Descriptive stats
+               "BaylorEdPsych", "mvnmle",                           # Littles MCAR test
+               "mice",                                              # Multiple imputation
+               "jtools", "sjstats",                                 # Reporting Odds Ratio and Std. Betas
+               "WeightIt", "cobalt", "survey",                      # Propensity score matching
+               "sjPlot")                                            # Generating regression tables
 
-# Load clean dataset
+## Options 
+options(digits = 5)        # Show 5 decimals
+options(scipen = 999)      # Turn off scientific notation
+select <- dplyr::select    # Use dyplr for 'select' function
+
+## Load clean dataset
 df_clean <- read.csv("~/YOUR RECODED FILE PATH HERE.csv")
 
-# View data 
+## View data 
 # Note: Variable names should follow SEISMIC conventions found here: https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021
 names(df_clean)
 head(df_clean)
@@ -29,311 +35,176 @@ df_clean <- df_clean %>%
   filter(international == 0) 
 
 ## Create subset dataframes for each discipline ####
-# Bio (complete info, after 2013)
+### Bio (complete info, after 2013)
 df_bio2 <- df_clean %>%
   subset(discipline == "BIO") %>%
   subset(apyear >= 2013) 
 
-# Chem (complete info, after 2014)
+### Chem (complete info, after 2014)
 df_chem2 <- df_clean %>%
   subset(discipline == "CHEM") %>%
   subset(apyear >= 2014)
 
-# Phys (complete info, after 2015)
-# Took 2nd course in sequence
+### Phys (complete info, after 2015)
 df_phys2 <- df_clean %>%
   subset(discipline == "PHYS") %>%
   subset(apyear >= 2015) 
 
-#### Descriptive Stats ####
+# Descriptive Stats ####
 # Vector of Continuous Vars
 contVar <- c("numgrade", "numgrade_2", "mathsr", "englsr", "hsgpa", "apscore")
 
-# Full Dataset
+## Full Dataset
 view(dfSummary(df_clean))
 lapply(df_clean[contVar], function(x) summary(x))
 
-# By Discipline
-# Bio
+## By Discipline
+### Bio
 view(dfSummary(df_bio2))
 lapply(df_bio2[contVar], function(x) summary(x))
-# Chem
+### Chem
 view(dfSummary(df_chem2))
 lapply(df_chem2[contVar], function(x) summary(x))
-# Phys
+### Phys
 view(dfSummary(df_phsy2))
 lapply(df_phys2[contVar], function(x) summary(x))
 
-#### Matching (using Weights) ####
-## Bio 
-# Data with no missing
-df_bio2_comp <- df_bio2 %>%  
-  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
-         firstgen, lowincomeflag, female, urm, ethniccode_cat,
-         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
-  filter(complete.cases(.))
+# Run Models (for each discipline) #
+# Note: For model specifications and samples, check: https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174
 
-# Check balance before weighting
-bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + ethniccode_cat +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
-        data = df_bio2_comp, estimand = "ATT", m.threshold = .05)
-
-# Estimate weights
-bio.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + ethniccode_cat +
-                      scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
-                    data = df_bio2_comp, estimand = "ATT")
-summary(bio.out) 
-
-# Check balance after weighting
-bal.tab(bio.out, m.threshold = .05, disp.v.ratio = TRUE)
-
-# Extract weights
-bio.w <- svydesign(ids = ~1, weights = bio.out$weights,
-                   data = df_bio2_comp)
-
-## Chem Weighting 
-# Data with no missing
-df_gchem2_comp <- df_chem2 %>%  
-  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
-         firstgen, lowincomeflag, female, urm, ethniccode_cat,
-         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
-  filter(complete.cases(.))
-
-# Check balance before weighting
-bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + urm +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
-        data = df_gchem2_comp, estimand = "ATT", m.threshold = .05)
-
-# Estimate weights
-chem.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + urm +
-                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
-                     data = df_gchem2_comp, estimand = "ATT")
-summary(chem.out) 
-
-# Check balance after weighting
-bal.tab(chem.out, m.threshold = .05, disp.v.ratio = TRUE)
-
-# Extract weights
-chem.w <- svydesign(ids = ~1, weights = chem.out$weights,
-                    data = df_gchem2_comp)
-
-## Phys Weighting 
-# Data with no missing
-df_phys2_comp <- df_phys2 %>%  
-  select(numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
-         firstgen, lowincomeflag, female, urm, cohort,
-         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
-  filter(complete.cases(.))
-
-# Check balance before weighting
-bal.tab(skipped_course ~ + firstgen + factor(lowincomeflag) + female + urm +
-          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
-        data = df_phys2_comp, estimand = "ATT", m.threshold = .05)
-
-# Estimate weights
-phys.out <- weightit(skipped_course ~ firstgen + factor(lowincomeflag) + female + urm +
-                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort),
-                     data = df_phys2_comp, estimand = "ATT")
-summary(phys.out) 
-
-# Check balance after weighting
-bal.tab(phys.out, m.threshold = .05, disp.v.ratio = TRUE)
-
-#Extract weights
-phys.w <- svydesign(ids = ~1, weights = phys.out$weights,
-                    data = df_phys2_comp)
-
-## Create weighted dataframes subsets for analysis samples (by each discipline) ####
-# Bio
-# Took AP 
-df_bio_aptakers <- bio.w %>%
-  subset(aptaker == 1)
-# Skip eligible
-df_bio_skeligible <- bio.w %>%
-  subset(eligible_to_skip == 1)
-# Skip eligible (at each score)
-df_bio_skeligible.3 <- bio.w %>%
-  subset(apscore_full == 3)
-df_bio_skeligible.4 <- bio.w %>%
-  subset(apscore_full == 4)
-df_bio_skeligible.5 <- bio.w %>%
-  subset(apscore_full == 5)
-
-# Chem
-# Took AP 
-df_chem_aptakers <- chem.w %>%
-  subset(aptaker == 1)
-# Skip eligible
-df_chem_skeligible <- chem.w %>%
-  subset(eligible_to_skip == 1)
-# Skip eligible (at each score)
-df_chem_skeligible.3 <- chem.w %>%
-  subset(apscore_full == 3)
-df_chem_skeligible.4 <- chem.w %>%
-  subset(apscore_full == 4)
-df_chem_skeligible.5 <- chem.w %>%
-  subset(apscore_full == 5)
-
-# Phys
-# Took AP 
-df_phys_aptakers <- phys.w %>%
-  subset(aptaker == 1)
-# Skip eligible
-df_phys_skeligible <- phys.w %>%
-  subset(eligible_to_skip == 1)
-# Skip eligible (at each score)
-df_phys_skeligible.3 <- phys.w %>%
-  subset(apscore_full == 3)
-df_phys_skeligible.4 <- phys.w %>%
-  subset(apscore_full == 4)
-df_phys_skeligible.5 <- phys.w %>%
-  subset(apscore_full == 5)
-
-#### Run Models (for each discipline) ####
-# Note: For model specifications, check: https://docs.google.com/spreadsheets/d/1rN8W_iz1mr7lEzBGfdTZHa45wKOSLiSF8VEpChCPsmE/edit#gid=129222174
-
-# BIO
-# RQ1 - Out of everyone, who earns an AP score that makes them eligible to skip? 
+## RQ1 - Out of everyone, who earns an AP score that makes them eligible to skip? ####
 # (Formerly 1ci.)
+## Correlations of demographics and eligibility
+# Bio
+bio_corr <- df_bio2 %>%
+  mutate(white = (ethniccode_cat == 0)) %>%
+  mutate(urm = (ethniccode_cat == 1)) %>%
+  mutate(asian = (ethniccode_cat == 2)) %>%
+  select(eligible_to_skip, firstgen, lowincomeflag, gender, white, asian, urm) %>%
+  filter(complete.cases(.)) %>%
+  corr.test()
+bio_corr
+corrplot(bio_corr$r, method = "color", type = "lower", addCoef.col = "Black",
+         p.mat = bio_corr$p, insig = "label_sig", sig.level = c(.001, .01, .05), pch.cex = 1)
+
+# CHEM
+chem_corr <- df_chem2 %>%
+  mutate(white = (ethniccode_cat == 0)) %>%
+  mutate(urm = (ethniccode_cat == 1)) %>%
+  mutate(asian = (ethniccode_cat == 2)) %>%
+  select(eligible_to_skip, firstgen, lowincomeflag, gender, white, asian, urm) %>%
+  filter(complete.cases(.)) %>%
+  corr.test()
+chem_corr
+corrplot(chem_corr$r, method = "color", type = "lower", addCoef.col = "Black", 
+         p.mat = chem_corr$p, insig = "label_sig", sig.level = c(.001, .01, .05), pch.cex = 1)
+
+# PHYS
+phys_corr <- df_phys2 %>%
+  mutate(white = (ethniccode_cat == 0)) %>%
+  mutate(urm = (ethniccode_cat == 1)) %>%
+  mutate(asian = (ethniccode_cat == 2)) %>%
+  select(eligible_to_skip, firstgen, lowincomeflag, gender, white, asian, urm) %>%
+  corr.test(use = "complete")
+corrplot(phys_corr$r, method = "color", type = "lower", addCoef.col = "Black", 
+         p.mat = phys_corr$p, insig = "label_sig", sig.level = c(.001, .01, .05), pch.cex = 1)
+
+# Models
+### BIO
 bio_rq1 <- glm(eligible_to_skip ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
                    scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                 data=df_bio2, binomial(link="logit"))
-summary(bio_rq1)
-logistic.display(bio_rq1)
+                  data=df_bio2, binomial(link="logit"))
+summ(bio_rq1, exp = T, digits = 5, confint=T)
 
-# RQ2 - Out of everyone who was eligible to skip, who actually skipped? 
+### CHEM
+chem_rq1 <- glm(eligible_to_skip ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
+               data=df_chem2, binomial(link="logit"))
+summ(chem_rq1, exp = T, digits = 5, confint=T)
+
+### PHYS
+phys_rq1 <- glm(eligible_to_skip ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
+               data=df_phys2, binomial(link="logit"))
+summ(phys_rq1, exp = T, digits = 5, confint=T)
+
+# Vizualization for RQ1
+plot_summs(bio_rq1,chem_rq1, phys_rq1, scale = T, exp = T, 
+           model.names = c("BIO", "CHEM", "PHYSICS"))
+
+## RQ2 - Out of everyone who was eligible to skip, who actually skipped? ####
 # (Formerly 2a.)
-bio_rq2a <- glm(skipped_course ~ 
+### BIO
+# Subset dataframe: Skip eligible
+df_bio_skeligible <- df_bio2 %>%
+  subset(eligible_to_skip == 1)
+
+# View number of eligible students who skipped the course
+table(df_bio_skeligible$skipped_course)
+
+# Model
+bio_rq2 <- glm(skipped_course ~ 
                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
-                data=df_bio_skeligible, binomial(link="logit"))
-summary(bio_rq2a)
-logistic.display(bio_rq2a)
-#robustse(bio_rq2a, coef="odd.ratio")
+                  data=df_bio_skeligible, binomial(link="logit"))
+summ(bio_rq2, exp = T, digits = 5, confint=T)
 
-# RQ3A - Out of everyone, what was the effect of skipping on 2nd course grade (at each AP score)? 
-# (Formerly 2b.)
-bio_rq3a <- lm(scale(numgrade_2) ~ factor(skipped_course)*factor(apscore), 
-               data=df_bio2)
-summary(bio_rq3a)
-#std_beta(bio_rq3a)
+### CHEM
+# Subset dataframe: Skip eligible
+df_chem_skeligible <- df_chem2 %>%
+  subset(eligible_to_skip == 1)
 
-# RQ3B - In a matched sample, what was the effect of skipping on 2nd course grade?
-# (Formerly 2b1.)
-bio_rq3a.3 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-                 data=df_bio2)
-summary(bio_rq3a.3)
-#std_beta(bio_rq3a.3)
+# View number of eligible students who skipped the course
+table(df_chem_skeligible$skipped_course)
 
-# RQ3B (When Score  = 3)
-bio_rq3a.3 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_bio2)
-summary(bio_rq3a.3)
-#std_beta(bio_rq3a.3)
+# Model
+chem_rq2 <- glm(skipped_course ~ 
+                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
+               data=df_chem_skeligible, binomial(link="logit"))
+summ(chem_rq2, exp = T, digits = 5, confint=T)
 
-# RQ3B (When Score  = 4)
-bio_rq3a.4 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_bio_skeligible.4)
-summary(bio_rq3a.4)
-#std_beta(bio_rq3a.4)
+### PHYS
+# Subset dataframe: Skip eligible
+df_phys_skeligible <- df_phys2 %>%
+  subset(eligible_to_skip == 1)
 
-# RQ3B (When Score  = 5)
-bio_rq3a.5 <- lm(scale(numgrade_2) ~ factor(skipped_course) + scale(apscore) + 
-                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               data=df_bio_skeligible.5)
-summary(bio_rq3a.5)
-#std_beta(bio_rq3a.5)
+# View number of eligible students who skipped the course
+table(df_phys_skeligible$skipped_course)
 
+# Model
+phys_rq2 <- glm(skipped_course ~ 
+                 # factor(firstgen) + *UNSTABLE*
+                 factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(cohort), 
+               data=df_phys_skeligible, binomial(link="logit"))
+summ(phys_rq2, exp = T, digits = 5, confint=T)
+  
+# Vizualization for RQ2
+plot_summs(bio_rq2,chem_rq2, phys_rq2, scale = T, exp = T,
+           model.names = c("BIO", "CHEM", "PHYSICS"))
 
-#### Create Regression Output Tables ####
-# By Discipline and RQ
-BIO_RQ1models <- tab_model(bio_rq1a, bio_rq1b, bio_rq1ci, bio_rq1cii, bio_rq2a,
-                           title = "BIO RQ1 Models", file = "BIO RQ1 Models.htm", 
-                           digits = 3, show.intercept = FALSE)
-print(BIO_RQ1models)
-BIO_RQ2models <- tab_model(bio_rq2b, bio_rq2c, bio_rq2d, bio_rq2e, bio_rq2f, bio_rq2g, 
-                           title = "BIO RQ2 Models", file = "BIO RQ2 Models.htm", 
-                           digits = 3, show.intercept = FALSE)
-print(BIO_RQ2models)
+## RQ3A - Out of everyone, what was the effect of skipping on 2nd course grade (at each AP score)? 
+### BIO
+# Descriptive Stats
+# Number of students who skipped the course at each AP score
+table(df_bio2$skipped_course, df_bio2$apscore_full)
+# Student course 2 grades at each AP score 
+table(df_bio2$numgrade_2, df_bio2$apscore_full, df_bio2$skipped_course)
+# Means and SD
+df_bio2 %>% 
+  group_by(apscore_full, skipped_course) %>%
+  summarize(mean = mean(numgrade_2,  na.rm = T), sd = sd(numgrade_2,  na.rm = T)) 
+# ANOVA
+bio_rq3a <- aov(numgrade_2 ~ as.factor(apscore_full)*as.factor(skipped_course), 
+                data=df_bio2)
+anova(bio_rq3a)
+TukeyHSD(bio_rq3a)
 
-CHEM_RQ1models <- tab_model(chem_rq1a, chem_rq1b, chem_rq1ci, chem_rq1cii, chem_rq2a, 
-                            title = "CHEM RQ1 Models", file = "CHEM RQ1 Models.htm", 
-                            digits = 3, show.intercept = FALSE)
-print(CHEM_RQ1models)
-CHEM_RQ2models <- tab_model(chem_rq2b, chem_rq2c, chem_rq2d, chem_rq2e, chem_rq2f, chem_rq2g,
-                            title = "CHEM RQ2 Models", file = "CHEM RQ2 Models.htm",
-                            digits = 3, show.intercept = FALSE)
-print(CHEM_RQ2models)
-
-PHYS_RQ1models <- tab_model(phys_rq1a, phys_rq1b, phys_rq1ci, phys_rq1cii, phys_rq2a,
-                            title = "PHYS RQ1 Models", file = "PHYS RQ1 Models.htm",
-                            digits = 3, show.intercept = FALSE)
-print(PHYS_RQ1models)
-PHYS_RQ2models <- tab_model(phys_rq2b, phys_rq2c, phys_rq2d, phys_rq2e, phys_rq2f, phys_rq2g,
-                            title = "PHYS RQ2 Models", file = "PHYS RQ2 Models.htm",
-                            digits = 3, show.intercept = FALSE)
-print(PHYS_RQ2models)
-
-#### Create Plots ####
-# BIO
-# Generate estimates
-fit_bio <- lm(numgrade_2 ~ scale(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-              df_bio2, na.action=na.exclude)
-# Add column of fitted values
-df_viz_bio <- df_bio2 %>%
-  mutate(numgrade_2.fitted = fitted(fit_bio))
-
-# Raw
-raw_bio <- df_viz_bio %>%
-  ggplot(aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
-  geom_point(stat = 'summary', fun.y = 'mean', size=3) +
-  stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
-  geom_smooth(stat = 'summary', method = 'loess') +
-  scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
-  scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
-  theme_classic() +
-  theme(
-    panel.border = element_rect(color = "black", fill=NA),
-    axis.title.x.top = element_blank(),
-    axis.title.y.right = element_blank(),
-    legend.position=c(0.85, 0.25),
-    legend.background = element_blank(),
-    legend.box.background = element_rect(color = "black")
-  ) +
-  labs(x = "AP Score", y = paste("Mean Grade in", "BIO", "2"), title= paste("BIO", "Uncontrolled Model"))
-plot(raw_bio)
-
-# Fitted
-fit_bio <- df_viz_bio %>%
-  ggplot(aes(y = numgrade_2.fitted, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
-  geom_point(stat = 'summary', fun.y = 'mean', size=3) +
-  stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
-  geom_smooth(stat = 'summary', method = 'loess') +
-  scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
-  scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
-  theme_classic() +
-  theme(
-    panel.border = element_rect(color = "black", fill=NA),
-    axis.title.x.top = element_blank(),
-    axis.title.y.right = element_blank(),
-    legend.position=c(0.85, 0.25),
-    legend.background = element_blank(),
-    legend.box.background = element_rect(color = "black")
-  ) +
-  labs(x = "AP Score", y = paste("Mean Grade in", "BIO", "2"), title= paste("BIO", "Fitted Model"))
-plot(fit_bio)
-
+# Vizualizations for RQ3A
 # Histogram
-hist_bio <- df_viz_bio %>%
-  ggplot(aes(x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
+hist_bio <- df_bio2 %>%
+  ggplot(aes(x = apscore, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
   geom_histogram(stat='count', position = position_dodge(preserve = "single")) +
   scale_x_continuous(sec.axis = dup_axis(labels = NULL)) +
   scale_y_continuous(sec.axis = dup_axis(labels = NULL)) +
@@ -342,24 +213,15 @@ hist_bio <- df_viz_bio %>%
     panel.border = element_rect(color = "black", fill=NA),
     axis.title.x.top = element_blank(),
     axis.title.y.right = element_blank(),
-    legend.position=c(0.85, 0.85),
+    legend.position=c(0.25, 0.85),
     legend.background = element_blank(),
     legend.box.background = element_rect(color = "black")) +
-  labs(x = "AP Score", y = "Number of Students", title= paste("Histogram of AP", "BIO", "Scores"))
+  labs(x = "AP Score", y = "Number of Students", title= "Histogram of AP BIO Scores")
 plot(hist_bio)
 
-#CHEM
-# Generate estimates
-fit_chem <- lm(numgrade_2 ~ scale(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               df_chem2, na.action=na.exclude)
-# Add column of fitted values
-df_viz_chem <- df_chem2 %>%
-  mutate(numgrade_2.fitted = fitted(fit_chem))
-
-# Raw
-raw_chem <- df_viz_chem %>%
-  ggplot(aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
+# Line Graph
+plot_bio_rq3a <- df_bio2 %>%
+  ggplot(aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
   geom_point(stat = 'summary', fun.y = 'mean', size=3) +
   stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
   geom_smooth(stat = 'summary', method = 'loess') +
@@ -374,32 +236,29 @@ raw_chem <- df_viz_chem %>%
     legend.background = element_blank(),
     legend.box.background = element_rect(color = "black")
   ) +
-  labs(x = "AP Score", y = paste("Mean Grade in", "CHEM", "2"), title= paste("CHEM", "Uncontrolled Model"))
-plot(raw_chem)
+  labs(x = "AP Score", y = "Mean Grade in BIO 2", title= "BIO Uncontrolled Model")
+plot(plot_bio_rq3a)
 
-# Fitted
-fit_chem <- df_viz_chem %>%
-  ggplot(aes(y = numgrade_2.fitted, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
-  geom_point(stat = 'summary', fun.y = 'mean', size=3) +
-  stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
-  geom_smooth(stat = 'summary', method = 'loess') +
-  scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
-  scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
-  theme_classic() +
-  theme(
-    panel.border = element_rect(color = "black", fill=NA),
-    axis.title.x.top = element_blank(),
-    axis.title.y.right = element_blank(),
-    legend.position=c(0.85, 0.25),
-    legend.background = element_blank(),
-    legend.box.background = element_rect(color = "black")
-  ) +
-  labs(x = "AP Score", y = paste("Mean Grade in", "CHEM", "2"), title= paste("CHEM", "Fitted Model"))
-plot(fit_chem)
+### CHEM
+# Descriptive Stats
+# Number of students who skipped the course at each AP score
+table(df_chem2$skipped_course, df_chem2$apscore_full)
+# Student course 2 grades at each AP score 
+table(df_chem2$numgrade_2, df_chem2$apscore_full, df_chem2$skipped_course) 
+# Means and SD
+df_chem2 %>% 
+  group_by(apscore_full, skipped_course) %>%
+  summarize(mean = mean(numgrade_2,  na.rm = T), sd = sd(numgrade_2,  na.rm = T)) 
+# ANOVA
+chem_rq3a <- aov(numgrade_2 ~ as.factor(apscore_full)*as.factor(skipped_course), 
+                 data=df_chem2)
+anova(chem_rq3a)
+TukeyHSD(chem_rq3a)
 
+# Vizualizations for RQ3A
 # Histogram
-hist_chem <- df_viz_chem %>%
-  ggplot(aes(x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
+hist_chem <- df_chem2 %>%
+  ggplot(aes(x = apscore, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
   geom_histogram(stat='count', position = position_dodge(preserve = "single")) +
   scale_x_continuous(sec.axis = dup_axis(labels = NULL)) +
   scale_y_continuous(sec.axis = dup_axis(labels = NULL)) +
@@ -408,24 +267,15 @@ hist_chem <- df_viz_chem %>%
     panel.border = element_rect(color = "black", fill=NA),
     axis.title.x.top = element_blank(),
     axis.title.y.right = element_blank(),
-    legend.position=c(0.85, 0.85),
+    legend.position=c(0.25, 0.85),
     legend.background = element_blank(),
     legend.box.background = element_rect(color = "black")) +
-  labs(x = "AP Score", y = "Number of Students", title= paste("Histogram of AP", "CHEM", "Scores"))
+  labs(x = "AP Score", y = "Number of Students", title= "Histogram of AP CHEM Scores")
 plot(hist_chem)
 
-#PHYSICS
-# Generate estimates
-fit_phys <- lm(numgrade_2 ~ scale(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
-                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
-               df_phys2, na.action=na.exclude)
-# Add column of fitted values
-df_viz_phys <- df_phys2 %>%
-  mutate(numgrade_2.fitted = fitted(fit_phys))
-
-# Raw
-raw_phys <- df_viz_phys %>%
-  ggplot(aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
+# Line Graph
+plot_chem_rq3a <- df_chem2 %>%
+  ggplot(aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
   geom_point(stat = 'summary', fun.y = 'mean', size=3) +
   stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
   geom_smooth(stat = 'summary', method = 'loess') +
@@ -440,32 +290,29 @@ raw_phys <- df_viz_phys %>%
     legend.background = element_blank(),
     legend.box.background = element_rect(color = "black")
   ) +
-  labs(x = "AP Score", y = paste("Mean Grade in", "PHYS", "2"), title= paste("PHYS", "Uncontrolled Model"))
-plot(raw_phys)
+  labs(x = "AP Score", y = "Mean Grade in CHEM 2", title= "CHEM Uncontrolled Model")
+plot(plot_chem_rq3a)
 
-# Fitted
-fit_phys <- df_viz_phys %>%
-  ggplot(aes(y = numgrade_2.fitted, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
-  geom_point(stat = 'summary', fun.y = 'mean', size=3) +
-  stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
-  geom_smooth(stat = 'summary', method = 'loess') +
-  scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
-  scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
-  theme_classic() +
-  theme(
-    panel.border = element_rect(color = "black", fill=NA),
-    axis.title.x.top = element_blank(),
-    axis.title.y.right = element_blank(),
-    legend.position=c(0.85, 0.25),
-    legend.background = element_blank(),
-    legend.box.background = element_rect(color = "black")
-  ) +
-  labs(x = "AP Score", y = paste("Mean Grade in", "PHYS", "2"), title= paste("PHYS", "Fitted Model"))
-plot(fit_phys)
+### PHYS
+# Descriptive Stats
+# Number of students who skipped the course at each AP score
+table(df_phys2$skipped_course, df_phys2$apscore_full)
+# Student course 2 grades at each AP score 
+table(df_phys2$numgrade_2, df_phys2$apscore_full, df_phys2$skipped_course) 
+# Means and SD
+df_phys2 %>% 
+  group_by(apscore_full, skipped_course) %>%
+  summarize(mean = mean(numgrade_2,  na.rm = T), sd = sd(numgrade_2,  na.rm = T)) 
+# ANOVA
+phys_rq3a <- aov(numgrade_2 ~ as.factor(apscore_full)*as.factor(skipped_course), 
+                 data=df_phys2)
+anova(phys_rq3a)
+TukeyHSD(phys_rq3a)
 
+# Vizualizations for RQ3A
 # Histogram
-hist_phys <- df_viz_phys %>%
-  ggplot(aes(x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = TRUE)) +
+hist_phys <- df_phys2 %>%
+  ggplot(aes(x = apscore, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
   geom_histogram(stat='count', position = position_dodge(preserve = "single")) +
   scale_x_continuous(sec.axis = dup_axis(labels = NULL)) +
   scale_y_continuous(sec.axis = dup_axis(labels = NULL)) +
@@ -474,9 +321,298 @@ hist_phys <- df_viz_phys %>%
     panel.border = element_rect(color = "black", fill=NA),
     axis.title.x.top = element_blank(),
     axis.title.y.right = element_blank(),
-    legend.position=c(0.85, 0.85),
+    legend.position=c(0.25, 0.85),
     legend.background = element_blank(),
     legend.box.background = element_rect(color = "black")) +
-  labs(x = "AP Score", y = "Number of Students", title= paste("Histogram of AP", "PHYS", "Scores"))
+  labs(x = "AP Score", y = "Number of Students", title= "Histogram of AP PHYS Scores")
 plot(hist_phys)
+
+# Line Graph
+plot_phys_rq3a <- df_phys2 %>%
+  ggplot(aes(y = numgrade_2, x = apscore_full, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
+  geom_point(stat = 'summary', fun.y = 'mean', size=3) +
+  stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
+  geom_smooth(stat = 'summary', method = 'loess') +
+  scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+  scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+  theme_classic() +
+  theme(
+    panel.border = element_rect(color = "black", fill=NA),
+    axis.title.x.top = element_blank(),
+    axis.title.y.right = element_blank(),
+    legend.position=c(0.85, 0.25),
+    legend.background = element_blank(),
+    legend.box.background = element_rect(color = "black")
+  ) +
+  labs(x = "AP Score", y = "Mean Grade in PHYS 2", title= "PHYS Uncontrolled Model")
+plot(plot_phys_rq3a)
+
+## RQ3B - In a matched sample, what was the effect of skipping on 2nd course grade?
+### BIO
+# RQ3B.0 (When score = NOT ELIGIBLE)
+# Subset Data
+df_bio_nonskeligible <- df_bio2 %>%
+  subset(eligible_to_skip == 0) %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+df_bio_nonskeligible <- svydesign(id = ~1, data = df_bio_nonskeligible)
+
+# Model
+bio_rq3b.nosk <- svyglm(numgrade_2 ~  
+                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                 design=df_bio_nonskeligible, na.action=na.exclude)
+summ(bio_rq3b.nosk, digits = 5, confint=T)
+
+## RQ3B.4 (When Score  = 4)
+# Subset and Weight Data
+df_bio_match.4 <- df_bio2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  subset(apscore_full == 4) %>%
+  filter(complete.cases(.))
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_bio_match.4, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+bio.out.4 <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                        scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                      data = df_bio_match.4, estimand = "ATT")
+summary(bio.out.4) 
+# Check balance after weighting
+bal.tab(bio.out.4, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+bio.w.4 <- svydesign(ids = ~1, weights = bio.out.4$weights,
+                     data = df_bio_match.4)
+
+# Model
+bio_rq3b.4 <- svyglm(numgrade_2 ~ skipped_course +  
+                   factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                 design=bio.w.4, na.action=na.exclude)
+summ(bio_rq3b.4, digits = 5, confint=T)
+
+## RQ3B (When Score  = 5)
+# Subset and Weight Data 
+# AP Score = 5
+df_bio_match.5 <- df_bio2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  subset(apscore_full == 5) %>%
+  filter(complete.cases(.))
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_bio_match.5, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+bio.out.5 <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                        scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                      data = df_bio_match.5, estimand = "ATT")
+summary(bio.out.5) 
+# Check balance after weighting
+bal.tab(bio.out.5, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+bio.w.5 <- svydesign(ids = ~1, weights = bio.out.5$weights,
+                     data = df_bio_match.5)
+
+# Model
+bio_rq3b.5 <- svyglm(numgrade_2 ~ skipped_course +  
+                       factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                     design=bio.w.5)
+summ(bio_rq3b.5, digits = 5, confint=T)
+
+# Vizualization for RQ3B
+plot_summs(bio_rq3b.nosk,bio_rq3b.4, bio_rq3b.5, scale = T, 
+           model.names = c("BIO_NOSK", "BIO_4", "BIO_5"),
+           coefs = c("Int" = "(Intercept)", "Skip" = "skipped_course"))
+
+
+### CHEM
+# RQ3B.0 (When score = NOT ELIGIBLE)
+# Subset Data
+df_chem_nonskeligible <- df_chem2 %>%
+  subset(eligible_to_skip == 0) %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+df_chem_nonskeligible <- svydesign(id = ~1, data = df_chem_nonskeligible)
+
+# Model
+chem_rq3b.nosk <- svyglm(numgrade_2 ~  
+                          factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                        design=df_chem_nonskeligible, na.action=na.exclude)
+summ(chem_rq3b.nosk, digits = 5, confint=T)
+
+## RQ3B.4 (When Score  = 3)
+# Subset and Weight Data
+df_chem_match.3 <- df_chem2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  subset(apscore_full == 3) %>%
+  filter(complete.cases(.))
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_chem_match.3, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+chem.out.3 <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                         scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                       data = df_chem_match.3, estimand = "ATT")
+summary(chem.out.3) 
+# Check balance after weighting
+bal.tab(chem.out.3, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+chem.w.3 <- svydesign(ids = ~1, weights = chem.out.3$weights,
+                      data = df_chem_match.3)
+
+# Model
+chem_rq3b.3 <- svyglm(numgrade_2 ~ skipped_course +  
+                        factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                        scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                      design=chem.w.3, na.action=na.exclude)
+summ(chem_rq3b.3, digits = 5)
+
+## RQ3B.4 (When Score  = 4)
+# Subset and Weight Data
+df_chem_match.4 <- df_chem2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  subset(apscore_full == 4) %>%
+  filter(complete.cases(.))
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_chem_match.4, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+chem.out.4 <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                        scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                      data = df_chem_match.4, estimand = "ATT")
+summary(chem.out.4) 
+# Check balance after weighting
+bal.tab(chem.out.4, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+chem.w.4 <- svydesign(ids = ~1, weights = chem.out.4$weights,
+                     data = df_chem_match.4)
+
+# Model
+chem_rq3b.4 <- svyglm(numgrade_2 ~ skipped_course +  
+                       factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                     design=chem.w.4, na.action=na.exclude)
+summ(chem_rq3b.4, digits = 5)
+
+## RQ3B (When Score  = 5)
+# Subset and Weight Data 
+# AP Score = 5
+df_chem_match.5 <- df_chem2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  subset(apscore_full == 5) %>%
+  filter(complete.cases(.))
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_chem_match.5, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+chem.out.5 <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                        scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                      data = df_chem_match.5, estimand = "ATT")
+summary(chem.out.5) 
+# Check balance after weighting
+bal.tab(chem.out.5, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+chem.w.5 <- svydesign(ids = ~1, weights = chem.out.5$weights,
+                     data = df_chem_match.5)
+
+# Model
+chem_rq3b.5 <- svyglm(numgrade_2 ~ skipped_course +  
+                       factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                       scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                     design=chem.w.5)
+summ(chem_rq3b.5, digits = 5)
+
+# Vizualization for RQ3B
+plot_summs(chem_rq3b.nosk, chem_rq3b.3, chem_rq3b.4, chem_rq3b.5, scale = T, 
+           model.names = c("CHEM_NoSkip", "CHEM_3", "CHEM_4", "CHEM_5"),
+           coefs = c("Int" = "(Intercept)", "Skip" = "skipped_course"))
+
+### PHYS
+# RQ3B.0 (When score = NOT ELIGIBLE)
+# Subset Data
+df_phys_nonskeligible <- df_phys2 %>%
+  subset(eligible_to_skip == 0) %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+df_phys_nonskeligible <- svydesign(id = ~1, data = df_phys_nonskeligible)
+
+# Model
+phys_rq3b.nosk <- svyglm(numgrade_2 ~  
+                           factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                         design=df_phys_nonskeligible, na.action=na.exclude)
+summ(phys_rq3b.nosk, digits = 5, confint=T)
+
+## RQ3B (When Score  = 5)
+# Subset and Weight Data 
+# AP Score = 5
+df_phys_match.5 <- df_phys2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  subset(apscore_full == 5) %>%
+  filter(complete.cases(.))
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_phys_match.5, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+phys.out.5 <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                         scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                       data = df_phys_match.5, estimand = "ATT")
+summary(phys.out.5) 
+# Check balance after weighting
+bal.tab(phys.out.5, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+phys.w.5 <- svydesign(ids = ~1, weights = phys.out.5$weights,
+                      data = df_phys_match.5)
+
+# Model
+phys_rq3b.5 <- svyglm(numgrade_2 ~ skipped_course +  
+                        factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                        scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                      design=phys.w.5)
+summ(phys_rq3b.5, digits = 5)
+
+# Vizualization for RQ3B
+plot_summs(phys_rq3b.nosk, phys_rq3b.5, scale = T, 
+           model.names = c("PHYS_NOSK", "PHYS_5"),
+           coefs = c("Int" = "(Intercept)", "Skip" = "skipped_course"))
+
+# Overall RQ3B Viz
+plot_summs(bio_rq3b.nosk, chem_rq3b.nosk, phys_rq3b.nosk, 
+           chem_rq3b.3, 
+           bio_rq3b.4, chem_rq3b.4,
+           bio_rq3b.5, chem_rq3b.5, phys_rq3b.5, 
+           scale = T, colors = "Paired",
+           model.names = c("BIO_NOSK", "CHEM_NOSK", "PHYS_NOSK", 
+                           "CHEM_3", 
+                           "BIO_4", "CHEM_4",
+                           "BIO_5", "CHEM_5", "PHYS_5"),
+           coefs = c("Int" = "(Intercept)", "Skip" = "skipped_course"))
+
+
+           
 
