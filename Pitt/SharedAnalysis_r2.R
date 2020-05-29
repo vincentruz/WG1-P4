@@ -18,7 +18,7 @@ options(scipen = 999)      # Turn off scientific notation
 select <- dplyr::select    # Use dyplr for 'select' function
 
 ## Load clean dataset
-df_clean <- read.csv("~/YOUR RECODED FILE PATH HERE.csv")
+df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 
 ## View data 
 # Note: Variable names should follow SEISMIC conventions found here: https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021
@@ -436,7 +436,7 @@ plot_summs(bio_rq3b.nosk,bio_rq3b.4, bio_rq3b.5, scale = T,
 # Matched Line Graphs
 df_rq3b_bio.nosk <- as.data.frame(bio_rq3b.nosk$model) %>%
   mutate(numgrade_2.fitted = bio_rq3b.nosk[["fitted.values"]]) %>%
-  mutate(`factor(apscore_full)` = as.numeric(`factor(apscore_full)`)) %>%
+  mutate(`factor(apscore_full)` = as.numeric(as.character(`factor(apscore_full)`))) %>%
   mutate(skipped_course = 0) 
 df_rq3b_bio.4 <- as.data.frame(bio_rq3b.4$model) %>%
   mutate(numgrade_2.fitted = bio_rq3b.4[["fitted.values"]]) %>%
@@ -475,7 +475,7 @@ df_chem_nonskeligible <- df_chem2 %>%
          firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
          hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
   filter(complete.cases(.)) 
-df_chem_nonskeligible <- svydesign(id = ~1, data = df_chem_nonskeligible)
+df_chem_nonskeligible <- svydesign(id = ~st_id, data = df_chem_nonskeligible)
 
 # Model
 chem_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
@@ -504,7 +504,7 @@ summary(chem.out.3)
 # Check balance after weighting
 bal.tab(chem.out.3, m.threshold = .05, disp.v.ratio = T)
 # Extract weights
-chem.w.3 <- svydesign(ids = ~1, weights = chem.out.3$weights,
+chem.w.3 <- svydesign(ids = ~st_id, weights = chem.out.3$weights,
                       data = df_chem_match.3)
 
 # Model
@@ -534,7 +534,7 @@ summary(chem.out.4)
 # Check balance after weighting
 bal.tab(chem.out.4, m.threshold = .05, disp.v.ratio = T)
 # Extract weights
-chem.w.4 <- svydesign(ids = ~1, weights = chem.out.4$weights,
+chem.w.4 <- svydesign(ids = ~st_id, weights = chem.out.4$weights,
                      data = df_chem_match.4)
 
 # Model
@@ -565,7 +565,7 @@ summary(chem.out.5)
 # Check balance after weighting
 bal.tab(chem.out.5, m.threshold = .05, disp.v.ratio = T)
 # Extract weights
-chem.w.5 <- svydesign(ids = ~1, weights = chem.out.5$weights,
+chem.w.5 <- svydesign(ids = ~st_id, weights = chem.out.5$weights,
                      data = df_chem_match.5)
 
 # Model
@@ -584,7 +584,7 @@ plot_summs(chem_rq3b.nosk, chem_rq3b.3, chem_rq3b.4, chem_rq3b.5, scale = T,
 # Matched Line Graphs 
 df_rq3b_chem.nosk <- as.data.frame(chem_rq3b.nosk$model) %>%
   mutate(numgrade_2.fitted = chem_rq3b.nosk[["fitted.values"]]) %>%
-  mutate(`factor(apscore_full)` = as.numeric(`factor(apscore_full)`)) %>%
+  mutate(`factor(apscore_full)` = as.numeric(as.character(`factor(apscore_full)`))) %>%
   mutate(skipped_course = 0) 
 df_rq3b_chem.3 <- as.data.frame(chem_rq3b.3$model) %>%
   mutate(numgrade_2.fitted = chem_rq3b.3[["fitted.values"]]) %>%
@@ -674,7 +674,7 @@ plot_summs(phys_rq3b.nosk, phys_rq3b.5, scale = T,
 # PHYS 
 df_rq3b_phys.nosk <- as.data.frame(phys_rq3b.nosk$model) %>%
   mutate(numgrade_2.fitted = phys_rq3b.nosk[["fitted.values"]]) %>%
-  mutate(`factor(apscore_full)` = as.numeric(`factor(apscore_full)`)) %>%
+  mutate(`factor(apscore_full)` = as.numeric(as.character(`factor(apscore_full)`))) %>%
   mutate(skipped_course = 0) 
 df_rq3b_phys.5 <- as.data.frame(phys_rq3b.5$model) %>%
   mutate(numgrade_2.fitted = phys_rq3b.5[["fitted.values"]]) %>%
