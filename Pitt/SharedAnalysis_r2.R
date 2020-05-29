@@ -360,7 +360,7 @@ df_bio_nonskeligible <- df_bio2 %>%
 df_bio_nonskeligible <- svydesign(id = ~1, data = df_bio_nonskeligible)
 
 # Model
-bio_rq3b.nosk <- svyglm(numgrade_2 ~  
+bio_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                  design=df_bio_nonskeligible, na.action=na.exclude)
@@ -428,9 +428,42 @@ bio_rq3b.5 <- svyglm(numgrade_2 ~ skipped_course +
 summ(bio_rq3b.5, digits = 5, confint=T)
 
 # Vizualization for RQ3B
+# Estimates
 plot_summs(bio_rq3b.nosk,bio_rq3b.4, bio_rq3b.5, scale = T, 
            model.names = c("BIO_NOSK", "BIO_4", "BIO_5"),
            coefs = c("Int" = "(Intercept)", "Skip" = "skipped_course"))
+
+# Matched Line Graphs
+df_rq3b_bio.nosk <- as.data.frame(bio_rq3b.nosk$model) %>%
+  mutate(numgrade_2.fitted = bio_rq3b.nosk[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(`factor(apscore_full)`)) %>%
+  mutate(skipped_course = 0) 
+df_rq3b_bio.4 <- as.data.frame(bio_rq3b.4$model) %>%
+  mutate(numgrade_2.fitted = bio_rq3b.4[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(4))
+df_rq3b_bio.5 <- as.data.frame(bio_rq3b.5$model) %>%
+  mutate(numgrade_2.fitted = bio_rq3b.5[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(5))
+df_rq3b_bio <-bind_rows(df_rq3b_bio.nosk, df_rq3b_bio.4, df_rq3b_bio.5)
+
+plot_bio_rq3b <- df_rq3b_bio %>%
+  ggplot(aes(y = numgrade_2.fitted, x = `factor(apscore_full)`, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
+  geom_point(stat = 'summary', fun.y = 'mean', size=3) +
+  stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
+  geom_smooth(stat = 'summary', method = 'loess') +
+  scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+  scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+  theme_classic() +
+  theme(
+    panel.border = element_rect(color = "black", fill=NA),
+    axis.title.x.top = element_blank(),
+    axis.title.y.right = element_blank(),
+    legend.position=c(0.85, 0.25),
+    legend.background = element_blank(),
+    legend.box.background = element_rect(color = "black")
+  ) +
+  labs(x = "AP Score", y = "Mean Grade in BIO 2", title= "BIO Matched Model")
+plot(plot_bio_rq3b)
 
 
 ### CHEM
@@ -445,7 +478,7 @@ df_chem_nonskeligible <- df_chem2 %>%
 df_chem_nonskeligible <- svydesign(id = ~1, data = df_chem_nonskeligible)
 
 # Model
-chem_rq3b.nosk <- svyglm(numgrade_2 ~  
+chem_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
                           factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                         design=df_chem_nonskeligible, na.action=na.exclude)
@@ -543,9 +576,46 @@ chem_rq3b.5 <- svyglm(numgrade_2 ~ skipped_course +
 summ(chem_rq3b.5, digits = 5)
 
 # Vizualization for RQ3B
+# Estimates
 plot_summs(chem_rq3b.nosk, chem_rq3b.3, chem_rq3b.4, chem_rq3b.5, scale = T, 
            model.names = c("CHEM_NoSkip", "CHEM_3", "CHEM_4", "CHEM_5"),
            coefs = c("Int" = "(Intercept)", "Skip" = "skipped_course"))
+
+# Matched Line Graphs 
+df_rq3b_chem.nosk <- as.data.frame(chem_rq3b.nosk$model) %>%
+  mutate(numgrade_2.fitted = chem_rq3b.nosk[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(`factor(apscore_full)`)) %>%
+  mutate(skipped_course = 0) 
+df_rq3b_chem.3 <- as.data.frame(chem_rq3b.3$model) %>%
+  mutate(numgrade_2.fitted = chem_rq3b.3[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(3))
+df_rq3b_chem.4 <- as.data.frame(chem_rq3b.4$model) %>%
+  mutate(numgrade_2.fitted = chem_rq3b.4[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(4))
+df_rq3b_chem.5 <- as.data.frame(chem_rq3b.5$model) %>%
+  mutate(numgrade_2.fitted = chem_rq3b.5[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(5))
+df_rq3b_chem <-bind_rows(df_rq3b_chem.nosk, df_rq3b_chem.3, df_rq3b_chem.4, df_rq3b_chem.5)
+
+plot_chem_rq3b <- df_rq3b_chem %>%
+  ggplot(aes(y = numgrade_2.fitted, x = `factor(apscore_full)`, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
+  geom_point(stat = 'summary', fun.y = 'mean', size=3) +
+  stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
+  geom_smooth(stat = 'summary', method = 'loess') +
+  scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+  scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+  theme_classic() +
+  theme(
+    panel.border = element_rect(color = "black", fill=NA),
+    axis.title.x.top = element_blank(),
+    axis.title.y.right = element_blank(),
+    legend.position=c(0.85, 0.25),
+    legend.background = element_blank(),
+    legend.box.background = element_rect(color = "black")
+  ) +
+  labs(x = "AP Score", y = "Mean Grade in CHEM 2", title= "CHEM Matched Model")
+plot(plot_chem_rq3b)
+
 
 ### PHYS
 # RQ3B.0 (When score = NOT ELIGIBLE)
@@ -559,7 +629,7 @@ df_phys_nonskeligible <- df_phys2 %>%
 df_phys_nonskeligible <- svydesign(id = ~1, data = df_phys_nonskeligible)
 
 # Model
-phys_rq3b.nosk <- svyglm(numgrade_2 ~  
+phys_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
                            factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                            scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                          design=df_phys_nonskeligible, na.action=na.exclude)
@@ -596,12 +666,43 @@ phys_rq3b.5 <- svyglm(numgrade_2 ~ skipped_course +
                       design=phys.w.5)
 summ(phys_rq3b.5, digits = 5)
 
-# Vizualization for RQ3B
+# Vizualization for RQ3B - Estimates
 plot_summs(phys_rq3b.nosk, phys_rq3b.5, scale = T, 
            model.names = c("PHYS_NOSK", "PHYS_5"),
            coefs = c("Int" = "(Intercept)", "Skip" = "skipped_course"))
 
-# Overall RQ3B Viz
+# PHYS 
+df_rq3b_phys.nosk <- as.data.frame(phys_rq3b.nosk$model) %>%
+  mutate(numgrade_2.fitted = phys_rq3b.nosk[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(`factor(apscore_full)`)) %>%
+  mutate(skipped_course = 0) 
+df_rq3b_phys.5 <- as.data.frame(phys_rq3b.5$model) %>%
+  mutate(numgrade_2.fitted = phys_rq3b.5[["fitted.values"]]) %>%
+  mutate(`factor(apscore_full)` = as.numeric(5))
+df_rq3b_phys <-bind_rows(df_rq3b_phys.nosk, df_rq3b_phys.5)
+
+plot_phys_rq3b <- df_rq3b_phys %>%
+  ggplot(aes(y = numgrade_2.fitted, x = `factor(apscore_full)`, color = as.factor(skipped_course), fill = as.factor(skipped_course), na.omit = T)) +
+  geom_point(stat = 'summary', fun.y = 'mean', size=3) +
+  stat_summary(fun.data = 'mean_se', geom = 'errorbar', width = 0.1) +
+  geom_smooth(stat = 'summary', method = 'loess') +
+  scale_x_continuous(limits = c(0,5), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 5, by=1), labels=c("Didn't Take", "1", "2", "3", "4", "5")) +
+  scale_y_continuous(limits = c(0,4), sec.axis = dup_axis(labels = NULL), breaks=seq(0, 4, by=0.5)) +
+  theme_classic() +
+  theme(
+    panel.border = element_rect(color = "black", fill=NA),
+    axis.title.x.top = element_blank(),
+    axis.title.y.right = element_blank(),
+    legend.position=c(0.85, 0.25),
+    legend.background = element_blank(),
+    legend.box.background = element_rect(color = "black")
+  ) +
+  labs(x = "AP Score", y = "Mean Grade in PHYS 2", title= "PHYS Matched Model")
+plot(plot_phys_rq3b)
+
+##### EXTRAS #####
+
+# Overall RQ3B Viz - Estimates
 plot_summs(bio_rq3b.nosk, chem_rq3b.nosk, phys_rq3b.nosk, 
            chem_rq3b.3, 
            bio_rq3b.4, chem_rq3b.4,
@@ -612,7 +713,3 @@ plot_summs(bio_rq3b.nosk, chem_rq3b.nosk, phys_rq3b.nosk,
                            "BIO_4", "CHEM_4",
                            "BIO_5", "CHEM_5", "PHYS_5"),
            coefs = c("Int" = "(Intercept)", "Skip" = "skipped_course"))
-
-
-           
-
