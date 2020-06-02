@@ -18,6 +18,7 @@ options(scipen = 999)      # Turn off scientific notation
 select <- dplyr::select    # Use dyplr for 'select' function
 
 ## Load clean dataset
+# df_clean <- read.csv("~/YOUR FILE PATH HERE.csv")
 df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 
 ## View data 
