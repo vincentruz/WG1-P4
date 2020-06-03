@@ -350,8 +350,37 @@ plot(plot_phys_rq3a)
 
 ## RQ3B - In a matched sample, what was the effect of skipping on 2nd course grade?
 ### BIO
-# RQ3B.0 (When score = NOT ELIGIBLE)
-# Subset Data
+# RQ3B.FULL
+# Complete cases only
+df_bio_full <- df_bio2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_bio_full, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+bio.out.full <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                        scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                      data = df_bio_full, estimand = "ATT")
+summary(bio.out.full) 
+# Check balance after weighting
+bal.tab(bio.out.full, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+bio.w.full <- svydesign(ids = ~1, weights = bio.out.full$weights,
+                     data = df_bio_full)
+
+# Model
+bio_rq3b.full <- svyglm(numgrade_2 ~ factor(skipped_course) + 
+                          factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                        design=bio.w.full, na.action=na.exclude)
+summ(bio_rq3b.full, digits = 5, confint=T)
+
+# RQ3B.NSE (When score = NOT ELIGIBLE)
+# Subset and select complete cases only
 df_bio_nonskeligible <- df_bio2 %>%
   subset(eligible_to_skip == 0) %>%
   select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
@@ -361,11 +390,41 @@ df_bio_nonskeligible <- df_bio2 %>%
 df_bio_nonskeligible <- svydesign(id = ~1, data = df_bio_nonskeligible)
 
 # Model
-bio_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
+bio_rq3b.nosk <- svyglm(numgrade_2 ~ scale(apscore_full) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                  design=df_bio_nonskeligible, na.action=na.exclude)
 summ(bio_rq3b.nosk, digits = 5, confint=T)
+
+# RQ3B.SE (When score = ELIGIBLE)
+# Subset, select complete cases only, and weight
+df_bio_skeligible <- df_bio2 %>%
+  subset(eligible_to_skip == 1) %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_bio_skeligible, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+bio.out.skeligible <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                         data = df_bio_skeligible, estimand = "ATT")
+summary(bio.out.skeligible) 
+# Check balance after weighting
+bal.tab(bio.out.skeligible, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+bio.w.skeligible <- svydesign(ids = ~1, weights = bio.out.skeligible$weights,
+                        data = df_bio_skeligible)
+
+# Model
+bio_rq3b.skeligible <- svyglm(numgrade_2 ~ factor(skipped_course) + scale(apscore_full) + 
+                          factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                        design=bio.w.skeligible, na.action=na.exclude)
+summ(bio_rq3b.skeligible, digits = 5, confint=T)
 
 ## RQ3B.4 (When Score  = 4)
 # Subset and Weight Data
@@ -466,24 +525,82 @@ plot_bio_rq3b <- df_rq3b_bio %>%
   labs(x = "AP Score", y = "Mean Grade in BIO 2", title= "BIO Matched Model")
 plot(plot_bio_rq3b)
 
-
 ### CHEM
-# RQ3B.0 (When score = NOT ELIGIBLE)
-# Subset Data
+# RQ3B.FULL
+# Complete cases only
+df_chem_full <- df_chem2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_chem_full, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+chem.out.full <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                         data = df_chem_full, estimand = "ATT")
+summary(chem.out.full) 
+# Check balance after weighting
+bal.tab(chem.out.full, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+chem.w.full <- svydesign(ids = ~1, weights = chem.out.full$weights,
+                        data = df_chem_full)
+
+# Model
+chem_rq3b.full <- svyglm(numgrade_2 ~ factor(skipped_course) + 
+                          factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                        design=chem.w.full, na.action=na.exclude)
+summ(chem_rq3b.full, digits = 5, confint=T)
+
+# RQ3B.NSE (When score = NOT ELIGIBLE)
+# Subset and select complete cases only
 df_chem_nonskeligible <- df_chem2 %>%
   subset(eligible_to_skip == 0) %>%
   select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
          firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
          hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
   filter(complete.cases(.)) 
-df_chem_nonskeligible <- svydesign(id = ~st_id, data = df_chem_nonskeligible)
+df_chem_nonskeligible <- svydesign(id = ~1, data = df_chem_nonskeligible)
 
 # Model
-chem_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
+chem_rq3b.nosk <- svyglm(numgrade_2 ~ scale(apscore_full) + 
                           factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                         design=df_chem_nonskeligible, na.action=na.exclude)
 summ(chem_rq3b.nosk, digits = 5, confint=T)
+
+# RQ3B.SE (When score = ELIGIBLE)
+# Subset, select complete cases only, and weight
+df_chem_skeligible <- df_chem2 %>%
+  subset(eligible_to_skip == 1) %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_chem_skeligible, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+chem.out.skeligible <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                               data = df_chem_skeligible, estimand = "ATT")
+summary(chem.out.skeligible) 
+# Check balance after weighting
+bal.tab(chem.out.skeligible, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+chem.w.skeligible <- svydesign(ids = ~1, weights = chem.out.skeligible$weights,
+                              data = df_chem_skeligible)
+
+# Model
+chem_rq3b.skeligible <- svyglm(numgrade_2 ~ factor(skipped_course) + scale(apscore_full) + 
+                                factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                                scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                              design=chem.w.skeligible, na.action=na.exclude)
+summ(chem_rq3b.skeligible, digits = 5, confint=T)
 
 ## RQ3B.4 (When Score  = 3)
 # Subset and Weight Data
@@ -619,8 +736,37 @@ plot(plot_chem_rq3b)
 
 
 ### PHYS
-# RQ3B.0 (When score = NOT ELIGIBLE)
-# Subset Data
+# RQ3B.FULL
+# Complete cases only
+df_phys_full <- df_phys2 %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_phys_full, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+phys.out.full <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                            scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                          data = df_phys_full, estimand = "ATT")
+summary(phys.out.full) 
+# Check balance after weighting
+bal.tab(phys.out.full, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+phys.w.full <- svydesign(ids = ~1, weights = phys.out.full$weights,
+                         data = df_phys_full)
+
+# Model
+phys_rq3b.full <- svyglm(numgrade_2 ~ factor(skipped_course) + 
+                           factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                         design=phys.w.full, na.action=na.exclude)
+summ(phys_rq3b.full, digits = 5, confint=T)
+
+# RQ3B.NSE (When score = NOT ELIGIBLE)
+# Subset and select complete cases only
 df_phys_nonskeligible <- df_phys2 %>%
   subset(eligible_to_skip == 0) %>%
   select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
@@ -630,11 +776,41 @@ df_phys_nonskeligible <- df_phys2 %>%
 df_phys_nonskeligible <- svydesign(id = ~1, data = df_phys_nonskeligible)
 
 # Model
-phys_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
+phys_rq3b.nosk <- svyglm(numgrade_2 ~ scale(apscore_full) + 
                            factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                            scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                          design=df_phys_nonskeligible, na.action=na.exclude)
 summ(phys_rq3b.nosk, digits = 5, confint=T)
+
+# RQ3B.SE (When score = ELIGIBLE)
+# Subset, select complete cases only, and weight
+df_phys_skeligible <- df_phys2 %>%
+  subset(eligible_to_skip == 1) %>%
+  select(st_id, numgrade_2, apscore_full, eligible_to_skip, skipped_course, aptaker,
+         firstgen, lowincomeflag, female, gender, urm, ethniccode_cat,
+         hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
+  filter(complete.cases(.)) 
+# Check balance before weighting
+bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+          scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+        data = df_phys_skeligible, estimand = "ATT", m.threshold = .05)
+# Estimate weights
+phys.out.skeligible <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+                                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
+                                data = df_phys_skeligible, estimand = "ATT")
+summary(phys.out.skeligible) 
+# Check balance after weighting
+bal.tab(phys.out.skeligible, m.threshold = .05, disp.v.ratio = T)
+# Extract weights
+phys.w.skeligible <- svydesign(ids = ~1, weights = phys.out.skeligible$weights,
+                               data = df_phys_skeligible)
+
+# Model
+phys_rq3b.skeligible <- svyglm(numgrade_2 ~ factor(skipped_course) + scale(apscore_full) + 
+                                 factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
+                                 scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
+                               design=phys.w.skeligible, na.action=na.exclude)
+summ(phys_rq3b.skeligible, digits = 5, confint=T)
 
 ## RQ3B (When Score  = 5)
 # Subset and Weight Data 
