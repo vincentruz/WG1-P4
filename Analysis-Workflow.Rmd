@@ -551,6 +551,7 @@ as_tibble(df_bio)
 # Stacked dataframe with Bio, Chem, Phys
 df_clean <- rbind(df_bio, df_chem, df_phys)
 df_clean <- df_clean %>%
+# Remove .y suffix (to signify course 1) and change .x suffix to "_2" (to signify course 2)
   rename_at(vars(ends_with(".x")), 
             ~(str_replace(., ".x", "_2"))) %>%
   rename_at(vars(ends_with(".y")), 
