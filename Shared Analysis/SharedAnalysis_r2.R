@@ -67,7 +67,7 @@ lapply(df_bio2[contVar], function(x) summary(x))
 view(dfSummary(df_chem2))
 lapply(df_chem2[contVar], function(x) summary(x))
 ### Phys
-view(dfSummary(df_phsy2))
+view(dfSummary(df_phys2))
 lapply(df_phys2[contVar], function(x) summary(x))
 
 # Run Models (for each discipline) #
