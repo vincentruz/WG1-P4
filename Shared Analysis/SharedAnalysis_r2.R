@@ -405,11 +405,11 @@ df_bio_skeligible <- df_bio2 %>%
          hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
   filter(complete.cases(.)) 
 # Check balance before weighting
-bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+bal.tab(skipped_course ~ factor(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
         data = df_bio_skeligible, estimand = "ATT", m.threshold = .05)
 # Estimate weights
-bio.out.skeligible <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+bio.out.skeligible <- weightit(skipped_course ~ factor(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
                            scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
                          data = df_bio_skeligible, estimand = "ATT")
 summary(bio.out.skeligible) 
@@ -450,7 +450,7 @@ bio.w.4 <- svydesign(ids = ~1, weights = bio.out.4$weights,
                      data = df_bio_match.4)
 
 # Model
-bio_rq3b.4 <- svyglm(numgrade_2 ~ skipped_course +  
+bio_rq3b.4 <- svyglm(numgrade_2 ~ factor(skipped_course) +  
                    factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                    scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                  design=bio.w.4, na.action=na.exclude)
@@ -481,7 +481,7 @@ bio.w.5 <- svydesign(ids = ~1, weights = bio.out.5$weights,
                      data = df_bio_match.5)
 
 # Model
-bio_rq3b.5 <- svyglm(numgrade_2 ~ skipped_course +  
+bio_rq3b.5 <- svyglm(numgrade_2 ~ factor(skipped_course) +  
                        factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                        scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                      design=bio.w.5)
@@ -581,11 +581,11 @@ df_chem_skeligible <- df_chem2 %>%
          hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
   filter(complete.cases(.)) 
 # Check balance before weighting
-bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+bal.tab(skipped_course ~ factor(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
         data = df_chem_skeligible, estimand = "ATT", m.threshold = .05)
 # Estimate weights
-chem.out.skeligible <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+chem.out.skeligible <- weightit(skipped_course ~ factor(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
                                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
                                data = df_chem_skeligible, estimand = "ATT")
 summary(chem.out.skeligible) 
@@ -791,11 +791,11 @@ df_phys_skeligible <- df_phys2 %>%
          hsgpa, mathsr, englsr, cohort, enrl_from_cohort_2, crs_term_2) %>%
   filter(complete.cases(.)) 
 # Check balance before weighting
-bal.tab(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+bal.tab(skipped_course ~ factor(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
         data = df_phys_skeligible, estimand = "ATT", m.threshold = .05)
 # Estimate weights
-phys.out.skeligible <- weightit(skipped_course ~ factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
+phys.out.skeligible <- weightit(skipped_course ~ factor(apscore_full) + factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) +
                                   scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2),
                                 data = df_phys_skeligible, estimand = "ATT")
 summary(phys.out.skeligible) 
