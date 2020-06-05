@@ -390,7 +390,7 @@ df_bio_nonskeligible <- df_bio2 %>%
 df_bio_nonskeligible <- svydesign(id = ~1, data = df_bio_nonskeligible)
 
 # Model
-bio_rq3b.nosk <- svyglm(numgrade_2 ~ scale(apscore_full) + 
+bio_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
                  factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                  scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                  design=df_bio_nonskeligible, na.action=na.exclude)
@@ -566,7 +566,7 @@ df_chem_nonskeligible <- df_chem2 %>%
 df_chem_nonskeligible <- svydesign(id = ~1, data = df_chem_nonskeligible)
 
 # Model
-chem_rq3b.nosk <- svyglm(numgrade_2 ~ scale(apscore_full) + 
+chem_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
                           factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                         design=df_chem_nonskeligible, na.action=na.exclude)
@@ -776,7 +776,7 @@ df_phys_nonskeligible <- df_phys2 %>%
 df_phys_nonskeligible <- svydesign(id = ~1, data = df_phys_nonskeligible)
 
 # Model
-phys_rq3b.nosk <- svyglm(numgrade_2 ~ scale(apscore_full) + 
+phys_rq3b.nosk <- svyglm(numgrade_2 ~ factor(apscore_full) + 
                            factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                            scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                          design=df_phys_nonskeligible, na.action=na.exclude)
