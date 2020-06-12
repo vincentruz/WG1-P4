@@ -19,6 +19,7 @@ select <- dplyr::select    # Use dyplr for 'select' function
 
 ## Load clean dataset
 # df_clean <- read.csv("~/YOUR FILE PATH HERE.csv")
+df_clean <- read.csv("~/Box Sync/LSAP_LRDC/Research Projects/SEISMIC/AP/SEISMIC_AP/SEISMIC_AP_CLEAN.csv")
 
 ## View data 
 # Note: Variable names should follow SEISMIC conventions found here: https://docs.google.com/spreadsheets/d/1SzU4PcIEUsAGnKKyAcugHO2O2aZW29sf9a_cC-FAElk/edit#gid=1679989021
@@ -419,7 +420,7 @@ bio.w.skeligible <- svydesign(ids = ~1, weights = bio.out.skeligible$weights,
                         data = df_bio_skeligible)
 
 # Model
-bio_rq3b.skeligible <- svyglm(numgrade_2 ~ factor(skipped_course) + scale(apscore_full) + 
+bio_rq3b.skeligible <- svyglm(numgrade_2 ~ factor(skipped_course) + factor(apscore_full) + 
                           factor(firstgen) + factor(lowincomeflag) + factor(gender) + factor(ethniccode_cat) + 
                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                         design=bio.w.skeligible, na.action=na.exclude)
