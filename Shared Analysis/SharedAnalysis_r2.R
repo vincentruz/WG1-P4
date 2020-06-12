@@ -420,7 +420,11 @@ bio.w.skeligible <- svydesign(ids = ~1, weights = bio.out.skeligible$weights,
                         data = df_bio_skeligible)
 
 # Model
+<<<<<<< HEAD
 bio_rq3b.skeligible <- svyglm(numgrade_2 ~ factor(skipped_course) + factor(apscore_full) + 
+=======
+bio_rq3b.skeligible <- svyglm(numgrade_2 ~ factor(skipped_course) + scale(apscore_full) + 
+>>>>>>> bc22e4f7a2a2d494aca6666759bf7398c108eccb
                           factor(firstgen) + factor(lowincomeflag) + factor(female) + factor(ethniccode_cat) + 
                           scale(hsgpa) + scale(mathsr) + scale(englsr) + factor(crs_term_2), 
                         design=bio.w.skeligible, na.action=na.exclude)
